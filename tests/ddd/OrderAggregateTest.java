@@ -45,15 +45,15 @@ class OrderAggregateTest {
     }
 
     private long newOrderId() {
-        return service.placeOrder(new PlaceOrderCommand("김철수", List.of(
-                new OrderLineCommand("자바 책", 15000, 2),
-                new OrderLineCommand("볼펜", 1000, 1)), "서울시 강남구"));
+        return service.placeOrder(new PlaceOrderCommand(1, List.of(
+                new OrderLineCommand(1, "자바 책", 15000, 2),
+                new OrderLineCommand(2, "볼펜", 1000, 1)), "서울시 강남구"));
     }
 
     @Test
     @DisplayName("S1 주문 항목은 상품 이름, 가격, 수량을 갖고 항목 금액은 가격 곱하기 수량이다. 주문은 주문 항목 여러 개로 만들고 주문 금액은 항목 금액의 합이다")
     void s1() {
-        OrderLine book = new OrderLine("자바 책", new Money(15000), 2);
+        OrderLine book = new OrderLine(1, "자바 책", new Money(15000), 2);
         assertEquals("자바 책", book.productName());
         assertEquals(new Money(15000), book.price());
         assertEquals(2, book.quantity());
@@ -85,14 +85,14 @@ class OrderAggregateTest {
         Order order = newOrder();
 
         assertThrows(UnsupportedOperationException.class,
-                () -> order.getOrderLines().add(new OrderLine("공책", new Money(2000), 5)));
+                () -> order.getOrderLines().add(new OrderLine(3, "공책", new Money(2000), 5)));
         assertEquals(2, order.getOrderLines().size());
         assertEquals(new Money(31000), order.getTotalPrice());
 
         List<OrderLine> given = new ArrayList<>();
-        given.add(new OrderLine("자바 책", new Money(15000), 2));
-        Order fromGiven = new Order(1, "김철수", given, new Address("서울시 강남구"));
-        given.add(new OrderLine("공책", new Money(2000), 5));
+        given.add(new OrderLine(1, "자바 책", new Money(15000), 2));
+        Order fromGiven = new Order(1, 1, given, new Address("서울시 강남구"));
+        given.add(new OrderLine(3, "공책", new Money(2000), 5));
         assertEquals(1, fromGiven.getOrderLines().size());
         assertEquals(new Money(30000), fromGiven.getTotalPrice());
     }
@@ -102,7 +102,7 @@ class OrderAggregateTest {
     void s4() {
         Order order = newOrder();
 
-        order.addOrderLine(new OrderLine("공책", new Money(2000), 5));
+        order.addOrderLine(new OrderLine(3, "공책", new Money(2000), 5));
 
         assertEquals(3, order.getOrderLines().size());
         assertEquals("공책", order.getOrderLines().get(2).productName());
@@ -118,7 +118,7 @@ class OrderAggregateTest {
         Order order = service.findOrder(orderId);
 
         IllegalStateException error = assertThrows(IllegalStateException.class,
-                () -> order.addOrderLine(new OrderLine("공책", new Money(2000), 5)));
+                () -> order.addOrderLine(new OrderLine(3, "공책", new Money(2000), 5)));
 
         assertEquals("주문 접수인 주문에만 항목을 더할 수 있습니다", error.getMessage());
         assertEquals(2, order.getOrderLines().size());
@@ -130,10 +130,10 @@ class OrderAggregateTest {
     @DisplayName("S6 주문은 항목이 하나 이상이어야 한다. 항목 없이 주문하면 거절한다")
     void s6() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand("강민준", List.of(), "인천시 연수구")));
+                () -> service.placeOrder(new PlaceOrderCommand(2, List.of(), "인천시 연수구")));
         assertEquals("주문 항목이 하나 이상 있어야 합니다", error.getMessage());
         assertThrows(IllegalArgumentException.class,
-                () -> new Order(1, "강민준", List.of(), new Address("인천시 연수구")));
+                () -> new Order(1, 2, List.of(), new Address("인천시 연수구")));
 
         assertTrue(runMain().contains("빈 주문: 주문 항목이 하나 이상 있어야 합니다"));
     }
@@ -142,9 +142,9 @@ class OrderAggregateTest {
     @DisplayName("S7 주문 항목의 수량은 1개 이상이다. 0개 항목으로 주문하면 거절한다")
     void s7() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> new OrderLine("자바 책", new Money(15000), 0));
+                () -> new OrderLine(1, "자바 책", new Money(15000), 0));
         assertEquals("수량은 1개 이상이어야 합니다", error.getMessage());
-        assertEquals(1, new OrderLine("자바 책", new Money(15000), 1).quantity());
+        assertEquals(1, new OrderLine(1, "자바 책", new Money(15000), 1).quantity());
 
         assertTrue(runMain().contains("0개 항목 주문: 수량은 1개 이상이어야 합니다"));
     }

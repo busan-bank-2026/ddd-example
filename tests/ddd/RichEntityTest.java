@@ -53,9 +53,9 @@ class RichEntityTest {
     @Test
     @DisplayName("S2 주문은 만들 때 주문 번호를 받고, 같은 번호면 같은 주문으로 본다")
     void s2() {
-        Order first = new Order(1, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
-        Order sameNumber = new Order(1, "이영희", List.of(new OrderLine("연필", new Money(500), 3)), new Address("부산시 해운대구"));
-        Order otherNumber = new Order(2, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order first = new Order(1, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order sameNumber = new Order(1, 2, List.of(new OrderLine(4, "연필", new Money(500), 3)), new Address("부산시 해운대구"));
+        Order otherNumber = new Order(2, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
 
         assertEquals(1, first.getId());
         assertEquals(first, sameNumber);
@@ -63,8 +63,8 @@ class RichEntityTest {
         assertNotEquals(first, otherNumber);
 
         OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
-        long placed1 = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
-        long placed2 = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        long placed1 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        long placed2 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
         assertEquals(1, placed1);
         assertEquals(2, placed2);
         assertEquals(1, service.findOrder(placed1).getId());
@@ -75,18 +75,18 @@ class RichEntityTest {
     @Test
     @DisplayName("S3 주문을 만들 때 주문 금액과 주문 접수 상태를 주문이 스스로 정한다")
     void s3() {
-        Order order = new Order(1, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order order = new Order(1, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
 
         assertEquals(30000, order.getTotalPrice().amount());
         assertEquals("주문 접수", order.getStatus().label());
-        assertEquals("김철수", order.getCustomerName());
+        assertEquals(1L, order.getMemberId());
         assertEquals("서울시 강남구", order.getAddress().value());
     }
 
     @Test
     @DisplayName("S4 결제, 배송, 취소 규칙을 주문이 스스로 지킨다. 서비스는 주문에게 시키기만 한다")
     void s4() {
-        Order order = new Order(1, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order order = new Order(1, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
 
         order.pay();
         assertEquals("결제 완료", order.getStatus().label());
@@ -96,14 +96,14 @@ class RichEntityTest {
         assertEquals("배송 중인 주문은 취소할 수 없습니다", cancelError.getMessage());
         assertEquals("배송 중", order.getStatus().label());
 
-        Order unpaid = new Order(2, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order unpaid = new Order(2, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
         IllegalStateException shipError = assertThrows(IllegalStateException.class, unpaid::ship);
         assertEquals("주문 접수인 주문은 배송할 수 없습니다", shipError.getMessage());
         unpaid.cancel();
         assertEquals("취소", unpaid.getStatus().label());
 
         OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
-        long placed = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        long placed = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
         service.pay(placed);
         service.ship(placed);
         assertEquals("배송 중", service.findOrder(placed).getStatus().label());

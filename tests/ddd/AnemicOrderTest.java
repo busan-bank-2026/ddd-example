@@ -24,7 +24,7 @@ class AnemicOrderTest {
     private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
 
     private long newOrder() {
-        return service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        return service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
     }
 
     @Test
@@ -32,7 +32,7 @@ class AnemicOrderTest {
     void s1() {
         Order order = service.findOrder(newOrder());
 
-        assertEquals("김철수", order.getCustomerName());
+        assertEquals(1L, order.getMemberId());
         assertEquals("자바 책", order.getOrderLines().get(0).productName());
         assertEquals(15000, order.getOrderLines().get(0).price().amount());
         assertEquals(2, order.getOrderLines().get(0).quantity());

@@ -42,19 +42,19 @@ class PlaceOrderTest {
     @Test
     @DisplayName("S1 주문하기는 주문하기 명령 하나를 받는다. 주문하기 명령은 주문자, 주문 항목 명령 목록, 배송 주소를 담고, 주문 항목 명령은 상품 이름, 가격, 수량을 담는다")
     void s1() {
-        OrderLineCommand book = new OrderLineCommand("자바 책", 15000, 2);
-        PlaceOrderCommand command = new PlaceOrderCommand("김철수", List.of(book), "서울시 강남구");
+        OrderLineCommand book = new OrderLineCommand(1, "자바 책", 15000, 2);
+        PlaceOrderCommand command = new PlaceOrderCommand(1, List.of(book), "서울시 강남구");
 
         assertEquals("자바 책", book.productName());
         assertEquals(15000, book.price());
         assertEquals(2, book.quantity());
-        assertEquals("김철수", command.customerName());
+        assertEquals(1L, command.memberId());
         assertEquals(List.of(book), command.orderLines());
         assertEquals("서울시 강남구", command.address());
 
         OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
         long orderId = service.placeOrder(command);
-        assertEquals("김철수", service.findOrder(orderId).getCustomerName());
+        assertEquals(1L, service.findOrder(orderId).getMemberId());
     }
 
     @Test
@@ -63,17 +63,17 @@ class PlaceOrderTest {
         OrderRepository repository = new MemoryOrderRepository();
         OrderApplicationService service = new OrderApplicationService(repository);
 
-        long firstId = service.placeOrder(new PlaceOrderCommand("김철수", List.of(
-                new OrderLineCommand("자바 책", 15000, 2),
-                new OrderLineCommand("볼펜", 1000, 1)), "서울시 강남구"));
-        long secondId = service.placeOrder(new PlaceOrderCommand("이영희",
-                List.of(new OrderLineCommand("공책", 2000, 3)), "부산시 해운대구"));
+        long firstId = service.placeOrder(new PlaceOrderCommand(1, List.of(
+                new OrderLineCommand(1, "자바 책", 15000, 2),
+                new OrderLineCommand(2, "볼펜", 1000, 1)), "서울시 강남구"));
+        long secondId = service.placeOrder(new PlaceOrderCommand(2,
+                List.of(new OrderLineCommand(3, "공책", 2000, 3)), "부산시 해운대구"));
 
         assertEquals(1, firstId);
         assertEquals(2, secondId);
         Order first = repository.findById(firstId).orElseThrow();
-        assertEquals("김철수", first.getCustomerName());
-        assertEquals(List.of(new OrderLine("자바 책", new Money(15000), 2), new OrderLine("볼펜", new Money(1000), 1)),
+        assertEquals(1L, first.getMemberId());
+        assertEquals(List.of(new OrderLine(1, "자바 책", new Money(15000), 2), new OrderLine(2, "볼펜", new Money(1000), 1)),
                 first.getOrderLines());
         assertEquals(new Address("서울시 강남구"), first.getAddress());
         assertEquals(new Money(31000), first.getTotalPrice());
@@ -88,14 +88,14 @@ class PlaceOrderTest {
     void s3() {
         OrderRepository repository = new MemoryOrderRepository();
         OrderApplicationService service = new OrderApplicationService(repository);
-        long orderId = service.placeOrder(new PlaceOrderCommand("김철수",
-                List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new PlaceOrderCommand(1,
+                List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
 
-        service.addOrderLine(orderId, new OrderLineCommand("공책", 2000, 5));
+        service.addOrderLine(orderId, new OrderLineCommand(3, "공책", 2000, 5));
 
         Order saved = repository.findById(orderId).orElseThrow();
         assertEquals(2, saved.getOrderLines().size());
-        assertEquals(new OrderLine("공책", new Money(2000), 5), saved.getOrderLines().get(1));
+        assertEquals(new OrderLine(3, "공책", new Money(2000), 5), saved.getOrderLines().get(1));
         assertEquals(new Money(40000), saved.getTotalPrice());
 
         assertTrue(runMain().contains("항목 더하기: 항목 3개, 주문 금액 41000원"));
@@ -108,32 +108,32 @@ class PlaceOrderTest {
         OrderApplicationService service = new OrderApplicationService(repository);
 
         IllegalArgumentException negative = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand("박민수",
-                        List.of(new OrderLineCommand("자바 책", -15000, 2)), "대구시 수성구")));
+                () -> service.placeOrder(new PlaceOrderCommand(2,
+                        List.of(new OrderLineCommand(1, "자바 책", -15000, 2)), "대구시 수성구")));
         assertEquals("금액은 0원 이상이어야 합니다", negative.getMessage());
 
         IllegalArgumentException blank = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand("최지우",
-                        List.of(new OrderLineCommand("자바 책", 15000, 1)), "")));
+                () -> service.placeOrder(new PlaceOrderCommand(2,
+                        List.of(new OrderLineCommand(1, "자바 책", 15000, 1)), "")));
         assertEquals("배송 주소를 입력해야 합니다", blank.getMessage());
 
         IllegalArgumentException empty = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand("강민준", List.of(), "인천시 연수구")));
+                () -> service.placeOrder(new PlaceOrderCommand(2, List.of(), "인천시 연수구")));
         assertEquals("주문 항목이 하나 이상 있어야 합니다", empty.getMessage());
 
         IllegalArgumentException zero = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand("윤서연",
-                        List.of(new OrderLineCommand("자바 책", 15000, 0)), "대전시 유성구")));
+                () -> service.placeOrder(new PlaceOrderCommand(2,
+                        List.of(new OrderLineCommand(1, "자바 책", 15000, 0)), "대전시 유성구")));
         assertEquals("수량은 1개 이상이어야 합니다", zero.getMessage());
 
         for (long id = 1; id <= 4; id++) {
             assertTrue(repository.findById(id).isEmpty());
         }
 
-        long orderId = service.placeOrder(new PlaceOrderCommand("김철수",
-                List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new PlaceOrderCommand(1,
+                List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
         assertThrows(IllegalArgumentException.class,
-                () -> service.addOrderLine(orderId, new OrderLineCommand("공책", -2000, 1)));
+                () -> service.addOrderLine(orderId, new OrderLineCommand(3, "공책", -2000, 1)));
         assertEquals(1, repository.findById(orderId).orElseThrow().getOrderLines().size());
 
         String printed = runMain();
@@ -148,8 +148,8 @@ class PlaceOrderTest {
     void s5() {
         OrderRepository repository = new MemoryOrderRepository();
         OrderApplicationService service = new OrderApplicationService(repository);
-        long orderId = service.placeOrder(new PlaceOrderCommand("김철수",
-                List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new PlaceOrderCommand(1,
+                List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
 
         IllegalStateException unpaid = assertThrows(IllegalStateException.class, () -> service.ship(orderId));
         assertEquals("주문 접수인 주문은 배송할 수 없습니다", unpaid.getMessage());
@@ -162,8 +162,8 @@ class PlaceOrderTest {
         service.deliver(orderId);
         assertEquals(OrderStatus.DELIVERED, repository.findById(orderId).orElseThrow().getStatus());
 
-        long canceledId = service.placeOrder(new PlaceOrderCommand("이영희",
-                List.of(new OrderLineCommand("볼펜", 1000, 1)), "부산시 해운대구"));
+        long canceledId = service.placeOrder(new PlaceOrderCommand(2,
+                List.of(new OrderLineCommand(2, "볼펜", 1000, 1)), "부산시 해운대구"));
         service.cancel(canceledId);
         assertEquals(OrderStatus.CANCELED, repository.findById(canceledId).orElseThrow().getStatus());
 

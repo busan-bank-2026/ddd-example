@@ -1,6 +1,6 @@
 # id-reference 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 회원과 상품 저장하기
   - 근거: S1, S2, S6
   - 파일: ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md

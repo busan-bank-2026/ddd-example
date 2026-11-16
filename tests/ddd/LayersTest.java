@@ -35,7 +35,8 @@ class LayersTest {
             "두 번 결제: 결제 완료인 주문은 결제할 수 없습니다",
             "배송 완료: 배송 완료",
             "없는 주문 결제: 주문이 없습니다",
-            "저장 안 한 취소: 주문 접수") + System.lineSeparator();
+            "저장 안 한 취소: 주문 접수",
+            "가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
