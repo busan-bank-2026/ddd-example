@@ -204,7 +204,7 @@ class ShippingContextTest {
                 assertFalse(source.contains("ddd.order"));
             }
         }
-        assertEquals(4, files);
+        assertEquals(5, files);
         assertEquals(EXPECTED, runMain());
     }
 

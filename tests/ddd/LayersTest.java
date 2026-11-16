@@ -144,7 +144,7 @@ class LayersTest {
         }
 
         try (Stream<Path> files = Files.list(Path.of("src/ddd"))) {
-            assertEquals(List.of("Main.java", "catalog", "member", "order", "shared", "shipping"),
+            assertEquals(List.of("Main.java", "OrderApp.java", "ShippingApp.java", "catalog", "member", "order", "shared", "shipping"),
                     files.map(file -> file.getFileName().toString()).sorted().toList());
         }
         String main = Files.readString(Path.of("src/ddd/Main.java"));

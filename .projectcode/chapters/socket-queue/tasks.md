@@ -2,7 +2,7 @@
 
 진행: 붙여넣기
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 소켓으로 메시지를 받는 배송 앱
   - 근거: S2, S3
   - 파일: ddd/src/ddd/shipping/infrastructure/SocketMessageReceiver.java, ddd/src/ddd/ShippingApp.java

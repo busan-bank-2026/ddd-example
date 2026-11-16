@@ -170,7 +170,7 @@ class BoundedContextsTest {
         assertTrue(Class.forName("ddd.order.domain.OrderRepository")
                 .isAssignableFrom(Class.forName("ddd.order.infrastructure.MemoryOrderRepository")));
         assertEquals(List.of("application", "domain", "infrastructure"), names("src/ddd/order"));
-        assertEquals(List.of("Main.java", "catalog", "member", "order", "shared", "shipping"), names("src/ddd"));
+        assertEquals(List.of("Main.java", "OrderApp.java", "ShippingApp.java", "catalog", "member", "order", "shared", "shipping"), names("src/ddd"));
         assertEquals(EXPECTED, runMain());
     }
 

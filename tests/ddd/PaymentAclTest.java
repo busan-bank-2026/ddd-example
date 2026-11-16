@@ -147,7 +147,7 @@ class PaymentAclTest {
                 }
             }
         }
-        assertEquals(List.of("LegacyPaymentAdapter.java", "Main.java"), users.stream().sorted().toList());
+        assertEquals(List.of("LegacyPaymentAdapter.java", "Main.java", "OrderApp.java"), users.stream().sorted().toList());
     }
 
     @Test
