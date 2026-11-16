@@ -1,6 +1,8 @@
 package ddd;
 
-public record Money(int amount) {
+import java.io.Serializable;
+
+public record Money(int amount) implements Serializable {
 
     public Money {
         if (amount < 0) {

@@ -1,6 +1,8 @@
 package ddd;
 
-public record OrderLine(String productName, Money price, int quantity) {
+import java.io.Serializable;
+
+public record OrderLine(String productName, Money price, int quantity) implements Serializable {
 
     public OrderLine {
         if (quantity < 1) {

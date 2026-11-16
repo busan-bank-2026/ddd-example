@@ -1,5 +1,10 @@
 package ddd;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -10,11 +15,27 @@ public class MemoryOrderRepository implements OrderRepository {
 
     @Override
     public void save(Order order) {
-        orders.put(order.getId(), order);
+        orders.put(order.getId(), copy(order));
     }
 
     @Override
     public Optional<Order> findById(long id) {
-        return Optional.ofNullable(orders.get(id));
+        Order order = orders.get(id);
+        if (order == null) {
+            return Optional.empty();
+        }
+        return Optional.of(copy(order));
+    }
+
+    private Order copy(Order order) {
+        try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bytes);
+            out.writeObject(order);
+            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+            return (Order) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

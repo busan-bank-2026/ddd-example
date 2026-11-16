@@ -105,5 +105,9 @@ public class Main {
         } catch (IllegalArgumentException e) {
             System.out.println("없는 주문 결제: " + e.getMessage());
         }
+
+        Order notSaved = orderService.findOrder(order2Id);
+        notSaved.cancel();
+        System.out.println("저장 안 한 취소: " + orderService.findOrder(order2Id).getStatus().label());
     }
 }

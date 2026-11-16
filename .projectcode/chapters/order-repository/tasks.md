@@ -13,7 +13,7 @@
   - 실행하면: 마지막에 없는 주문 결제: 주문이 없습니다가 더 찍힌다
   - Why: 번호는 밖에서 들어온다. 없는 번호면 업무 말로 알려야 무엇이 틀렸는지 안다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
-- [ ] T3 복사본으로 저장하기
+- [x] T3 복사본으로 저장하기
   - 근거: S2
   - 진행: 붙여넣기. MemoryOrderRepository의 copy 메서드와 네 파일의 implements Serializable
   - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/Main.java

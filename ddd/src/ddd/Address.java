@@ -1,6 +1,8 @@
 package ddd;
 
-public record Address(String value) {
+import java.io.Serializable;
+
+public record Address(String value) implements Serializable {
 
     public Address {
         if (value == null || value.isBlank()) {
