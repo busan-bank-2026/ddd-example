@@ -5,12 +5,12 @@ import java.util.List;
 
 import ddd.domain.Address;
 import ddd.domain.DiscountPolicy;
-import ddd.domain.Member;
-import ddd.domain.MemberRepository;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
 import ddd.domain.OrderLineFactory;
 import ddd.domain.OrderRepository;
+import ddd.member.domain.Member;
+import ddd.member.domain.MemberRepository;
 
 public class OrderApplicationService {
 

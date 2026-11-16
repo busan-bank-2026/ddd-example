@@ -1,5 +1,7 @@
 package ddd.domain;
 
+import ddd.member.domain.Member;
+import ddd.member.domain.MemberGrade;
 import ddd.shared.Money;
 
 public class DiscountPolicy {

@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.member.domain;
 
 public enum MemberGrade {
     BASIC,

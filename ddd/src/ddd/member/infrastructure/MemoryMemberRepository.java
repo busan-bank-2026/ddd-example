@@ -1,11 +1,11 @@
-package ddd.infrastructure;
+package ddd.member.infrastructure;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import ddd.domain.Member;
-import ddd.domain.MemberRepository;
+import ddd.member.domain.Member;
+import ddd.member.domain.MemberRepository;
 
 public class MemoryMemberRepository implements MemberRepository {
 

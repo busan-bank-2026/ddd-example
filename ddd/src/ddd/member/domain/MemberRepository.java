@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.member.domain;
 
 import java.util.Optional;
 

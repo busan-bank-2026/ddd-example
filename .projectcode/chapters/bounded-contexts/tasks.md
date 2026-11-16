@@ -12,7 +12,7 @@
   - 실행하면: 이클립스에서 ddd.shared 패키지를 만들고 Money를 옮기면 출력은 그대로이고 src/ddd에 shared 폴더가 생기고 그 안에 Money.java가 보인다
   - Why: 주문과 상품이 모두 쓰는 돈을 한 곳에 두고 함께 지키기로 약속해야 컨텍스트를 나눠도 돈 규칙이 하나로 남는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
-- [ ] T3 회원 컨텍스트 만들기
+- [x] T3 회원 컨텍스트 만들기
   - 근거: S3
   - 파일: ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/member/domain/Member.java, ddd/src/ddd/member/domain/MemberGrade.java, ddd/src/ddd/member/domain/MemberRepository.java, ddd/src/ddd/member/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java
   - 실행하면: ddd.member.domain, ddd.member.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 그대로이고 src/ddd/member에 domain, infrastructure 폴더가 보인다
