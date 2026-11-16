@@ -1,0 +1,30 @@
+# rich-entity 작업
+
+- [ ] 테스트 작성
+- [ ] T1 결제 없이 배송해 보기
+  - 근거: S1
+  - 파일: ddd/src/ddd/Main.java
+  - 실행하면: 앞 장 다섯 줄 뒤에 결제 없이 배송: 배송 중이 찍힌다
+  - Why: 규칙이 서비스에만 있으면 서비스를 거치지 않는 길로 규칙이 깨지는 것을 먼저 눈으로 본다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language
+- [ ] T2 주문 번호를 받는 생성자 만들기
+  - 근거: S2, S3, S6
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 주문 줄이 주문: 1번, 김철수, 자바 책 2개, 30000원, 주문 접수로 찍힌다
+  - Why: 주문은 내용이 바뀌어도 같은 주문이다. 번호로 알아보고, 만들 때부터 올바른 금액과 상태를 갖게 한다
+  - 다른 장: anemic-order, ubiquitous-language, project-setup
+- [ ] T3 결제, 배송, 취소를 주문에게 시키기
+  - 근거: S4
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java
+  - 실행하면: 출력은 T2와 같고 규칙이 OrderService에서 Order로 옮겨 간다
+  - Why: 규칙은 그 규칙이 지키는 데이터 곁에 있어야 어느 길로 오든 지켜진다
+  - 다른 장: anemic-order, ubiquitous-language
+- [ ] T4 상태를 바꾸는 길 막기
+  - 근거: S5
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/Main.java
+  - 실행하면: 마지막 줄이 결제 없이 배송: 결제하지 않은 주문은 배송할 수 없습니다로 바뀐다
+  - Why: setter가 남아 있으면 규칙을 건너뛰는 길도 남는다. 상태는 행동 메서드로만 바뀌게 한다
+  - 다른 장: anemic-order, project-setup, ubiquitous-language
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
