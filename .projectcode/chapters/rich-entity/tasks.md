@@ -7,7 +7,7 @@
   - 실행하면: 앞 장 다섯 줄 뒤에 결제 없이 배송: 배송 중이 찍힌다
   - Why: 규칙이 서비스에만 있으면 서비스를 거치지 않는 길로 규칙이 깨지는 것을 먼저 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language
-- [ ] T2 주문 번호를 받는 생성자 만들기
+- [x] T2 주문 번호를 받는 생성자 만들기
   - 근거: S2, S3, S6
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 주문 줄이 주문: 1번, 김철수, 자바 책 2개, 30000원, 주문 접수로 찍힌다

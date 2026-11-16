@@ -2,16 +2,10 @@ package ddd;
 
 public class OrderService {
 
+    private long nextId = 1;
+
     public Order placeOrder(String customerName, String productName, int price, int quantity, String address) {
-        Order order = new Order();
-        order.setCustomerName(customerName);
-        order.setProductName(productName);
-        order.setPrice(price);
-        order.setQuantity(quantity);
-        order.setAddress(address);
-        order.setTotalPrice(price * quantity);
-        order.setStatus("주문 접수");
-        return order;
+        return new Order(nextId++, customerName, productName, price, quantity, address);
     }
 
     public void pay(Order order) {
