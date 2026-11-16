@@ -1,0 +1,24 @@
+# order-aggregate 작업
+
+- [ ] 테스트 작성
+- [ ] T1 주문 항목 여러 개로 주문하기
+  - 근거: S1, S2, S8
+  - 파일: ddd/src/ddd/OrderLine.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 주문 줄 아래에 항목 두 줄이 찍히고, 마지막에 항목 더하기: 항목 3개, 주문 금액 31000원이 찍힌다
+  - Why: 항목 목록을 그대로 내주면 밖에서 항목을 더해도 주문 금액이 따라오지 않는 것을 먼저 눈으로 본다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object
+- [ ] T2 항목 더하기를 주문에게 시키기
+  - 근거: S3, S4, S5, S8
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 항목 더하기 줄이 41000원으로 바뀌고, 결제 뒤 항목 더하기: 주문 접수인 주문에만 항목을 더할 수 있습니다가 더 찍힌다
+  - Why: 항목은 루트인 주문을 거쳐서만 바뀌어야 주문 금액과 항목이 늘 함께 맞는다
+  - 다른 장: project-setup, anemic-order, rich-entity, value-object, ubiquitous-language
+- [ ] T3 빈 주문과 0개 항목 막기
+  - 근거: S6, S7
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Main.java
+  - 실행하면: 마지막에 빈 주문: 주문 항목이 하나 이상 있어야 합니다와 0개 항목 주문: 수량은 1개 이상이어야 합니다가 더 찍힌다
+  - Why: 항목이 없는 주문은 주문이 아니다. 주문은 만들어지는 순간부터 규칙을 지킨 채로 있어야 한다
+  - 다른 장: project-setup, anemic-order, rich-entity, value-object
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
