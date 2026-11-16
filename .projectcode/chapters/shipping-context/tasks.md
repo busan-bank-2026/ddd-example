@@ -1,6 +1,6 @@
 # shipping-context 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 결제 완료를 정해진 글자로 알리기
   - 근거: S1, S2
   - 파일: ddd/src/ddd/order/application/OrderOpenHostService.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/context-map.md, ddd/glossary.md

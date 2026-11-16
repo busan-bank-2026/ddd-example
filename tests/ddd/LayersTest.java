@@ -44,7 +44,10 @@ class LayersTest {
             "저장 안 한 취소: 주문 접수",
             "6만원 주문 배송비: 서울 0원, 제주 3000원",
             "가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원",
-            "동시 수정: 다른 곳에서 먼저 바꾼 주문입니다") + System.lineSeparator();
+            "동시 수정: 다른 곳에서 먼저 바꾼 주문입니다",
+            "결제 완료 메시지: ORDER_PAID|orderId=1|address=서울시 강남구",
+            "결제 완료 메시지: ORDER_PAID|orderId=4|address=광주시 북구",
+            "배송 컨텍스트: 1번 주문, 서울시 강남구") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
@@ -136,7 +139,7 @@ class LayersTest {
         }
 
         try (Stream<Path> files = Files.list(Path.of("src/ddd"))) {
-            assertEquals(List.of("Main.java", "catalog", "member", "order", "shared"),
+            assertEquals(List.of("Main.java", "catalog", "member", "order", "shared", "shipping"),
                     files.map(file -> file.getFileName().toString()).sorted().toList());
         }
         String main = Files.readString(Path.of("src/ddd/Main.java"));
