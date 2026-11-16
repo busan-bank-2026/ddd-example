@@ -23,6 +23,6 @@
   - 실행하면: 마지막 줄이 동시 수정: 다른 곳에서 먼저 바꾼 주문입니다로 바뀌고, 용어집 저장하기 줄에 버전 확인이 보인다
   - Why: 잠가 두지 않고 저장할 때 버전만 비교하면 먼저 저장한 쪽은 지키고 낡은 주문의 저장은 막는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
