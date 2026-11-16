@@ -13,7 +13,7 @@
   - 실행하면: 출력 열여덟 줄은 그대로이고, 주문 줄의 김철수는 주문의 회원 번호 1로 회원 저장소에서 찾은 이름이다
   - Why: 주문이 회원과 상품 객체를 쥐지 않고 번호만 가리켜야 애그리거트마다 따로 꺼내고 따로 저장할 수 있다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
-- [ ] T3 상품 가격이 바뀐 뒤 주문 보기
+- [x] T3 상품 가격이 바뀐 뒤 주문 보기
   - 근거: S5
   - 파일: ddd/src/ddd/Main.java
   - 실행하면: 마지막 줄에 가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원이 찍힌다

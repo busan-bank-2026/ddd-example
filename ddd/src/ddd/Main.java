@@ -134,5 +134,12 @@ public class Main {
         Order notSaved = orderService.findOrder(order2Id);
         notSaved.cancel();
         System.out.println("저장 안 한 취소: " + orderService.findOrder(order2Id).getStatus().label());
+
+        productRepository.save(new Product(1, "자바 책", new Money(18000)));
+        Order firstOrder = orderService.findOrder(orderId);
+        OrderLine bookLine = firstOrder.getOrderLines().get(0);
+        Product book = productRepository.findById(bookLine.productId()).orElseThrow();
+        System.out.println("가격 바뀐 뒤: " + book.getId() + "번 상품 " + book.getPrice().amount() + "원, 주문 항목 "
+                + bookLine.price().amount() + "원, 주문 금액 " + firstOrder.getTotalPrice().amount() + "원");
     }
 }
