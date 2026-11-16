@@ -13,6 +13,6 @@
   - 실행하면: 출력 서른두 줄이 그대로 나오고, 용어집 끝에 주문 요약, 주문 조회 서비스, 명령과 조회 나누기 줄이 보인다
   - Why: 어느 쪽이 바꾸고 어느 쪽이 읽기만 하는지 말로 정해 두어야 조회 서비스에 규칙을 넣지 않는다
   - 다른 장: ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, shipping-context, payment-acl
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
