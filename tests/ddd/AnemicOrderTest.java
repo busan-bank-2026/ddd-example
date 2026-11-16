@@ -27,8 +27,10 @@ import ddd.order.application.PlaceOrderCommand;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
 import ddd.order.domain.OrderLineFactory;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class AnemicOrderTest {
 
@@ -47,7 +49,7 @@ class AnemicOrderTest {
         return new OrderLineFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
 
     private long newOrder() {
         return service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));

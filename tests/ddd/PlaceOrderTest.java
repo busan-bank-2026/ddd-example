@@ -32,8 +32,10 @@ import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class PlaceOrderTest {
 
@@ -76,7 +78,7 @@ class PlaceOrderTest {
         assertEquals(List.of(book), command.orderLines());
         assertEquals("서울시 강남구", command.address());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(command);
         assertEquals(1L, service.findOrder(orderId).getMemberId());
     }
@@ -85,7 +87,7 @@ class PlaceOrderTest {
     @DisplayName("S2 주문하기는 주문하기 명령으로 주문을 만들어 주문 저장소에 저장하고 주문 번호를 돌려준다")
     void s2() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
 
         long firstId = service.placeOrder(new PlaceOrderCommand(1, List.of(
                 new OrderLineCommand(1, 2),
@@ -111,7 +113,7 @@ class PlaceOrderTest {
     @DisplayName("S3 주문 항목 더하기는 주문 번호와 주문 항목 명령을 받아 주문을 꺼내 주문에게 시키고 다시 저장한다")
     void s3() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1,
                 List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
 
@@ -129,7 +131,7 @@ class PlaceOrderTest {
     @DisplayName("S4 명령의 값이 규칙에 맞지 않으면 주문, 주문 항목, 돈, 주소가 정한 거절 말 그대로 거절하고 아무것도 저장하지 않는다")
     void s4() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
 
         IllegalArgumentException negative = assertThrows(IllegalArgumentException.class,
                 () -> new Product(4, "할인 책", new Money(-15000), 10));
@@ -170,7 +172,7 @@ class PlaceOrderTest {
     @DisplayName("S5 주문 응용 서비스가 결제하기, 배송하기, 배송 완료하기, 주문 취소하기를 주문 번호로 받아 주문을 꺼내 주문에게 시키고 다시 저장한다")
     void s5() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1,
                 List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
 

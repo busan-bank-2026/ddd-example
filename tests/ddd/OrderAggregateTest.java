@@ -31,8 +31,10 @@ import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
 import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class OrderAggregateTest {
 
@@ -51,7 +53,7 @@ class OrderAggregateTest {
         return new OrderLineFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
 
     private String runMain() {
         PrintStream original = System.out;

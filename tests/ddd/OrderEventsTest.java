@@ -37,8 +37,10 @@ import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderPlaced;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class OrderEventsTest {
 
@@ -71,7 +73,9 @@ class OrderEventsTest {
             "동시 수정: 다른 곳에서 먼저 바꾼 주문입니다",
             "결제 완료 메시지: ORDER_PAID|orderId=1|address=서울시 강남구",
             "결제 완료 메시지: ORDER_PAID|orderId=4|address=광주시 북구",
-            "배송 컨텍스트: 1번 주문, 서울시 강남구") + System.lineSeparator();
+            "배송 컨텍스트: 1번 주문, 서울시 강남구",
+            "외부 결제 응답: 27900원 0000, 108000원 E101",
+            "한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
@@ -170,7 +174,7 @@ class OrderEventsTest {
         servicePublisher.subscribe(OrderPlaced.class, placed::add);
         OrderRepository orders = new MemoryOrderRepository();
         OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()),
-                members(), new DiscountPolicy(), servicePublisher);
+                members(), new DiscountPolicy(), servicePublisher, new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1, bookAndPen(), "서울시 강남구"));
 
         assertTrue(orders.findById(orderId).isPresent());
@@ -201,7 +205,7 @@ class OrderEventsTest {
         publisher.subscribe(OrderPlaced.class, handler::handle);
         OrderRepository orders = new MemoryOrderRepository();
         OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products),
-                members(), new DiscountPolicy(), publisher);
+                members(), new DiscountPolicy(), publisher, new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1, bookAndPen(), "서울시 강남구"));
 
         assertEquals(OrderStatus.ORDERED, orders.findById(orderId).orElseThrow().getStatus());

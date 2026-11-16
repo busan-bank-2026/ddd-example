@@ -1,6 +1,6 @@
 # payment-acl 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 외부 결제 모듈 붙여넣기
   - 근거: S1
   - 진행: 붙여넣기. LegacyPayGateway.java 전체

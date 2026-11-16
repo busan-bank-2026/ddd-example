@@ -31,8 +31,10 @@ import ddd.order.domain.Address;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
 import ddd.order.domain.OrderLineFactory;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class ValueObjectTest {
 
@@ -99,7 +101,7 @@ class ValueObjectTest {
     @Test
     @DisplayName("S4 주문의 가격과 주문 금액은 돈이다. 음수 가격으로 주문하면 주문이 만들어지지 않고 거절 메시지를 보여준다")
     void s4() {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구")));
 
         assertEquals(new Money(15000), order.getOrderLines().get(0).price());
@@ -122,7 +124,7 @@ class ValueObjectTest {
         assertEquals(new Address("서울시 강남구"), new Address("서울시 강남구"));
         assertNotEquals(new Address("부산시 해운대구"), new Address("서울시 강남구"));
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구")));
         assertEquals(new Address("서울시 강남구"), order.getAddress());
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,

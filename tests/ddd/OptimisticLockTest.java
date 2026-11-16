@@ -32,8 +32,10 @@ import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class OptimisticLockTest {
 
@@ -66,7 +68,9 @@ class OptimisticLockTest {
             "동시 수정: 다른 곳에서 먼저 바꾼 주문입니다",
             "결제 완료 메시지: ORDER_PAID|orderId=1|address=서울시 강남구",
             "결제 완료 메시지: ORDER_PAID|orderId=4|address=광주시 북구",
-            "배송 컨텍스트: 1번 주문, 서울시 강남구") + System.lineSeparator();
+            "배송 컨텍스트: 1번 주문, 서울시 강남구",
+            "외부 결제 응답: 27900원 0000, 108000원 E101",
+            "한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
@@ -122,7 +126,7 @@ class OptimisticLockTest {
 
         OrderRepository serviceOrders = new MemoryOrderRepository();
         OrderApplicationService service = new OrderApplicationService(serviceOrders, new OrderLineFactory(products()),
-                members(), new DiscountPolicy(), new EventPublisher());
+                members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         assertEquals(1, serviceOrders.findById(orderId).orElseThrow().getVersion());
         service.pay(orderId);

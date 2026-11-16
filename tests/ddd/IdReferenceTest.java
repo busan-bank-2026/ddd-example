@@ -34,8 +34,10 @@ import ddd.order.domain.Order;
 import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class IdReferenceTest {
 
@@ -120,7 +122,7 @@ class IdReferenceTest {
     @Test
     @DisplayName("S3 주문은 회원을 객체로 갖지 않고 회원 번호로 가리킨다. 주문하기 명령은 주문자 이름 대신 회원 번호를 담고, Main은 주문의 회원 번호로 회원 저장소에서 회원을 찾아 이름을 보여준다")
     void s3() throws Exception {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         PlaceOrderCommand command = new PlaceOrderCommand(7,
                 List.of(new OrderLineCommand(1, 2)), "서울시 강남구");
         assertEquals(7L, command.memberId());
@@ -143,7 +145,7 @@ class IdReferenceTest {
         OrderLineCommand command = new OrderLineCommand(2, 3);
         assertEquals(2L, command.productId());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(command), "서울시 강남구"));
         service.addOrderLine(orderId, new OrderLineCommand(3, 5));
 
@@ -167,7 +169,7 @@ class IdReferenceTest {
         Product book = products.findById(1).orElseThrow();
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(
                 new OrderLineCommand(book.getId(), 2)), "서울시 강남구"));
 

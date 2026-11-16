@@ -24,8 +24,10 @@ import ddd.order.application.OrderLineCommand;
 import ddd.order.application.PlaceOrderCommand;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.OrderLineFactory;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class UbiquitousLanguageTest {
 
@@ -44,7 +46,7 @@ class UbiquitousLanguageTest {
         return new OrderLineFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
 
     @Test
     @DisplayName("S1 주문을 만드는 일을 업무 말인 주문하기로 부른다")

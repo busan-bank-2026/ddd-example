@@ -32,8 +32,10 @@ import ddd.order.domain.Order;
 import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import legacypay.LegacyPayGateway;
 
 class OrderFactoryTest {
 
@@ -66,7 +68,9 @@ class OrderFactoryTest {
             "동시 수정: 다른 곳에서 먼저 바꾼 주문입니다",
             "결제 완료 메시지: ORDER_PAID|orderId=1|address=서울시 강남구",
             "결제 완료 메시지: ORDER_PAID|orderId=4|address=광주시 북구",
-            "배송 컨텍스트: 1번 주문, 서울시 강남구") + System.lineSeparator();
+            "배송 컨텍스트: 1번 주문, 서울시 강남구",
+            "외부 결제 응답: 27900원 0000, 108000원 E101",
+            "한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
@@ -131,7 +135,7 @@ class OrderFactoryTest {
                 List.of(OrderApplicationService.class.getConstructors()[0].getParameterTypes()));
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(
                 new OrderLineCommand(1, 2),
                 new OrderLineCommand(2, 1)), "서울시 강남구"));
@@ -157,7 +161,7 @@ class OrderFactoryTest {
     @DisplayName("S4 없는 상품 번호로 주문하거나 항목을 더하면 상품이 없습니다로 거절하고 아무것도 저장하지 않는다. Main이 없는 상품 주문 장면을 보여준다")
     void s4() {
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy(), new EventPublisher());
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
 
         IllegalArgumentException placing = assertThrows(IllegalArgumentException.class,
                 () -> service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(100, 1)), "서울시 강남구")));
