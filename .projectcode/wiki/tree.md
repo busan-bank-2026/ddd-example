@@ -1,6 +1,6 @@
 # 폴더 구조
 
-anemic-order 장 끝 기준이다.
+ubiquitous-language 장 끝 기준이다.
 
 ```
 ddd/
@@ -14,6 +14,7 @@ ddd/
       OrderService.java
   .classpath
   .project
+  glossary.md
 test-lib/
   junit-platform-console-standalone.jar
 ```

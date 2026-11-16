@@ -9,8 +9,9 @@ flowchart LR
   C --> D[Order]
 ```
 
-만든 장: project-setup, anemic-order
+만든 장: project-setup, anemic-order, ubiquitous-language
 맡는 파일
 - ddd/src/ddd/Main.java
 - ddd/src/ddd/OrderService.java
 - ddd/src/ddd/Order.java
+- ddd/glossary.md

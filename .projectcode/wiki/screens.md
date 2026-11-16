@@ -8,4 +8,5 @@
 
 ## 주문 장면
 처음 나온 장: anemic-order
-출력 파일: ../chapters/anemic-order/captures/done-주문-장면.txt
+출력 파일: ../chapters/ubiquitous-language/captures/done-주문-장면.txt
+바뀐 장: ubiquitous-language. 출력은 그대로다
