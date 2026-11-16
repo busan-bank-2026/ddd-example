@@ -3,7 +3,7 @@
 진행: 붙여넣기
 
 - [x] 테스트 작성
-- [ ] T1 소켓으로 메시지를 받는 배송 앱
+- [x] T1 소켓으로 메시지를 받는 배송 앱
   - 근거: S2, S3
   - 파일: ddd/src/ddd/shipping/infrastructure/SocketMessageReceiver.java, ddd/src/ddd/ShippingApp.java
   - 실행하면: 이클립스에서 ShippingApp을 Run하면 배송 앱이 9090번 포트에서 메시지를 기다립니다가 찍히고 프로그램이 끝나지 않고 기다린다. Main 출력은 서른세 줄 그대로다
