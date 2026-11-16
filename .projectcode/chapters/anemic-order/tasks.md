@@ -13,7 +13,7 @@
   - 실행하면: 이어서 결제: 결제 완료가 찍힌다
   - Why: 결제한 주문만 배송하려면 결제 상태가 먼저 있어야 한다
   - 다른 장: project-setup
-- [ ] T3 주문 배송하기
+- [x] T3 주문 배송하기
   - 근거: S3, S4
   - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
   - 실행하면: 이어서 배송: 배송 중이 찍힌다

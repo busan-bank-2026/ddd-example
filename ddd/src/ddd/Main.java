@@ -13,5 +13,8 @@ public class Main {
 
         orderService.updatePayment(order);
         System.out.println("결제: " + order.getStatus());
+
+        orderService.updateDelivery(order);
+        System.out.println("배송: " + order.getStatus());
     }
 }
