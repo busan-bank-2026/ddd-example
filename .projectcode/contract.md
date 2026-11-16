@@ -8,7 +8,7 @@
 | IDE | 이클립스. ddd에 .project와 .classpath를 넣는다 |
 | 빌드 도구 | 없음 |
 | 학생 코드 라이브러리 | 없음 |
-| 저장소 | HashMap. 23장만 Oracle XE 21c |
+| 저장소 | HashMap |
 | 테스트 | JUnit 5 (test-lib/junit-platform-console-standalone.jar) |
 | 메시지 형식 | 한 줄 글자. 타입|키=값|키=값 |
 | 소켓 포트 | 9090. 22장의 배송 앱이 localhost에서 연다 |
@@ -19,7 +19,7 @@
 |---|---|
 | 학생 코드 | ddd |
 | 행동 테스트 | tests/ddd. 패키지 ddd. 클래스 이름은 장 이름 + Test. 이클립스에 붙이지 않는다 |
-| jar | 테스트용 JUnit jar는 test-lib. 23장의 ojdbc jar는 ddd/lib |
+| jar | 테스트용 JUnit jar는 test-lib |
 | 컴파일 결과 | ddd/bin, bin-test. git에 올리지 않는다 |
 
 ## 실행

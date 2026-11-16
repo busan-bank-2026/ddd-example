@@ -11,5 +11,4 @@
 
 ## 어긋난 것
 
-- contract: 기술 표의 저장소 줄에 23장만 Oracle XE 21c가 남아 있다. roadmap은 23장이 없고 오라클 저장소를 하지 않는 것에 둔다. .projectcode/contract.md
-- contract: 폴더 표의 jar 줄에 23장의 ojdbc jar는 ddd/lib가 남아 있다. .projectcode/contract.md
+- 없음
