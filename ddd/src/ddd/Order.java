@@ -13,6 +13,9 @@ public class Order {
     private String status;
 
     public Order(long id, String customerName, List<OrderLine> orderLines, Address address) {
+        if (orderLines.isEmpty()) {
+            throw new IllegalArgumentException("주문 항목이 하나 이상 있어야 합니다");
+        }
         this.id = id;
         this.customerName = customerName;
         this.orderLines = new ArrayList<>(orderLines);

@@ -13,7 +13,7 @@
   - 실행하면: 항목 더하기 줄이 41000원으로 바뀌고, 결제 뒤 항목 더하기: 주문 접수인 주문에만 항목을 더할 수 있습니다가 더 찍힌다
   - Why: 항목은 루트인 주문을 거쳐서만 바뀌어야 주문 금액과 항목이 늘 함께 맞는다
   - 다른 장: project-setup, anemic-order, rich-entity, value-object, ubiquitous-language
-- [ ] T3 빈 주문과 0개 항목 막기
+- [x] T3 빈 주문과 0개 항목 막기
   - 근거: S6, S7
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Main.java
   - 실행하면: 마지막에 빈 주문: 주문 항목이 하나 이상 있어야 합니다와 0개 항목 주문: 수량은 1개 이상이어야 합니다가 더 찍힌다

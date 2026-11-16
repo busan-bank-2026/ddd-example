@@ -71,5 +71,20 @@ public class Main {
         } catch (IllegalStateException e) {
             System.out.println("결제 뒤 항목 더하기: " + e.getMessage());
         }
+
+        try {
+            Order order6 = orderService.placeOrder("강민준", List.of(), "인천시 연수구");
+            System.out.println("빈 주문: " + order6.getStatus());
+        } catch (IllegalArgumentException e) {
+            System.out.println("빈 주문: " + e.getMessage());
+        }
+
+        try {
+            Order order7 = orderService.placeOrder("윤서연", List.of(new OrderLine("자바 책", new Money(15000), 0)),
+                    "대전시 유성구");
+            System.out.println("0개 항목 주문: " + order7.getTotalPrice().amount() + "원");
+        } catch (IllegalArgumentException e) {
+            System.out.println("0개 항목 주문: " + e.getMessage());
+        }
     }
 }
