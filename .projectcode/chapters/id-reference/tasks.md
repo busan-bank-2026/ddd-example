@@ -1,0 +1,24 @@
+# id-reference 작업
+
+- [ ] 테스트 작성
+- [ ] T1 회원과 상품 저장하기
+  - 근거: S1, S2, S6
+  - 파일: ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 출력 열여덟 줄은 그대로이고, src/ddd/domain에 회원과 상품 네 파일, src/ddd/infrastructure에 메모리 저장소 두 파일이 더 보인다
+  - Why: 회원과 상품은 주문과 따로 만들어지고 따로 바뀌는 애그리거트라 각자 저장소를 가져야 한다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
+- [ ] T2 주문이 회원과 상품을 번호로 가리키기
+  - 근거: S3, S4, S6
+  - 파일: ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 출력 열여덟 줄은 그대로이고, 주문 줄의 김철수는 주문의 회원 번호 1로 회원 저장소에서 찾은 이름이다
+  - Why: 주문이 회원과 상품 객체를 쥐지 않고 번호만 가리켜야 애그리거트마다 따로 꺼내고 따로 저장할 수 있다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
+- [ ] T3 상품 가격이 바뀐 뒤 주문 보기
+  - 근거: S5
+  - 파일: ddd/src/ddd/Main.java
+  - 실행하면: 마지막 줄에 가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원이 찍힌다
+  - Why: 주문 항목이 주문 때의 이름과 가격을 담아 두었기 때문에 상품이 바뀌어도 이미 한 주문은 바뀌지 않는다는 것을 눈으로 본다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
