@@ -18,7 +18,7 @@
   - 실행하면: 외부 결제 응답 줄 다음에 한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수가 찍히고, 앞 결제 두 건은 그대로 결제 완료다
   - Why: 주문은 결제 창구와 결제 결과라는 우리 말만 쓰고, 코드 글자와 원 단위 int는 어댑터 한 곳에서 번역하면 외부 모듈이 바뀌어도 주문 모델은 그대로다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
-- [ ] T3 컨텍스트 맵에 부패 방지 계층 적기
+- [x] T3 컨텍스트 맵에 부패 방지 계층 적기
   - 근거: S6
   - 파일: ddd/context-map.md, ddd/glossary.md
   - 실행하면: 출력 서른한 줄이 그대로 나오고, context-map.md에 부패 방지 계층 절과 외부 말과 우리 말 표, 결제 하위 도메인 줄이 보인다
