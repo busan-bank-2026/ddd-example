@@ -1,6 +1,6 @@
 # 폴더 구조
 
-socket-queue 장 끝 기준이다.
+기준 장: socket-queue
 
 ```
 ddd/
