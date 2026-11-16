@@ -98,5 +98,12 @@ public class Main {
 
         orderService.deliver(orderId);
         System.out.println("배송 완료: " + orderService.findOrder(orderId).getStatus().label());
+
+        try {
+            orderService.pay(100);
+            System.out.println("없는 주문 결제: " + orderService.findOrder(100).getStatus().label());
+        } catch (IllegalArgumentException e) {
+            System.out.println("없는 주문 결제: " + e.getMessage());
+        }
     }
 }

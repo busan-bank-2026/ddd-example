@@ -7,7 +7,7 @@
   - 실행하면: 출력은 앞 장 열여섯 줄과 같고, 주문이 저장소를 거쳐 주문 번호로 오간다
   - Why: 주문을 들고 다니지 않고 저장소에 두면 주문 번호만으로 언제든 다시 꺼내 일을 시킬 수 있다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
-- [ ] T2 없는 주문 번호 거절하기
+- [x] T2 없는 주문 번호 거절하기
   - 근거: S5
   - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
   - 실행하면: 마지막에 없는 주문 결제: 주문이 없습니다가 더 찍힌다

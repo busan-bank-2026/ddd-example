@@ -18,7 +18,7 @@ public class OrderService {
     }
 
     public Order findOrder(long orderId) {
-        return orderRepository.findById(orderId).orElseThrow();
+        return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문이 없습니다"));
     }
 
     public void addOrderLine(long orderId, OrderLine orderLine) {
