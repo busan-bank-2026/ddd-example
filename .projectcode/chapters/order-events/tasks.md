@@ -14,7 +14,7 @@
   - 실행하면: 출력은 T1과 같다. 이벤트는 발행기에 쌓이기만 해서 자바 책 재고는 그대로 10개이고, src/ddd/application에 EventPublisher가 더 보인다
   - Why: 주문 저장은 주문 응용 서비스 한 번의 일로 끝낸다. 저장한 뒤에 일어난 일을 발행기에 넘기면 재고 줄이기는 그 일 밖에서 따로 한다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
-- [ ] T3 재고 줄이기 처리기로 재고 맞추기
+- [x] T3 재고 줄이기 처리기로 재고 맞추기
   - 근거: S4, S5
   - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 주문 뒤 줄 다음에 이벤트 처리 뒤: 자바 책 재고 8개가 찍히고, src/ddd/application에 DecreaseStockHandler가 더 보인다

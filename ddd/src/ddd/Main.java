@@ -2,6 +2,7 @@ package ddd;
 
 import java.util.List;
 
+import ddd.application.DecreaseStockHandler;
 import ddd.application.EventPublisher;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
@@ -14,6 +15,7 @@ import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
 import ddd.domain.OrderLineFactory;
+import ddd.domain.OrderPlaced;
 import ddd.domain.Product;
 import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryMemberRepository;
@@ -35,6 +37,8 @@ public class Main {
         productRepository.save(new Product(3, "공책", new Money(2000), 10));
 
         EventPublisher eventPublisher = new EventPublisher();
+        DecreaseStockHandler decreaseStockHandler = new DecreaseStockHandler(productRepository);
+        eventPublisher.subscribe(OrderPlaced.class, decreaseStockHandler::handle);
         OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository(),
                 new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher);
 
@@ -52,6 +56,8 @@ public class Main {
         }
         System.out.println("주문 뒤: 이벤트 " + order.getEvents().size() + "개, 자바 책 재고 "
                 + productRepository.findById(1).orElseThrow().getStock() + "개");
+        eventPublisher.processEvents();
+        System.out.println("이벤트 처리 뒤: 자바 책 재고 " + productRepository.findById(1).orElseThrow().getStock() + "개");
 
         orderService.pay(orderId);
         System.out.println("결제: " + orderService.findOrder(orderId).getStatus().label());
