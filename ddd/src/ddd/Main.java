@@ -1,5 +1,7 @@
 package ddd;
 
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -7,10 +9,16 @@ public class Main {
 
         OrderService orderService = new OrderService();
 
-        Order order = orderService.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
+        List<OrderLine> orderLines = List.of(
+                new OrderLine("자바 책", new Money(15000), 2),
+                new OrderLine("볼펜", new Money(1000), 1));
+        Order order = orderService.placeOrder("김철수", orderLines, "서울시 강남구");
         System.out.println("주문: " + order.getId() + "번, " + order.getCustomerName() + ", "
-                + order.getProductName() + " " + order.getQuantity() + "개, " + order.getTotalPrice().amount()
-                + "원, " + order.getStatus());
+                + order.getTotalPrice().amount() + "원, " + order.getStatus());
+        for (OrderLine orderLine : order.getOrderLines()) {
+            System.out.println("주문 항목: " + orderLine.productName() + " " + orderLine.quantity() + "개, "
+                    + orderLine.amount().amount() + "원");
+        }
 
         orderService.pay(order);
         System.out.println("결제: " + order.getStatus());
@@ -25,7 +33,8 @@ public class Main {
             System.out.println("취소: " + e.getMessage());
         }
 
-        Order order2 = orderService.placeOrder("이영희", "자바 책", 15000, 1, "부산시 해운대구");
+        Order order2 = orderService.placeOrder("이영희", List.of(new OrderLine("자바 책", new Money(15000), 1)),
+                "부산시 해운대구");
         try {
             order2.ship();
             System.out.println("결제 없이 배송: " + order2.getStatus());
@@ -34,17 +43,25 @@ public class Main {
         }
 
         try {
-            Order order3 = orderService.placeOrder("박민수", "자바 책", -15000, 2, "대구시 수성구");
+            Order order3 = orderService.placeOrder("박민수", List.of(new OrderLine("자바 책", new Money(-15000), 2)),
+                    "대구시 수성구");
             System.out.println("음수 금액 주문: " + order3.getTotalPrice().amount() + "원");
         } catch (IllegalArgumentException e) {
             System.out.println("음수 금액 주문: " + e.getMessage());
         }
 
         try {
-            Order order4 = orderService.placeOrder("최지우", "자바 책", 15000, 1, "");
+            Order order4 = orderService.placeOrder("최지우", List.of(new OrderLine("자바 책", new Money(15000), 1)), "");
             System.out.println("빈 주소 주문: " + order4.getStatus());
         } catch (IllegalArgumentException e) {
             System.out.println("빈 주소 주문: " + e.getMessage());
         }
+
+        Order order5 = orderService.placeOrder("정하늘", List.of(
+                new OrderLine("자바 책", new Money(15000), 2),
+                new OrderLine("볼펜", new Money(1000), 1)), "광주시 북구");
+        order5.getOrderLines().add(new OrderLine("공책", new Money(2000), 5));
+        System.out.println("항목 더하기: 항목 " + order5.getOrderLines().size() + "개, 주문 금액 "
+                + order5.getTotalPrice().amount() + "원");
     }
 }

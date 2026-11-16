@@ -1,24 +1,26 @@
 package ddd;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Order {
 
     private long id;
     private String customerName;
-    private String productName;
-    private Money price;
-    private int quantity;
+    private List<OrderLine> orderLines;
     private Address address;
     private Money totalPrice;
     private String status;
 
-    public Order(long id, String customerName, String productName, Money price, int quantity, Address address) {
+    public Order(long id, String customerName, List<OrderLine> orderLines, Address address) {
         this.id = id;
         this.customerName = customerName;
-        this.productName = productName;
-        this.price = price;
-        this.quantity = quantity;
+        this.orderLines = new ArrayList<>(orderLines);
         this.address = address;
-        this.totalPrice = price.times(quantity);
+        this.totalPrice = new Money(0);
+        for (OrderLine orderLine : orderLines) {
+            totalPrice = totalPrice.plus(orderLine.amount());
+        }
         this.status = "주문 접수";
     }
 
@@ -30,16 +32,8 @@ public class Order {
         return customerName;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public Money getPrice() {
-        return price;
-    }
-
-    public int getQuantity() {
-        return quantity;
+    public List<OrderLine> getOrderLines() {
+        return orderLines;
     }
 
     public Address getAddress() {

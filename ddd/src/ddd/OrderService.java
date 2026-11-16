@@ -1,11 +1,13 @@
 package ddd;
 
+import java.util.List;
+
 public class OrderService {
 
     private long nextId = 1;
 
-    public Order placeOrder(String customerName, String productName, int price, int quantity, String address) {
-        return new Order(nextId++, customerName, productName, new Money(price), quantity, new Address(address));
+    public Order placeOrder(String customerName, List<OrderLine> orderLines, String address) {
+        return new Order(nextId++, customerName, orderLines, new Address(address));
     }
 
     public void pay(Order order) {

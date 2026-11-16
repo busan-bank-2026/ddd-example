@@ -1,7 +1,7 @@
 # order-aggregate 작업
 
 - [x] 테스트 작성
-- [ ] T1 주문 항목 여러 개로 주문하기
+- [x] T1 주문 항목 여러 개로 주문하기
   - 근거: S1, S2, S8
   - 파일: ddd/src/ddd/OrderLine.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 주문 줄 아래에 항목 두 줄이 찍히고, 마지막에 항목 더하기: 항목 3개, 주문 금액 31000원이 찍힌다
