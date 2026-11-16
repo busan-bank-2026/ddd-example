@@ -18,7 +18,7 @@
   - 실행하면: ddd.member.domain, ddd.member.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 그대로이고 src/ddd/member에 domain, infrastructure 폴더가 보인다
   - Why: 회원은 이름과 등급만 맡는 일반 하위 도메인이라 주문 규칙과 떼어 두면 주문을 바꿀 때 회원을 건드리지 않는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
-- [ ] T4 상품 컨텍스트 만들기
+- [x] T4 상품 컨텍스트 만들기
   - 근거: S4
   - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/domain/ProductRepository.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java, ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/Main.java
   - 실행하면: ddd.catalog.domain, ddd.catalog.application, ddd.catalog.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 그대로이고 src/ddd/catalog에 세 폴더가 보인다

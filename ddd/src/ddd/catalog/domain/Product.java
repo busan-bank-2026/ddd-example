@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.catalog.domain;
 
 import ddd.shared.Money;
 

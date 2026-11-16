@@ -1,11 +1,11 @@
-package ddd.infrastructure;
+package ddd.catalog.infrastructure;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import ddd.domain.Product;
-import ddd.domain.ProductRepository;
+import ddd.catalog.domain.Product;
+import ddd.catalog.domain.ProductRepository;
 
 public class MemoryProductRepository implements ProductRepository {
 

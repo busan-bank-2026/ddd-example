@@ -1,5 +1,8 @@
 package ddd.domain;
 
+import ddd.catalog.domain.Product;
+import ddd.catalog.domain.ProductRepository;
+
 public class OrderLineFactory {
 
     private final ProductRepository productRepository;

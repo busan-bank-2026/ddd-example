@@ -1,9 +1,9 @@
-package ddd.application;
+package ddd.catalog.application;
 
+import ddd.catalog.domain.Product;
+import ddd.catalog.domain.ProductRepository;
 import ddd.domain.OrderLine;
 import ddd.domain.OrderPlaced;
-import ddd.domain.Product;
-import ddd.domain.ProductRepository;
 
 public class DecreaseStockHandler {
 
