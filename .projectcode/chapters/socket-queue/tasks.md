@@ -8,7 +8,7 @@
   - 파일: ddd/src/ddd/shipping/infrastructure/SocketMessageReceiver.java, ddd/src/ddd/ShippingApp.java
   - 실행하면: 이클립스에서 ShippingApp을 Run하면 배송 앱이 9090번 포트에서 메시지를 기다립니다가 찍히고 프로그램이 끝나지 않고 기다린다. Main 출력은 서른세 줄 그대로다
   - Why: 소켓은 받는 쪽이 포트를 먼저 열어 두어야 보내는 쪽이 붙을 수 있다. 배송 컨텍스트는 받은 글자를 지금의 처리기에 넘기기만 한다
-- [ ] T2 소켓 발행기로 바꿔 끼운 주문 앱
+- [x] T2 소켓 발행기로 바꿔 끼운 주문 앱
   - 근거: S1, S4
   - 파일: ddd/src/ddd/order/application/SocketEventPublisher.java, ddd/src/ddd/OrderApp.java
   - 실행하면: 이클립스에서 ShippingApp을 먼저 Run하고 기다립니다 줄이 보이면 OrderApp을 Run한다. 주문 앱 콘솔에 결제: 1번 주문, 결제 완료와 결제 완료 메시지를 배송 앱으로 보냈습니다가, 배송 앱 콘솔에 받은 메시지: ORDER_PAID|orderId=1|address=서울시 강남구와 배송 컨텍스트: 1번 주문, 서울시 강남구가 찍힌다
