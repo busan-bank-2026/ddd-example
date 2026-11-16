@@ -11,7 +11,7 @@
   - 파일: ddd/.project, ddd/.classpath, ddd/.settings/org.eclipse.jdt.core.prefs, ddd/.settings/org.eclipse.core.resources.prefs
   - 실행하면: 이클립스에서 ddd를 열고 Main을 Run 하면 Console 창에 같은 글이 찍힌다
   - Why: 학생은 강의 내내 이클립스에서 코드를 치고 실행한다
-- [ ] T3 테스트 실행기 붙이기
+- [x] T3 테스트 실행기 붙이기
   - 근거: S3
   - 파일: ddd/lib/junit-platform-console-standalone.jar, ddd/.project, ddd/.classpath, .projectcode/contract.md, .gitignore
   - 실행하면: ddd 폴더에서 테스트 명령을 치면 3 tests successful이 나오고 이클립스에서도 ProjectSetupTest를 JUnit Test로 돌릴 수 있다

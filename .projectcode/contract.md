@@ -20,12 +20,19 @@
 | 학생 코드 | ddd |
 | 행동 테스트 | tests |
 | jar | ddd/lib. JUnit jar, 23장의 ojdbc jar |
-| 컴파일 결과 | ddd/bin. git에 올리지 않는다 |
+| 컴파일 결과 | ddd/bin, ddd/bin-test. git에 올리지 않는다 |
 
 ## 실행
 
 - 실행: cd ddd, javac -d bin --source-path src src/ddd/Main.java, java -cp bin ddd.Main
-- 테스트: tests를 bin-test로 컴파일한 뒤 java -jar ddd/lib/junit-platform-console-standalone.jar로 실행한다
+- 테스트: ddd 폴더에서 아래 세 줄을 실행한다. 이클립스와 같은 작업 폴더다. 맥과 리눅스는 ; 대신 :를 쓴다
+
+```
+cd ddd
+javac -d bin --source-path src src/ddd/Main.java
+javac -d bin-test -cp "bin;lib/junit-platform-console-standalone.jar" ../tests/ddd/*.java
+java -jar lib/junit-platform-console-standalone.jar execute -cp "bin;bin-test" --scan-classpath
+```
 - 빌드: javac -d bin --source-path src src/ddd/Main.java
 
 ## 캡처
