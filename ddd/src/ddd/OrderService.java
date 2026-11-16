@@ -2,7 +2,7 @@ package ddd;
 
 public class OrderService {
 
-    public Order createOrder(String customerName, String productName, int price, int quantity, String address) {
+    public Order placeOrder(String customerName, String productName, int price, int quantity, String address) {
         Order order = new Order();
         order.setCustomerName(customerName);
         order.setProductName(productName);

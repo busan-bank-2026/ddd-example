@@ -6,7 +6,7 @@
   - 파일: ddd/glossary.md
   - 실행하면: 출력은 그대로이고 이클립스의 ddd 아래에 glossary.md가 보인다
   - Why: 코드 이름을 바꾸기 전에 업무 말을 먼저 정해 두어야 모두 같은 말을 쓴다
-- [ ] T2 주문하기로 이름 바꾸기
+- [x] T2 주문하기로 이름 바꾸기
   - 근거: S1
   - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
   - 실행하면: 출력 다섯 줄이 그대로 나온다

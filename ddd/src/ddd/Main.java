@@ -7,7 +7,7 @@ public class Main {
 
         OrderService orderService = new OrderService();
 
-        Order order = orderService.createOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
+        Order order = orderService.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
         System.out.println("주문: " + order.getCustomerName() + ", " + order.getProductName() + " "
                 + order.getQuantity() + "개, " + order.getTotalPrice() + "원, " + order.getStatus());
 
