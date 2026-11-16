@@ -24,7 +24,7 @@
   - 실행하면: ddd.catalog.domain, ddd.catalog.application, ddd.catalog.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 그대로이고 src/ddd/catalog에 세 폴더가 보인다
   - Why: 상품과 재고는 주문을 돕는 지원 하위 도메인이다. 재고를 줄이는 처리기도 상품 쪽에 두면 상품 규칙이 한 컨텍스트에 모인다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
-- [ ] T5 주문 컨텍스트 만들기
+- [x] T5 주문 컨텍스트 만들기
   - 근거: S5, S6
   - 파일: ddd/src/ddd/domain 아래 남은 열두 파일, ddd/src/ddd/application 아래 남은 네 파일, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/domain 아래 열두 파일, ddd/src/ddd/order/application 아래 네 파일, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/Main.java, ddd/context-map.md
   - 실행하면: ddd.order 아래 세 패키지를 만들고 남은 클래스를 옮긴 뒤 빈 패키지를 지우면 출력은 그대로이고 src/ddd에는 Main.java와 catalog, member, order, shared만 남는다. context-map.md에 컨텍스트 사이 표가 보인다

@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.order.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;

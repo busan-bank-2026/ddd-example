@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.order.domain;
 
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;

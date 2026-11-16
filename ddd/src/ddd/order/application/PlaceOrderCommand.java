@@ -1,4 +1,4 @@
-package ddd.application;
+package ddd.order.application;
 
 import java.util.List;
 

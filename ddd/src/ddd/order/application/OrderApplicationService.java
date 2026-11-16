@@ -1,16 +1,16 @@
-package ddd.application;
+package ddd.order.application;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ddd.domain.Address;
-import ddd.domain.DiscountPolicy;
-import ddd.domain.Order;
-import ddd.domain.OrderLine;
-import ddd.domain.OrderLineFactory;
-import ddd.domain.OrderRepository;
 import ddd.member.domain.Member;
 import ddd.member.domain.MemberRepository;
+import ddd.order.domain.Address;
+import ddd.order.domain.DiscountPolicy;
+import ddd.order.domain.Order;
+import ddd.order.domain.OrderLine;
+import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderRepository;
 
 public class OrderApplicationService {
 

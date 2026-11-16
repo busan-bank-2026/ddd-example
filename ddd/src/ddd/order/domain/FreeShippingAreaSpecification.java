@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.order.domain;
 
 public class FreeShippingAreaSpecification implements OrderSpecification {
 

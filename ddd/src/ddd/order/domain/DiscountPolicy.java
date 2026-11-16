@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.order.domain;
 
 import ddd.member.domain.Member;
 import ddd.member.domain.MemberGrade;

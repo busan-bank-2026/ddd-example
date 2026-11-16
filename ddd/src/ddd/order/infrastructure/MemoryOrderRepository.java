@@ -1,4 +1,4 @@
-package ddd.infrastructure;
+package ddd.order.infrastructure;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import ddd.domain.Order;
-import ddd.domain.OrderRepository;
+import ddd.order.domain.Order;
+import ddd.order.domain.OrderRepository;
 
 public class MemoryOrderRepository implements OrderRepository {
 

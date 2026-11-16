@@ -2,25 +2,25 @@ package ddd;
 
 import java.util.List;
 
-import ddd.application.EventPublisher;
-import ddd.application.OrderApplicationService;
-import ddd.application.OrderLineCommand;
-import ddd.application.PlaceOrderCommand;
 import ddd.catalog.application.DecreaseStockHandler;
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;
 import ddd.catalog.infrastructure.MemoryProductRepository;
-import ddd.domain.DiscountPolicy;
-import ddd.domain.Order;
-import ddd.domain.OrderLine;
-import ddd.domain.OrderLineFactory;
-import ddd.domain.OrderPlaced;
-import ddd.domain.OrderRepository;
-import ddd.infrastructure.MemoryOrderRepository;
 import ddd.member.domain.Member;
 import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
+import ddd.order.application.EventPublisher;
+import ddd.order.application.OrderApplicationService;
+import ddd.order.application.OrderLineCommand;
+import ddd.order.application.PlaceOrderCommand;
+import ddd.order.domain.DiscountPolicy;
+import ddd.order.domain.Order;
+import ddd.order.domain.OrderLine;
+import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderPlaced;
+import ddd.order.domain.OrderRepository;
+import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
 
 public class Main {
