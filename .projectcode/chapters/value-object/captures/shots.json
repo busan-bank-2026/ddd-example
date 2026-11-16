@@ -1,0 +1,19 @@
+{
+  "chapter": "value-object",
+  "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main",
+  "cwd": "ddd",
+  "shots": [
+    { "file": "T1-음수-금액-주문.txt", "task": "T1", "commit": "6fd0f16", "screen": "콘솔 실행",
+      "see": "앞 장 여섯 줄 뒤에 음수 금액 주문: -30000원이 찍힌다",
+      "run": {} },
+    { "file": "T2-돈-값-객체.txt", "task": "T2", "commit": "813dc45", "screen": "콘솔 실행과 glossary.md",
+      "see": "마지막 줄이 음수 금액 주문: 금액은 0원 이상이어야 합니다로 바뀌고 이어서 용어집에 돈 Money 줄이 보인다",
+      "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && type glossary.md" } },
+    { "file": "T3-주소-값-객체.txt", "task": "T3", "commit": "2271683", "screen": "콘솔 실행과 glossary.md",
+      "see": "마지막에 빈 주소 주문: 배송 주소를 입력해야 합니다가 더 찍히고 이어서 용어집에 주소 Address 줄이 보인다",
+      "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && type glossary.md" } },
+    { "file": "done-주문-장면.txt", "task": "done", "commit": "2271683", "screen": "콘솔 실행 (이클립스 Run 대신)",
+      "see": "시작 글부터 빈 주소 주문 거절까지 여덟 줄이 spec 실행 결과와 같게 찍힌다",
+      "run": {} }
+  ]
+}
