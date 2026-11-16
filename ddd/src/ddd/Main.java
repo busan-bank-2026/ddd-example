@@ -32,5 +32,8 @@ public class Main {
         } catch (IllegalStateException e) {
             System.out.println("결제 없이 배송: " + e.getMessage());
         }
+
+        Order order3 = orderService.placeOrder("박민수", "자바 책", -15000, 2, "대구시 수성구");
+        System.out.println("음수 금액 주문: " + order3.getTotalPrice() + "원");
     }
 }
