@@ -1,7 +1,7 @@
 # layers 작업
 
 - [x] 테스트 작성
-- [ ] T1 도메인 계층 만들기
+- [x] T1 도메인 계층 만들기
   - 근거: S1
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/OrderStatus.java, ddd/src/ddd/OrderRepository.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/OrderApplicationService.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Main.java
   - 실행하면: 이클립스에서 ddd.domain 패키지를 만들고 여섯 클래스를 끌어 놓으면 출력 열여덟 줄이 그대로 나오고 src/ddd/domain에 여섯 파일이 보인다

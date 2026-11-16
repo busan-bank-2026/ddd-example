@@ -2,6 +2,9 @@ package ddd;
 
 import java.util.List;
 
+import ddd.domain.Order;
+import ddd.domain.OrderLine;
+
 public class Main {
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package ddd;
+package ddd.domain;
 
 public enum OrderStatus {
     ORDERED("주문 접수"),

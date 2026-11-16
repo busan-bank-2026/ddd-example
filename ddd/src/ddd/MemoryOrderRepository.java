@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import ddd.domain.Order;
+import ddd.domain.OrderRepository;
+
 public class MemoryOrderRepository implements OrderRepository {
 
     private final Map<Long, Order> orders = new HashMap<>();

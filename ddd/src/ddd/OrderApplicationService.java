@@ -3,6 +3,12 @@ package ddd;
 import java.util.ArrayList;
 import java.util.List;
 
+import ddd.domain.Address;
+import ddd.domain.Money;
+import ddd.domain.Order;
+import ddd.domain.OrderLine;
+import ddd.domain.OrderRepository;
+
 public class OrderApplicationService {
 
     private final OrderRepository orderRepository;
