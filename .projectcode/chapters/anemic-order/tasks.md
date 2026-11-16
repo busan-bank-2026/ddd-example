@@ -1,7 +1,7 @@
 # anemic-order 작업
 
 - [x] 테스트 작성
-- [ ] T1 주문 만들기
+- [x] T1 주문 만들기
   - 근거: S1
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
   - 실행하면: 시작 글 아래에 주문: 김철수, 자바 책 2개, 30000원, 주문 접수가 찍힌다
