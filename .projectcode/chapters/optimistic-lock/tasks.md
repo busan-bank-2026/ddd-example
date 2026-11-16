@@ -1,0 +1,24 @@
+# optimistic-lock 작업
+
+- [ ] 테스트 작성
+- [ ] T1 같은 주문을 두 번 꺼내 덮어쓰기
+  - 근거: S1
+  - 파일: ddd/src/ddd/Main.java
+  - 실행하면: 가격 바뀐 뒤 줄 다음에 동시 수정: 취소가 찍힌다. 배송 중이던 주문이 취소로 덮였다
+  - Why: 같은 주문을 두 곳에서 들고 있다가 나중에 저장한 쪽이 앞 저장을 지우는 것을 먼저 눈으로 본다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
+- [ ] T2 저장할 때마다 주문 버전 올리기
+  - 근거: S2, S4
+  - 파일: ddd/src/ddd/domain/Order.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/glossary.md
+  - 실행하면: 출력은 T1과 같아 동시 수정: 취소가 그대로 찍히고, 용어집에 버전 version 줄이 더 보인다
+  - Why: 꺼낸 주문이 몇 번째 저장을 보고 바뀌었는지 알아야 나중 저장이 낡은 주문인지 가릴 수 있다
+  - 다른 장: anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
+- [ ] T3 버전이 다르면 저장 거절하기
+  - 근거: S3, S4
+  - 파일: ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 마지막 줄이 동시 수정: 다른 곳에서 먼저 바꾼 주문입니다로 바뀌고, 용어집 저장하기 줄에 버전 확인이 보인다
+  - Why: 잠가 두지 않고 저장할 때 버전만 비교하면 먼저 저장한 쪽은 지키고 낡은 주문의 저장은 막는다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
