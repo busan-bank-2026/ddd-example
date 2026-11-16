@@ -2,7 +2,7 @@ package ddd.domain;
 
 import java.io.Serializable;
 
-public record OrderLine(String productName, Money price, int quantity) implements Serializable {
+public record OrderLine(long productId, String productName, Money price, int quantity) implements Serializable {
 
     public OrderLine {
         if (quantity < 1) {

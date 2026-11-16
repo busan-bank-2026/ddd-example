@@ -9,18 +9,18 @@ public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private String customerName;
+    private long memberId;
     private List<OrderLine> orderLines;
     private Address address;
     private Money totalPrice;
     private OrderStatus status;
 
-    public Order(long id, String customerName, List<OrderLine> orderLines, Address address) {
+    public Order(long id, long memberId, List<OrderLine> orderLines, Address address) {
         if (orderLines.isEmpty()) {
             throw new IllegalArgumentException("주문 항목이 하나 이상 있어야 합니다");
         }
         this.id = id;
-        this.customerName = customerName;
+        this.memberId = memberId;
         this.orderLines = new ArrayList<>(orderLines);
         this.address = address;
         this.totalPrice = new Money(0);
@@ -34,8 +34,8 @@ public class Order implements Serializable {
         return id;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public long getMemberId() {
+        return memberId;
     }
 
     public List<OrderLine> getOrderLines() {

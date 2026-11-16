@@ -7,7 +7,7 @@
   - 실행하면: 출력 열여덟 줄은 그대로이고, src/ddd/domain에 회원과 상품 네 파일, src/ddd/infrastructure에 메모리 저장소 두 파일이 더 보인다
   - Why: 회원과 상품은 주문과 따로 만들어지고 따로 바뀌는 애그리거트라 각자 저장소를 가져야 한다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
-- [ ] T2 주문이 회원과 상품을 번호로 가리키기
+- [x] T2 주문이 회원과 상품을 번호로 가리키기
   - 근거: S3, S4, S6
   - 파일: ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 출력 열여덟 줄은 그대로이고, 주문 줄의 김철수는 주문의 회원 번호 1로 회원 저장소에서 찾은 이름이다

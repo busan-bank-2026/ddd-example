@@ -23,7 +23,7 @@ public class OrderApplicationService {
         for (OrderLineCommand orderLineCommand : command.orderLines()) {
             orderLines.add(toOrderLine(orderLineCommand));
         }
-        Order order = new Order(nextId++, command.customerName(), orderLines, new Address(command.address()));
+        Order order = new Order(nextId++, command.memberId(), orderLines, new Address(command.address()));
         orderRepository.save(order);
         return order.getId();
     }
@@ -63,6 +63,6 @@ public class OrderApplicationService {
     }
 
     private OrderLine toOrderLine(OrderLineCommand command) {
-        return new OrderLine(command.productName(), new Money(command.price()), command.quantity());
+        return new OrderLine(command.productId(), command.productName(), new Money(command.price()), command.quantity());
     }
 }
