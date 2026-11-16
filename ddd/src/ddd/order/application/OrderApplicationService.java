@@ -11,6 +11,8 @@ import ddd.order.domain.Order;
 import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
+import ddd.order.domain.PaymentGateway;
+import ddd.order.domain.PaymentResult;
 
 public class OrderApplicationService {
 
@@ -20,16 +22,19 @@ public class OrderApplicationService {
     private final DiscountPolicy discountPolicy;
     private final EventPublisher eventPublisher;
     private final OrderOpenHostService orderOpenHostService;
+    private final PaymentGateway paymentGateway;
     private long nextId = 1;
 
     public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory,
-            MemberRepository memberRepository, DiscountPolicy discountPolicy, EventPublisher eventPublisher) {
+            MemberRepository memberRepository, DiscountPolicy discountPolicy, EventPublisher eventPublisher,
+            PaymentGateway paymentGateway) {
         this.orderRepository = orderRepository;
         this.orderLineFactory = orderLineFactory;
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
         this.eventPublisher = eventPublisher;
         this.orderOpenHostService = new OrderOpenHostService(eventPublisher);
+        this.paymentGateway = paymentGateway;
     }
 
     public long placeOrder(PlaceOrderCommand command) {
@@ -57,6 +62,10 @@ public class OrderApplicationService {
         Order order = findOrder(orderId);
         Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
         order.pay(discountPolicy.discount(member, order));
+        PaymentResult result = paymentGateway.pay(order.getPaymentPrice());
+        if (!result.approved()) {
+            throw new IllegalStateException(result.reason());
+        }
         orderRepository.save(order);
         orderOpenHostService.publishOrderPaid(order);
     }

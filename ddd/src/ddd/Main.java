@@ -20,6 +20,7 @@ import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderPlaced;
 import ddd.order.domain.OrderRepository;
+import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
 import ddd.shipping.application.OrderPaidMessageHandler;
@@ -47,7 +48,8 @@ public class Main {
         eventPublisher.subscribe(OrderPlaced.class, decreaseStockHandler::handle);
         OrderRepository orderRepository = new MemoryOrderRepository();
         OrderApplicationService orderService = new OrderApplicationService(orderRepository,
-                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher);
+                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
+                new LegacyPaymentAdapter(new LegacyPayGateway()));
 
         List<OrderLineCommand> orderLines = List.of(
                 new OrderLineCommand(1, 2),
@@ -206,5 +208,15 @@ public class Main {
         LegacyPayGateway legacyPayGateway = new LegacyPayGateway();
         System.out.println("외부 결제 응답: 27900원 " + legacyPayGateway.approve("DDD-SHOP", 27900) + ", 108000원 "
                 + legacyPayGateway.approve("DDD-SHOP", 108000));
+
+        long bigOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+                List.of(new OrderLineCommand(1, 6)), "서울시 송파구"));
+        try {
+            orderService.pay(bigOrderId);
+            System.out.println("한도 넘은 결제: " + orderService.findOrder(bigOrderId).getStatus().label());
+        } catch (IllegalStateException e) {
+            System.out.println("한도 넘은 결제: " + e.getMessage() + ", "
+                    + orderService.findOrder(bigOrderId).getStatus().label());
+        }
     }
 }
