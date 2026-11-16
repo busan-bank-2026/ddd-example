@@ -13,6 +13,6 @@
   - 실행하면: 결제 완료 메시지 두 줄 다음에 배송 컨텍스트: 1번 주문, 서울시 강남구가 찍히고 src/ddd에 shipping 폴더가 보인다
   - Why: 배송 컨텍스트가 발행된 언어의 글자만 읽어 자기 모델로 바꾸면 주문 컨텍스트가 안을 바꿔도 메시지 모양만 지키면 된다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식

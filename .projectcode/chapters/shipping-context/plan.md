@@ -55,7 +55,7 @@ context-map.md
 - T1: 결제 완료 메시지 표: 칸, 값, 뜻. 종류 ORDER_PAID, orderId 주문 번호, address 배송 주소. 예 ORDER_PAID|orderId=1|address=서울시 강남구
 - T2: 하위 도메인 표에 배송 줄(지원, 배송 컨텍스트, ddd.shipping)을 더한다
 - T2: 컨텍스트 사이 표에 배송, 주문, 결제 완료 메시지 처리기가 결제 완료 메시지 글자를 읽어 배송을 만든다 줄을 더한다
-- T2: 배송 컨텍스트는 주문 클래스를 import하지 않고 메시지 글자만 읽는다고 쓴다
+- T2: 컨텍스트 사이 절 아래 줄을 지금에 맞춘다. 주문과 상품은 다른 컨텍스트 클래스를 import로 쓰고, 배송은 주문 클래스를 import하지 않고 메시지 글자만 읽으며, 배송은 주문 번호와 배송 주소를 자기 모양으로 갖는다고 쓴다
 
 glossary.md
 - T1: 공개 호스트 서비스 OrderOpenHostService, 결제 완료 메시지 ORDER_PAID 줄
