@@ -1,7 +1,7 @@
 # order-repository 작업
 
 - [x] 테스트 작성
-- [ ] T1 주문을 저장소에 넣고 번호로 꺼내기
+- [x] T1 주문을 저장소에 넣고 번호로 꺼내기
   - 근거: S1, S3, S4, S6
   - 파일: ddd/src/ddd/OrderRepository.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 출력은 앞 장 열여섯 줄과 같고, 주문이 저장소를 거쳐 주문 번호로 오간다
