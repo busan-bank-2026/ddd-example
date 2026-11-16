@@ -1,6 +1,6 @@
 # optimistic-lock 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 같은 주문을 두 번 꺼내 덮어쓰기
   - 근거: S1
   - 파일: ddd/src/ddd/Main.java

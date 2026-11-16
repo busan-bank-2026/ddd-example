@@ -51,7 +51,8 @@ class FreeShippingTest {
             "없는 상품 주문: 상품이 없습니다",
             "저장 안 한 취소: 주문 접수",
             "6만원 주문 배송비: 서울 0원, 제주 3000원",
-            "가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원") + System.lineSeparator();
+            "가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원",
+            "동시 수정: 다른 곳에서 먼저 바꾼 주문입니다") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
