@@ -20,7 +20,7 @@
 - [x] 캡처
 - [x] 도식
 - [x] 테스트 보강
-- [ ] T4 이클립스에서 tests 연결 빼기
+- [x] T4 이클립스에서 tests 연결 빼기
   - 근거: S2, 고침 T3
   - 파일: ddd/.project, ddd/.classpath, .projectcode/contract.md
   - 실행하면: tests 폴더가 없는 학생 이클립스에서도 ddd가 오류 없이 열린다

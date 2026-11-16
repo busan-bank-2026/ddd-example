@@ -46,4 +46,3 @@ java -jar lib/junit-platform-console-standalone.jar execute -cp "bin;bin-test" -
 - ddd 폴더를 프로젝트로 연다
 - main 클래스를 열고 Run을 누른다
 - 22장은 OrderApp을 먼저 실행하고 ShippingApp을 실행한다
-- 테스트는 테스트 파일에서 Run As, JUnit Test를 고른다
