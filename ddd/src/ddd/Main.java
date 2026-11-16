@@ -226,5 +226,16 @@ public class Main {
             System.out.println("주문 목록: " + summary.orderId() + "번, " + summary.memberName() + ", 항목 "
                     + summary.orderLineCount() + "개, " + summary.paymentPrice() + "원, " + summary.status());
         }
+
+        productRepository.save(new Product(5, "노트북", new Money(120000), 10));
+        long laptopOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+                List.of(new OrderLineCommand(5, 1)), "서울시 서초구"));
+        try {
+            orderService.pay(laptopOrderId);
+        } catch (IllegalStateException e) {
+            eventPublisher.processEvents();
+            System.out.println("결제 실패 뒤: 노트북 재고 " + productRepository.findById(5).orElseThrow().getStock() + "개, "
+                    + orderService.findOrder(laptopOrderId).getStatus().label());
+        }
     }
 }
