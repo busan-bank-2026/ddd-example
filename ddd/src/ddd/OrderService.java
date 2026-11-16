@@ -1,5 +1,6 @@
 package ddd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderService {
@@ -11,8 +12,12 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public long placeOrder(String customerName, List<OrderLine> orderLines, String address) {
-        Order order = new Order(nextId++, customerName, orderLines, new Address(address));
+    public long placeOrder(PlaceOrderCommand command) {
+        List<OrderLine> orderLines = new ArrayList<>();
+        for (OrderLineCommand orderLineCommand : command.orderLines()) {
+            orderLines.add(toOrderLine(orderLineCommand));
+        }
+        Order order = new Order(nextId++, command.customerName(), orderLines, new Address(command.address()));
         orderRepository.save(order);
         return order.getId();
     }
@@ -21,9 +26,9 @@ public class OrderService {
         return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문이 없습니다"));
     }
 
-    public void addOrderLine(long orderId, OrderLine orderLine) {
+    public void addOrderLine(long orderId, OrderLineCommand command) {
         Order order = findOrder(orderId);
-        order.addOrderLine(orderLine);
+        order.addOrderLine(toOrderLine(command));
         orderRepository.save(order);
     }
 
@@ -49,5 +54,9 @@ public class OrderService {
         Order order = findOrder(orderId);
         order.cancel();
         orderRepository.save(order);
+    }
+
+    private OrderLine toOrderLine(OrderLineCommand command) {
+        return new OrderLine(command.productName(), new Money(command.price()), command.quantity());
     }
 }
