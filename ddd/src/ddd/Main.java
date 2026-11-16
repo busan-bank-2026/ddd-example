@@ -26,6 +26,7 @@ import ddd.shipping.application.OrderPaidMessageHandler;
 import ddd.shipping.domain.Shipment;
 import ddd.shipping.domain.ShipmentRepository;
 import ddd.shipping.infrastructure.MemoryShipmentRepository;
+import legacypay.LegacyPayGateway;
 
 public class Main {
 
@@ -201,5 +202,9 @@ public class Main {
         eventPublisher.processEvents();
         Shipment shipment = shipmentRepository.findByOrderId(orderId).orElseThrow();
         System.out.println("배송 컨텍스트: " + shipment.getOrderId() + "번 주문, " + shipment.getAddress());
+
+        LegacyPayGateway legacyPayGateway = new LegacyPayGateway();
+        System.out.println("외부 결제 응답: 27900원 " + legacyPayGateway.approve("DDD-SHOP", 27900) + ", 108000원 "
+                + legacyPayGateway.approve("DDD-SHOP", 108000));
     }
 }
