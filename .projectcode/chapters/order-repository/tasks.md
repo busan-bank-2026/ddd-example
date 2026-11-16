@@ -20,6 +20,6 @@
   - 실행하면: 마지막에 저장 안 한 취소: 주문 접수가 더 찍힌다
   - Why: 진짜 DB는 저장한 것만 남는다. 메모리 저장소도 복사본을 쓰면 다시 저장해야 바뀐 것이 남는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
