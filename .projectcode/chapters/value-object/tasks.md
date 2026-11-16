@@ -7,7 +7,7 @@
   - 실행하면: 앞 장 여섯 줄 뒤에 음수 금액 주문: -30000원이 찍힌다
   - Why: 금액이 그냥 숫자면 말이 안 되는 금액도 주문에 들어가는 것을 먼저 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity
-- [ ] T2 금액을 돈 값 객체로 바꾸기
+- [x] T2 금액을 돈 값 객체로 바꾸기
   - 근거: S2, S3, S4, S6
   - 파일: ddd/src/ddd/Money.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 마지막 줄이 음수 금액 주문: 금액은 0원 이상이어야 합니다로 바뀐다

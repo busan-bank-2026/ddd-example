@@ -9,8 +9,8 @@ public class Main {
 
         Order order = orderService.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
         System.out.println("주문: " + order.getId() + "번, " + order.getCustomerName() + ", "
-                + order.getProductName() + " " + order.getQuantity() + "개, " + order.getTotalPrice() + "원, "
-                + order.getStatus());
+                + order.getProductName() + " " + order.getQuantity() + "개, " + order.getTotalPrice().amount()
+                + "원, " + order.getStatus());
 
         orderService.pay(order);
         System.out.println("결제: " + order.getStatus());
@@ -33,7 +33,11 @@ public class Main {
             System.out.println("결제 없이 배송: " + e.getMessage());
         }
 
-        Order order3 = orderService.placeOrder("박민수", "자바 책", -15000, 2, "대구시 수성구");
-        System.out.println("음수 금액 주문: " + order3.getTotalPrice() + "원");
+        try {
+            Order order3 = orderService.placeOrder("박민수", "자바 책", -15000, 2, "대구시 수성구");
+            System.out.println("음수 금액 주문: " + order3.getTotalPrice().amount() + "원");
+        } catch (IllegalArgumentException e) {
+            System.out.println("음수 금액 주문: " + e.getMessage());
+        }
     }
 }

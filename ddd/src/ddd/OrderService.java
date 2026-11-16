@@ -5,7 +5,7 @@ public class OrderService {
     private long nextId = 1;
 
     public Order placeOrder(String customerName, String productName, int price, int quantity, String address) {
-        return new Order(nextId++, customerName, productName, price, quantity, address);
+        return new Order(nextId++, customerName, productName, new Money(price), quantity, address);
     }
 
     public void pay(Order order) {

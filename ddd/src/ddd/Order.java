@@ -5,20 +5,20 @@ public class Order {
     private long id;
     private String customerName;
     private String productName;
-    private int price;
+    private Money price;
     private int quantity;
     private String address;
-    private int totalPrice;
+    private Money totalPrice;
     private String status;
 
-    public Order(long id, String customerName, String productName, int price, int quantity, String address) {
+    public Order(long id, String customerName, String productName, Money price, int quantity, String address) {
         this.id = id;
         this.customerName = customerName;
         this.productName = productName;
         this.price = price;
         this.quantity = quantity;
         this.address = address;
-        this.totalPrice = price * quantity;
+        this.totalPrice = price.times(quantity);
         this.status = "주문 접수";
     }
 
@@ -34,7 +34,7 @@ public class Order {
         return productName;
     }
 
-    public int getPrice() {
+    public Money getPrice() {
         return price;
     }
 
@@ -46,7 +46,7 @@ public class Order {
         return address;
     }
 
-    public int getTotalPrice() {
+    public Money getTotalPrice() {
         return totalPrice;
     }
 
