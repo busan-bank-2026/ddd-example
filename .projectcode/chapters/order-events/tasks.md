@@ -1,6 +1,6 @@
 # order-events 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 주문이 주문 접수됨 이벤트 남기기
   - 근거: S1, S2, S5
   - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/OrderPlaced.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md

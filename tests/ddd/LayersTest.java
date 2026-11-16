@@ -22,6 +22,8 @@ class LayersTest {
             "주문: 1번, 김철수, 31000원, 주문 접수",
             "주문 항목: 자바 책 2개, 30000원",
             "주문 항목: 볼펜 1개, 1000원",
+            "주문 뒤: 이벤트 1개, 자바 책 재고 10개",
+            "이벤트 처리 뒤: 자바 책 재고 8개",
             "결제: 결제 완료",
             "할인: VIP 3100원, 결제 금액 27900원",
             "배송비: 3000원",
@@ -90,7 +92,7 @@ class LayersTest {
         }
         Class<?> service = Class.forName("ddd.application.OrderApplicationService");
         assertEquals(List.of(Class.forName("ddd.domain.OrderRepository"), Class.forName("ddd.domain.OrderLineFactory"),
-                Class.forName("ddd.domain.MemberRepository"), Class.forName("ddd.domain.DiscountPolicy")),
+                Class.forName("ddd.domain.MemberRepository"), Class.forName("ddd.domain.DiscountPolicy"), Class.forName("ddd.application.EventPublisher")),
                 List.of(service.getConstructors()[0].getParameterTypes()));
         assertEquals(EXPECTED, runMain());
     }

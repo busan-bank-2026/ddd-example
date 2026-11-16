@@ -16,6 +16,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import ddd.application.EventPublisher;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
@@ -41,6 +42,8 @@ class OrderFactoryTest {
             "주문: 1번, 김철수, 31000원, 주문 접수",
             "주문 항목: 자바 책 2개, 30000원",
             "주문 항목: 볼펜 1개, 1000원",
+            "주문 뒤: 이벤트 1개, 자바 책 재고 10개",
+            "이벤트 처리 뒤: 자바 책 재고 8개",
             "결제: 결제 완료",
             "할인: VIP 3100원, 결제 금액 27900원",
             "배송비: 3000원",
@@ -82,9 +85,9 @@ class OrderFactoryTest {
 
     private static ProductRepository products() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000)));
-        products.save(new Product(2, "볼펜", new Money(1000)));
-        products.save(new Product(3, "공책", new Money(2000)));
+        products.save(new Product(1, "자바 책", new Money(15000), 10));
+        products.save(new Product(2, "볼펜", new Money(1000), 10));
+        products.save(new Product(3, "공책", new Money(2000), 10));
         return products;
     }
 
@@ -111,7 +114,7 @@ class OrderFactoryTest {
         assertEquals(new OrderLine(1, "자바 책", new Money(15000), 2), factory.create(1, 2));
         assertEquals(new OrderLine(2, "볼펜", new Money(1000), 1), factory.create(2, 1));
 
-        products.save(new Product(1, "자바 책", new Money(18000)));
+        products.save(new Product(1, "자바 책", new Money(18000), 10));
         assertEquals(new OrderLine(1, "자바 책", new Money(18000), 2), factory.create(1, 2));
 
         assertEquals("ddd.domain", OrderLineFactory.class.getPackageName());
@@ -120,11 +123,11 @@ class OrderFactoryTest {
     @Test
     @DisplayName("S3 주문 응용 서비스는 주문하기와 주문 항목 더하기에서 주문 항목 팩토리에게 주문 항목을 만들게 한다. Main은 팩토리를 만들어 주문 응용 서비스에 넘기고, 앞 장 출력 열아홉 줄은 그대로다")
     void s3() throws Exception {
-        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class),
+        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class),
                 List.of(OrderApplicationService.class.getConstructors()[0].getParameterTypes()));
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy());
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy(), new EventPublisher());
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(
                 new OrderLineCommand(1, 2),
                 new OrderLineCommand(2, 1)), "서울시 강남구"));
@@ -150,7 +153,7 @@ class OrderFactoryTest {
     @DisplayName("S4 없는 상품 번호로 주문하거나 항목을 더하면 상품이 없습니다로 거절하고 아무것도 저장하지 않는다. Main이 없는 상품 주문 장면을 보여준다")
     void s4() {
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy());
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products()), members(), new DiscountPolicy(), new EventPublisher());
 
         IllegalArgumentException placing = assertThrows(IllegalArgumentException.class,
                 () -> service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(100, 1)), "서울시 강남구")));

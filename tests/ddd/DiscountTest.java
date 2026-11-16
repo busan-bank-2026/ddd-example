@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import ddd.application.EventPublisher;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
@@ -42,6 +43,8 @@ class DiscountTest {
             "주문: 1번, 김철수, 31000원, 주문 접수",
             "주문 항목: 자바 책 2개, 30000원",
             "주문 항목: 볼펜 1개, 1000원",
+            "주문 뒤: 이벤트 1개, 자바 책 재고 10개",
+            "이벤트 처리 뒤: 자바 책 재고 8개",
             "결제: 결제 완료",
             "할인: VIP 3100원, 결제 금액 27900원",
             "배송비: 3000원",
@@ -142,18 +145,18 @@ class DiscountTest {
     @Test
     @DisplayName("S4 주문 응용 서비스는 결제하기에서 주문을 꺼내고, 회원을 찾고, 할인 정책에게 할인 금액을 계산하게 하고, 주문에게 결제를 시키고, 저장한다. Main이 첫 주문의 할인 장면을 보여준다")
     void s4() {
-        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class),
+        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class),
                 List.of(OrderApplicationService.class.getConstructors()[0].getParameterTypes()));
 
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000)));
-        products.save(new Product(2, "볼펜", new Money(1000)));
+        products.save(new Product(1, "자바 책", new Money(15000), 10));
+        products.save(new Product(2, "볼펜", new Money(1000), 10));
         MemberRepository members = new MemoryMemberRepository();
         members.save(new Member(1, "김철수", MemberGrade.VIP));
         members.save(new Member(2, "이영희", MemberGrade.BASIC));
         OrderRepository orders = new MemoryOrderRepository();
         OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products),
-                members, new DiscountPolicy());
+                members, new DiscountPolicy(), new EventPublisher());
 
         List<OrderLineCommand> lines = List.of(new OrderLineCommand(1, 2), new OrderLineCommand(2, 1));
         long vipOrderId = service.placeOrder(new PlaceOrderCommand(1, lines, "서울시 강남구"));

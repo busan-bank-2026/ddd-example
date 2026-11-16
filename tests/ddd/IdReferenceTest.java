@@ -18,6 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import ddd.application.EventPublisher;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
@@ -47,9 +48,9 @@ class IdReferenceTest {
 
     private static OrderLineFactory orderLineFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000)));
-        products.save(new Product(2, "볼펜", new Money(1000)));
-        products.save(new Product(3, "공책", new Money(2000)));
+        products.save(new Product(1, "자바 책", new Money(15000), 10));
+        products.save(new Product(2, "볼펜", new Money(1000), 10));
+        products.save(new Product(3, "공책", new Money(2000), 10));
         return new OrderLineFactory(products);
     }
 
@@ -75,13 +76,13 @@ class IdReferenceTest {
         assertEquals(member.hashCode(), new Member(1, "김영수", MemberGrade.BASIC).hashCode());
         assertNotEquals(member, new Member(2, "김철수", MemberGrade.BASIC));
 
-        Product product = new Product(1, "자바 책", new Money(15000));
+        Product product = new Product(1, "자바 책", new Money(15000), 10);
         assertEquals(1L, product.getId());
         assertEquals("자바 책", product.getName());
         assertEquals(new Money(15000), product.getPrice());
-        assertEquals(product, new Product(1, "자바 책", new Money(18000)));
-        assertEquals(product.hashCode(), new Product(1, "자바 책", new Money(18000)).hashCode());
-        assertNotEquals(product, new Product(2, "자바 책", new Money(15000)));
+        assertEquals(product, new Product(1, "자바 책", new Money(18000), 10));
+        assertEquals(product.hashCode(), new Product(1, "자바 책", new Money(18000), 10).hashCode());
+        assertNotEquals(product, new Product(2, "자바 책", new Money(15000), 10));
     }
 
     @Test
@@ -95,10 +96,10 @@ class IdReferenceTest {
         assertTrue(members.findById(3).isEmpty());
 
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(1, "자바 책", new Money(15000), 10));
         assertEquals(new Money(15000), products.findById(1).orElseThrow().getPrice());
         assertTrue(products.findById(2).isEmpty());
-        products.save(new Product(1, "자바 책", new Money(18000)));
+        products.save(new Product(1, "자바 책", new Money(18000), 10));
         assertEquals(new Money(18000), products.findById(1).orElseThrow().getPrice());
 
         assertTrue(MemberRepository.class.isInterface());
@@ -112,14 +113,14 @@ class IdReferenceTest {
         int firstOrder = main.indexOf("placeOrder(");
         assertTrue(main.indexOf("new Member(1, \"김철수\", MemberGrade.VIP)") > 0);
         assertTrue(main.indexOf("new Member(1, \"김철수\", MemberGrade.VIP)") < firstOrder);
-        assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000))") > 0);
-        assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000))") < firstOrder);
+        assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000), 10)") > 0);
+        assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000), 10)") < firstOrder);
     }
 
     @Test
     @DisplayName("S3 주문은 회원을 객체로 갖지 않고 회원 번호로 가리킨다. 주문하기 명령은 주문자 이름 대신 회원 번호를 담고, Main은 주문의 회원 번호로 회원 저장소에서 회원을 찾아 이름을 보여준다")
     void s3() throws Exception {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
         PlaceOrderCommand command = new PlaceOrderCommand(7,
                 List.of(new OrderLineCommand(1, 2)), "서울시 강남구");
         assertEquals(7L, command.memberId());
@@ -142,7 +143,7 @@ class IdReferenceTest {
         OrderLineCommand command = new OrderLineCommand(2, 3);
         assertEquals(2L, command.productId());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(command), "서울시 강남구"));
         service.addOrderLine(orderId, new OrderLineCommand(3, 5));
 
@@ -162,15 +163,15 @@ class IdReferenceTest {
     @DisplayName("S5 주문 뒤 상품 가격이 바뀌어도 주문 항목의 가격과 주문 금액은 주문 때 그대로다")
     void s5() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(1, "자바 책", new Money(15000), 10));
         Product book = products.findById(1).orElseThrow();
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products), members(), new DiscountPolicy());
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products), members(), new DiscountPolicy(), new EventPublisher());
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(
                 new OrderLineCommand(book.getId(), 2)), "서울시 강남구"));
 
-        products.save(new Product(1, "자바 책", new Money(18000)));
+        products.save(new Product(1, "자바 책", new Money(18000), 10));
 
         Order saved = orders.findById(orderId).orElseThrow();
         assertEquals(new Money(18000), products.findById(1).orElseThrow().getPrice());

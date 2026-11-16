@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import ddd.application.EventPublisher;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
@@ -42,13 +43,13 @@ class OrderStatusTest {
 
     private static OrderLineFactory orderLineFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000)));
-        products.save(new Product(2, "볼펜", new Money(1000)));
-        products.save(new Product(3, "공책", new Money(2000)));
+        products.save(new Product(1, "자바 책", new Money(15000), 10));
+        products.save(new Product(2, "볼펜", new Money(1000), 10));
+        products.save(new Product(3, "공책", new Money(2000), 10));
         return new OrderLineFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher());
 
     private String runMain() {
         PrintStream original = System.out;
