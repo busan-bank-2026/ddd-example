@@ -2,6 +2,7 @@ package ddd;
 
 import java.util.List;
 
+import ddd.application.EventPublisher;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
@@ -33,8 +34,9 @@ public class Main {
         productRepository.save(new Product(2, "볼펜", new Money(1000), 10));
         productRepository.save(new Product(3, "공책", new Money(2000), 10));
 
+        EventPublisher eventPublisher = new EventPublisher();
         OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository(),
-                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy());
+                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher);
 
         List<OrderLineCommand> orderLines = List.of(
                 new OrderLineCommand(1, 2),

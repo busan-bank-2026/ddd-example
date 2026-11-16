@@ -18,14 +18,16 @@ public class OrderApplicationService {
     private final OrderLineFactory orderLineFactory;
     private final MemberRepository memberRepository;
     private final DiscountPolicy discountPolicy;
+    private final EventPublisher eventPublisher;
     private long nextId = 1;
 
     public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory,
-            MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+            MemberRepository memberRepository, DiscountPolicy discountPolicy, EventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.orderLineFactory = orderLineFactory;
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
+        this.eventPublisher = eventPublisher;
     }
 
     public long placeOrder(PlaceOrderCommand command) {
@@ -35,6 +37,7 @@ public class OrderApplicationService {
         }
         Order order = new Order(nextId++, command.memberId(), orderLines, new Address(command.address()));
         orderRepository.save(order);
+        eventPublisher.publish(order.getEvents());
         return order.getId();
     }
 

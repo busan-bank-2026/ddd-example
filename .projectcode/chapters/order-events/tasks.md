@@ -7,7 +7,7 @@
   - 실행하면: 볼펜 항목 줄 다음에 주문 뒤: 이벤트 1개, 자바 책 재고 10개가 찍히고, src/ddd/domain에 OrderPlaced가 더 보인다
   - Why: 주문이 재고를 직접 줄이면 주문이 상품까지 바꾼다. 주문은 주문 접수됨이라는 일어난 일만 남기고 재고는 건드리지 않는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
-- [ ] T2 저장 뒤 이벤트를 발행기에 넘기기
+- [x] T2 저장 뒤 이벤트를 발행기에 넘기기
   - 근거: S3, S5
   - 진행: 붙여넣기. EventPublisher.java 전체
   - 파일: ddd/src/ddd/application/EventPublisher.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
