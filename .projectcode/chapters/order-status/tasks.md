@@ -1,7 +1,7 @@
 # order-status 작업
 
 - [x] 테스트 작성
-- [ ] T1 주문 상태를 한 묶음으로 정하기
+- [x] T1 주문 상태를 한 묶음으로 정하기
   - 근거: S1, S6
   - 파일: ddd/src/ddd/OrderStatus.java, ddd/src/ddd/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 출력은 앞 장과 같고, 상태가 글자 대신 주문 상태 묶음에서 나온다

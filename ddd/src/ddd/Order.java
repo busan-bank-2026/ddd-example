@@ -10,7 +10,7 @@ public class Order {
     private List<OrderLine> orderLines;
     private Address address;
     private Money totalPrice;
-    private String status;
+    private OrderStatus status;
 
     public Order(long id, String customerName, List<OrderLine> orderLines, Address address) {
         if (orderLines.isEmpty()) {
@@ -24,7 +24,7 @@ public class Order {
         for (OrderLine orderLine : orderLines) {
             totalPrice = totalPrice.plus(orderLine.amount());
         }
-        this.status = "주문 접수";
+        this.status = OrderStatus.ORDERED;
     }
 
     public long getId() {
@@ -47,12 +47,12 @@ public class Order {
         return totalPrice;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
     public void addOrderLine(OrderLine orderLine) {
-        if (!status.equals("주문 접수")) {
+        if (status != OrderStatus.ORDERED) {
             throw new IllegalStateException("주문 접수인 주문에만 항목을 더할 수 있습니다");
         }
         orderLines.add(orderLine);
@@ -60,21 +60,21 @@ public class Order {
     }
 
     public void pay() {
-        status = "결제 완료";
+        status = OrderStatus.PAID;
     }
 
     public void ship() {
-        if (!status.equals("결제 완료")) {
+        if (status != OrderStatus.PAID) {
             throw new IllegalStateException("결제하지 않은 주문은 배송할 수 없습니다");
         }
-        status = "배송 중";
+        status = OrderStatus.SHIPPING;
     }
 
     public void cancel() {
-        if (status.equals("배송 중")) {
+        if (status == OrderStatus.SHIPPING) {
             throw new IllegalStateException("배송 중인 주문은 취소할 수 없습니다");
         }
-        status = "취소";
+        status = OrderStatus.CANCELED;
     }
 
     @Override

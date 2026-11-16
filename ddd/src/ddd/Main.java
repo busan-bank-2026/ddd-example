@@ -14,21 +14,21 @@ public class Main {
                 new OrderLine("볼펜", new Money(1000), 1));
         Order order = orderService.placeOrder("김철수", orderLines, "서울시 강남구");
         System.out.println("주문: " + order.getId() + "번, " + order.getCustomerName() + ", "
-                + order.getTotalPrice().amount() + "원, " + order.getStatus());
+                + order.getTotalPrice().amount() + "원, " + order.getStatus().label());
         for (OrderLine orderLine : order.getOrderLines()) {
             System.out.println("주문 항목: " + orderLine.productName() + " " + orderLine.quantity() + "개, "
                     + orderLine.amount().amount() + "원");
         }
 
         orderService.pay(order);
-        System.out.println("결제: " + order.getStatus());
+        System.out.println("결제: " + order.getStatus().label());
 
         orderService.ship(order);
-        System.out.println("배송: " + order.getStatus());
+        System.out.println("배송: " + order.getStatus().label());
 
         try {
             orderService.cancel(order);
-            System.out.println("취소: " + order.getStatus());
+            System.out.println("취소: " + order.getStatus().label());
         } catch (IllegalStateException e) {
             System.out.println("취소: " + e.getMessage());
         }
@@ -37,7 +37,7 @@ public class Main {
                 "부산시 해운대구");
         try {
             order2.ship();
-            System.out.println("결제 없이 배송: " + order2.getStatus());
+            System.out.println("결제 없이 배송: " + order2.getStatus().label());
         } catch (IllegalStateException e) {
             System.out.println("결제 없이 배송: " + e.getMessage());
         }
@@ -52,7 +52,7 @@ public class Main {
 
         try {
             Order order4 = orderService.placeOrder("최지우", List.of(new OrderLine("자바 책", new Money(15000), 1)), "");
-            System.out.println("빈 주소 주문: " + order4.getStatus());
+            System.out.println("빈 주소 주문: " + order4.getStatus().label());
         } catch (IllegalArgumentException e) {
             System.out.println("빈 주소 주문: " + e.getMessage());
         }
@@ -74,7 +74,7 @@ public class Main {
 
         try {
             Order order6 = orderService.placeOrder("강민준", List.of(), "인천시 연수구");
-            System.out.println("빈 주문: " + order6.getStatus());
+            System.out.println("빈 주문: " + order6.getStatus().label());
         } catch (IllegalArgumentException e) {
             System.out.println("빈 주문: " + e.getMessage());
         }
