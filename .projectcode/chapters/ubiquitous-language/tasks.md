@@ -1,0 +1,29 @@
+# ubiquitous-language 작업
+
+- [ ] 테스트 작성
+- [ ] T1 용어집 만들기
+  - 근거: S5
+  - 파일: ddd/glossary.md
+  - 실행하면: 출력은 그대로이고 이클립스의 ddd 아래에 glossary.md가 보인다
+  - Why: 코드 이름을 바꾸기 전에 업무 말을 먼저 정해 두어야 모두 같은 말을 쓴다
+- [ ] T2 주문하기로 이름 바꾸기
+  - 근거: S1
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 출력 다섯 줄이 그대로 나온다
+  - Why: 업무에서는 주문을 만든다고 하지 않고 주문한다고 한다
+  - 다른 장: anemic-order, project-setup
+- [ ] T3 결제하기와 배송하기로 이름 바꾸기
+  - 근거: S2, S3
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 출력 다섯 줄이 그대로 나온다
+  - Why: 상태를 고친다는 말 대신 업무에서 하는 일 이름을 쓴다
+  - 다른 장: anemic-order, project-setup
+- [ ] T4 주문 취소하기로 이름 바꾸기
+  - 근거: S4
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 출력 다섯 줄이 그대로 나오고 지우기가 아니라 취소라는 것이 이름에 드러난다
+  - Why: 주문은 지워지지 않고 취소 상태로 남는다. delete라는 이름은 업무와 다르게 읽힌다
+  - 다른 장: anemic-order, project-setup
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
