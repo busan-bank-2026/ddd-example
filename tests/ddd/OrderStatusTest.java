@@ -15,6 +15,12 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import ddd.application.OrderApplicationService;
+import ddd.application.OrderLineCommand;
+import ddd.application.PlaceOrderCommand;
+import ddd.domain.OrderStatus;
+import ddd.infrastructure.MemoryOrderRepository;
+
 class OrderStatusTest {
 
     private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());

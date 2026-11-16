@@ -1,6 +1,6 @@
 # layers 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 도메인 계층 만들기
   - 근거: S1
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/OrderStatus.java, ddd/src/ddd/OrderRepository.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/OrderApplicationService.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Main.java

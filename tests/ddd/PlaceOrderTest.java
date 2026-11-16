@@ -14,6 +14,17 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import ddd.application.OrderApplicationService;
+import ddd.application.OrderLineCommand;
+import ddd.application.PlaceOrderCommand;
+import ddd.domain.Address;
+import ddd.domain.Money;
+import ddd.domain.Order;
+import ddd.domain.OrderLine;
+import ddd.domain.OrderRepository;
+import ddd.domain.OrderStatus;
+import ddd.infrastructure.MemoryOrderRepository;
+
 class PlaceOrderTest {
 
     private String runMain() {
