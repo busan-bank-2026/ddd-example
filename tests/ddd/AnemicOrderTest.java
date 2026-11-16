@@ -26,10 +26,10 @@ class AnemicOrderTest {
 
         assertEquals("김철수", order.getCustomerName());
         assertEquals("자바 책", order.getProductName());
-        assertEquals(15000, order.getPrice());
+        assertEquals(15000, order.getPrice().amount());
         assertEquals(2, order.getQuantity());
-        assertEquals("서울시 강남구", order.getAddress());
-        assertEquals(30000, order.getTotalPrice());
+        assertEquals("서울시 강남구", order.getAddress().value());
+        assertEquals(30000, order.getTotalPrice().amount());
         assertEquals("주문 접수", order.getStatus());
     }
 

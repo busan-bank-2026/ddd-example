@@ -19,7 +19,7 @@ class UbiquitousLanguageTest {
         Order order = service.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
 
         assertEquals("주문 접수", order.getStatus());
-        assertEquals(30000, order.getTotalPrice());
+        assertEquals(30000, order.getTotalPrice().amount());
     }
 
     @Test
