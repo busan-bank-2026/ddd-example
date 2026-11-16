@@ -189,5 +189,8 @@ public class Main {
         } catch (IllegalStateException e) {
             System.out.println("동시 수정: " + e.getMessage());
         }
+
+        eventPublisher.subscribe(String.class, message -> System.out.println("결제 완료 메시지: " + message));
+        eventPublisher.processEvents();
     }
 }

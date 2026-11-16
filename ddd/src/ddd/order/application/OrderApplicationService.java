@@ -19,6 +19,7 @@ public class OrderApplicationService {
     private final MemberRepository memberRepository;
     private final DiscountPolicy discountPolicy;
     private final EventPublisher eventPublisher;
+    private final OrderOpenHostService orderOpenHostService;
     private long nextId = 1;
 
     public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory,
@@ -28,6 +29,7 @@ public class OrderApplicationService {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
         this.eventPublisher = eventPublisher;
+        this.orderOpenHostService = new OrderOpenHostService(eventPublisher);
     }
 
     public long placeOrder(PlaceOrderCommand command) {
@@ -56,6 +58,7 @@ public class OrderApplicationService {
         Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
         order.pay(discountPolicy.discount(member, order));
         orderRepository.save(order);
+        orderOpenHostService.publishOrderPaid(order);
     }
 
     public void ship(long orderId) {

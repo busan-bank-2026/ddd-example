@@ -1,7 +1,7 @@
 # shipping-context 작업
 
 - [x] 테스트 작성
-- [ ] T1 결제 완료를 정해진 글자로 알리기
+- [x] T1 결제 완료를 정해진 글자로 알리기
   - 근거: S1, S2
   - 파일: ddd/src/ddd/order/application/OrderOpenHostService.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/context-map.md, ddd/glossary.md
   - 실행하면: 동시 수정 줄 다음에 결제 완료 메시지: ORDER_PAID|orderId=1|address=서울시 강남구와 4번 주문 메시지가 찍힌다
