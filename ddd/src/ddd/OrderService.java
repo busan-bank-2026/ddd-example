@@ -13,4 +13,8 @@ public class OrderService {
         order.setStatus("주문 접수");
         return order;
     }
+
+    public void updatePayment(Order order) {
+        order.setStatus("결제 완료");
+    }
 }
