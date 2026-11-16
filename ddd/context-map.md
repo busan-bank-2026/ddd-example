@@ -12,3 +12,9 @@
 - 바운디드 컨텍스트(bounded context)는 한 모델과 한 말이 통하는 코드의 경계다
 - 이 프로그램은 하위 도메인 하나에 컨텍스트 하나를 둔다
 - 컨텍스트 안에는 domain, application, infrastructure 계층을 둔다
+
+## 공유 커널
+
+- 돈 Money는 공유 커널(shared kernel) 묶음 ddd.shared에 둔다
+- 주문과 상품 컨텍스트가 함께 쓴다
+- 바꾸려면 쓰는 컨텍스트가 모두 합의해야 한다. 그래서 작게 둔다

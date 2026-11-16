@@ -6,7 +6,7 @@
   - 파일: ddd/context-map.md
   - 실행하면: 출력 스물여섯 줄이 그대로 나오고, context-map.md에 주문 핵심, 상품 지원, 회원 일반 하위 도메인과 맡는 컨텍스트 묶음이 보인다
   - Why: 어디서 나눌지는 코드보다 업무에서 먼저 정한다. 이 가게의 핵심이 무엇인지 알아야 경계를 긋는다
-- [ ] T2 공유 커널로 돈 옮기기
+- [x] T2 공유 커널로 돈 옮기기
   - 근거: S2
   - 파일: ddd/src/ddd/domain/Money.java, ddd/src/ddd/shared/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/Main.java, ddd/context-map.md
   - 실행하면: 이클립스에서 ddd.shared 패키지를 만들고 Money를 옮기면 출력은 그대로이고 src/ddd에 shared 폴더가 생기고 그 안에 Money.java가 보인다

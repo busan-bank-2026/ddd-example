@@ -11,7 +11,6 @@ import ddd.domain.DiscountPolicy;
 import ddd.domain.Member;
 import ddd.domain.MemberGrade;
 import ddd.domain.MemberRepository;
-import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
 import ddd.domain.OrderLineFactory;
@@ -22,6 +21,7 @@ import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryMemberRepository;
 import ddd.infrastructure.MemoryOrderRepository;
 import ddd.infrastructure.MemoryProductRepository;
+import ddd.shared.Money;
 
 public class Main {
 

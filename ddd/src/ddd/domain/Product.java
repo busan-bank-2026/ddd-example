@@ -1,5 +1,7 @@
 package ddd.domain;
 
+import ddd.shared.Money;
+
 public class Product {
 
     private final long id;

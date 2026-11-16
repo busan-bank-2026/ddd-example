@@ -1,5 +1,7 @@
 package ddd.domain;
 
+import ddd.shared.Money;
+
 public class DiscountPolicy {
 
     public Money discount(Member member, Order order) {

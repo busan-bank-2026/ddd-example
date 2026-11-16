@@ -1,4 +1,4 @@
-package ddd.domain;
+package ddd.shared;
 
 import java.io.Serializable;
 

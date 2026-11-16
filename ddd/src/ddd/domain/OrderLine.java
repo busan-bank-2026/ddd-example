@@ -2,6 +2,8 @@ package ddd.domain;
 
 import java.io.Serializable;
 
+import ddd.shared.Money;
+
 public record OrderLine(long productId, String productName, Money price, int quantity) implements Serializable {
 
     public OrderLine {
