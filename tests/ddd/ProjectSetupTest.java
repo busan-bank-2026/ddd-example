@@ -1,5 +1,6 @@
 package ddd;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -42,17 +43,13 @@ class ProjectSetupTest {
         assertTrue(classpath.contains("JavaSE-21"));
         assertTrue(prefs.contains("org.eclipse.jdt.core.compiler.compliance=21"));
         assertTrue(resources.contains("encoding/<project>=UTF-8"));
+        assertFalse(project.contains("PARENT-1-PROJECT_LOC/tests"));
+        assertFalse(classpath.contains("path=\"tests\""));
     }
 
     @Test
     @DisplayName("S3 테스트 명령을 실행하면 행동 테스트 결과를 보여준다")
-    void s3() throws Exception {
-        String project = Files.readString(Path.of(".project"));
-        String classpath = Files.readString(Path.of(".classpath"));
-
+    void s3() {
         assertTrue(Files.exists(Path.of("lib/junit-platform-console-standalone.jar")));
-        assertTrue(project.contains("PARENT-1-PROJECT_LOC/tests"));
-        assertTrue(classpath.contains("kind=\"src\" path=\"tests\""));
-        assertTrue(classpath.contains("lib/junit-platform-console-standalone.jar"));
     }
 }

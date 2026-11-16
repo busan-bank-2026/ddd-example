@@ -19,7 +19,7 @@
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] 테스트 보강
+- [x] 테스트 보강
 - [ ] T4 이클립스에서 tests 연결 빼기
   - 근거: S2, 고침 T3
   - 파일: ddd/.project, ddd/.classpath, .projectcode/contract.md
