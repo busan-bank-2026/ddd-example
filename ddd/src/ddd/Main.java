@@ -182,8 +182,12 @@ public class Main {
         Order orderB = orderService.findOrder(order5Id);
         orderA.ship();
         orderRepository.save(orderA);
-        orderB.cancel();
-        orderRepository.save(orderB);
-        System.out.println("동시 수정: " + orderService.findOrder(order5Id).getStatus().label());
+        try {
+            orderB.cancel();
+            orderRepository.save(orderB);
+            System.out.println("동시 수정: " + orderService.findOrder(order5Id).getStatus().label());
+        } catch (IllegalStateException e) {
+            System.out.println("동시 수정: " + e.getMessage());
+        }
     }
 }

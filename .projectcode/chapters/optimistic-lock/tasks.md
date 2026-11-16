@@ -17,7 +17,7 @@
   - 실행하면: 출력은 T1과 같아 동시 수정: 취소가 그대로 찍히고, 용어집에 버전 version 줄이 더 보인다
   - Why: 꺼낸 주문이 몇 번째 저장을 보고 바뀌었는지 알아야 나중 저장이 낡은 주문인지 가릴 수 있다
   - 다른 장: anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
-- [ ] T3 버전이 다르면 저장 거절하기
+- [x] T3 버전이 다르면 저장 거절하기
   - 근거: S3, S4
   - 파일: ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 마지막 줄이 동시 수정: 다른 곳에서 먼저 바꾼 주문입니다로 바뀌고, 용어집 저장하기 줄에 버전 확인이 보인다

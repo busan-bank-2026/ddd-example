@@ -18,6 +18,10 @@ public class MemoryOrderRepository implements OrderRepository {
 
     @Override
     public void save(Order order) {
+        Order saved = orders.get(order.getId());
+        if (saved != null && saved.getVersion() != order.getVersion()) {
+            throw new IllegalStateException("다른 곳에서 먼저 바꾼 주문입니다");
+        }
         order.increaseVersion();
         orders.put(order.getId(), copy(order));
     }
