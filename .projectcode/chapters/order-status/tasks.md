@@ -1,0 +1,24 @@
+# order-status 작업
+
+- [ ] 테스트 작성
+- [ ] T1 주문 상태를 한 묶음으로 정하기
+  - 근거: S1, S6
+  - 파일: ddd/src/ddd/OrderStatus.java, ddd/src/ddd/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 출력은 앞 장과 같고, 상태가 글자 대신 주문 상태 묶음에서 나온다
+  - Why: 상태를 글자로 두면 오타도 상태가 된다. 있을 수 있는 상태를 한 묶음으로 정해 둔다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate
+- [ ] T2 상태 전이 규칙을 주문 상태에 모으기
+  - 근거: S2, S3, S4
+  - 파일: ddd/src/ddd/OrderStatus.java, ddd/src/ddd/Order.java, ddd/src/ddd/Main.java
+  - 실행하면: 결제 없이 배송 줄이 주문 접수인 주문은 배송할 수 없습니다로 바뀌고, 마지막에 두 번 결제: 결제 완료인 주문은 결제할 수 없습니다가 더 찍힌다
+  - Why: 어느 상태에서 어느 상태로 갈 수 있는지가 한곳에 있어야 빠진 규칙이 없다. 두 번 결제도 그 규칙으로 막힌다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate
+- [ ] T3 배송 완료하기
+  - 근거: S5, S6
+  - 파일: ddd/src/ddd/OrderStatus.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 마지막에 배송 완료: 배송 완료가 더 찍힌다
+  - Why: 새 상태는 주문 상태에 한 줄, 규칙에 한 줄을 더하면 된다. 규칙이 모여 있어 고칠 곳이 적다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
