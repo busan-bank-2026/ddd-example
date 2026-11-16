@@ -158,3 +158,10 @@ index 4c0b4e9..548767b 100644
 -    </linkedResources>
  </projectDescription>
 ```
+
+## T5 테스트용 파일을 학생 프로젝트 밖으로 빼기
+커밋: 3bbd71f
+
+| 파일 | 변경 |
+|---|---|
+| ddd/lib/junit-platform-console-standalone.jar | 지움. 저장소 루트 test-lib로 옮김 |

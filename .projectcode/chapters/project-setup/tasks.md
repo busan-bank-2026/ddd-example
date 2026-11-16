@@ -34,6 +34,6 @@
   - 파일: test-lib/junit-platform-console-standalone.jar, ddd/lib/junit-platform-console-standalone.jar, .projectcode/contract.md, .gitignore
   - 실행하면: ddd 폴더에는 이클립스가 만드는 파일만 있고 테스트 명령은 3 tests successful이 나온다
   - Why: 학생 프로젝트는 이클립스에서 새로 만든 프로젝트와 같아야 한다. 테스트용 jar와 컴파일 결과가 섞이면 헷갈린다
-- [ ] 수렴 점검 (수정 2)
-- [ ] 캡처 (수정 2)
-- [ ] 도식 (수정 2)
+- [x] 수렴 점검 (수정 2)
+- [x] 캡처 (수정 2)
+- [x] 도식 (수정 2)

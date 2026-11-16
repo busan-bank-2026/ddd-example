@@ -11,7 +11,7 @@
       "run": {} },
     { "file": "T3-테스트-실행.txt", "task": "T3", "commit": "59ab1a2 + fixes", "screen": "테스트 명령",
       "see": "3 tests successful이 나온다",
-      "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && javac -d bin-test -cp \"bin;lib/junit-platform-console-standalone.jar\" ../tests/ddd/*.java && java -jar lib/junit-platform-console-standalone.jar execute -cp \"bin;bin-test\" --scan-classpath --disable-ansi-colors" } },
+      "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && javac -d ../bin-test -cp \"bin;../test-lib/junit-platform-console-standalone.jar\" ../tests/ddd/*.java && java -jar ../test-lib/junit-platform-console-standalone.jar execute -cp \"bin;../bin-test\" --scan-classpath --disable-ansi-colors" } },
     { "file": "done-시작-글.txt", "task": "done", "commit": "7c99b1d + fixes", "screen": "콘솔 실행",
       "see": "콘솔에 온라인 주문 프로그램을 시작합니다가 찍힌다",
       "run": {} }
