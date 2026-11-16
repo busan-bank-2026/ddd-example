@@ -1,6 +1,6 @@
 # 폴더 구조
 
-project-setup 장 끝 기준이다.
+anemic-order 장 끝 기준이다.
 
 ```
 ddd/
@@ -10,6 +10,8 @@ ddd/
   src/
     ddd/
       Main.java
+      Order.java
+      OrderService.java
   .classpath
   .project
 test-lib/

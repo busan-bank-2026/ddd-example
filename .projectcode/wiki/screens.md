@@ -5,4 +5,7 @@
 ## 시작 글
 처음 나온 장: project-setup
 출력 파일: ../chapters/project-setup/captures/done-시작-글.txt
-출력: 온라인 주문 프로그램을 시작합니다
+
+## 주문 장면
+처음 나온 장: anemic-order
+출력 파일: ../chapters/anemic-order/captures/done-주문-장면.txt
