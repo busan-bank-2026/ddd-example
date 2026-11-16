@@ -50,6 +50,7 @@ class ProjectSetupTest {
     @Test
     @DisplayName("S3 테스트 명령을 실행하면 행동 테스트 결과를 보여준다")
     void s3() {
-        assertTrue(Files.exists(Path.of("lib/junit-platform-console-standalone.jar")));
+        assertTrue(Files.exists(Path.of("../test-lib/junit-platform-console-standalone.jar")));
+        assertFalse(Files.exists(Path.of("lib/junit-platform-console-standalone.jar")));
     }
 }

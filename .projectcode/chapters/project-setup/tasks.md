@@ -28,7 +28,7 @@
 - [x] 수렴 점검 (수정)
 - [x] 캡처 (수정)
 - [x] 도식 (수정)
-- [ ] 테스트 보강 (2)
+- [x] 테스트 보강 (2)
 - [ ] T5 테스트용 파일을 학생 프로젝트 밖으로 빼기
   - 근거: S3, 고침 T3
   - 파일: test-lib/junit-platform-console-standalone.jar, ddd/lib/junit-platform-console-standalone.jar, .projectcode/contract.md, .gitignore
