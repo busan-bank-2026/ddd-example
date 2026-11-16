@@ -25,13 +25,13 @@
 ## 실행
 
 - 실행: cd ddd, javac -d bin --source-path src src/ddd/Main.java, java -cp bin ddd.Main
-- 테스트: 저장소 루트에서 아래 네 줄을 실행한다. 테스트 명령이 ddd 폴더에서 돈다. 맥과 리눅스는 ; 대신 :를 쓴다
+- 테스트: 저장소 루트에서 아래 네 줄을 실행한다. 테스트 명령이 ddd 폴더에서 돈다. 이클립스가 쓰는 ddd/bin과 겹치지 않게 결과는 bin-test에 쓴다. 맥과 리눅스는 ; 대신 :를 쓴다
 
 ```
 cd ddd
-javac -d bin --source-path src src/ddd/Main.java
-javac -d ../bin-test -cp "bin;../test-lib/junit-platform-console-standalone.jar" ../tests/ddd/*.java
-java -jar ../test-lib/junit-platform-console-standalone.jar execute -cp "bin;../bin-test" --scan-classpath
+javac -d ../bin-test/main --source-path src src/ddd/Main.java
+javac -d ../bin-test/test -cp "../bin-test/main;../test-lib/junit-platform-console-standalone.jar" ../tests/ddd/*.java
+java -jar ../test-lib/junit-platform-console-standalone.jar execute -cp "../bin-test/main;../bin-test/test" --scan-classpath
 ```
 - 빌드: javac -d bin --source-path src src/ddd/Main.java
 
