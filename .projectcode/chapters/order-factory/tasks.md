@@ -13,6 +13,6 @@
   - 실행하면: 없는 주문 결제 줄 다음에 없는 상품 주문: 상품이 없습니다가 찍힌다
   - Why: 팩토리가 상품을 찾는 곳이라 없는 상품을 알아채고 업무 말로 거절하는 것도 팩토리가 맡는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
