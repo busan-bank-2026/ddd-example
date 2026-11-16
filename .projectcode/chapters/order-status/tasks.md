@@ -19,6 +19,6 @@
   - 실행하면: 마지막에 배송 완료: 배송 완료가 더 찍힌다
   - Why: 새 상태는 주문 상태에 한 줄, 규칙에 한 줄을 더하면 된다. 규칙이 모여 있어 고칠 곳이 적다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
