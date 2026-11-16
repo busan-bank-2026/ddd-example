@@ -1,0 +1,35 @@
+# bounded-contexts 작업
+
+- [ ] 테스트 작성
+- [ ] T1 하위 도메인과 컨텍스트 정하기
+  - 근거: S1
+  - 파일: ddd/context-map.md
+  - 실행하면: 출력 스물여섯 줄이 그대로 나오고, context-map.md에 주문 핵심, 상품 지원, 회원 일반 하위 도메인과 맡는 컨텍스트 묶음이 보인다
+  - Why: 어디서 나눌지는 코드보다 업무에서 먼저 정한다. 이 가게의 핵심이 무엇인지 알아야 경계를 긋는다
+- [ ] T2 공유 커널로 돈 옮기기
+  - 근거: S2
+  - 파일: ddd/src/ddd/domain/Money.java, ddd/src/ddd/shared/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/Main.java, ddd/context-map.md
+  - 실행하면: 이클립스에서 ddd.shared 패키지를 만들고 Money를 옮기면 출력은 그대로이고 src/ddd에 shared 폴더가 생기고 그 안에 Money.java가 보인다
+  - Why: 주문과 상품이 모두 쓰는 돈을 한 곳에 두고 함께 지키기로 약속해야 컨텍스트를 나눠도 돈 규칙이 하나로 남는다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+- [ ] T3 회원 컨텍스트 만들기
+  - 근거: S3
+  - 파일: ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/member/domain/Member.java, ddd/src/ddd/member/domain/MemberGrade.java, ddd/src/ddd/member/domain/MemberRepository.java, ddd/src/ddd/member/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java
+  - 실행하면: ddd.member.domain, ddd.member.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 그대로이고 src/ddd/member에 domain, infrastructure 폴더가 보인다
+  - Why: 회원은 이름과 등급만 맡는 일반 하위 도메인이라 주문 규칙과 떼어 두면 주문을 바꿀 때 회원을 건드리지 않는다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+- [ ] T4 상품 컨텍스트 만들기
+  - 근거: S4
+  - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/domain/ProductRepository.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java, ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/Main.java
+  - 실행하면: ddd.catalog.domain, ddd.catalog.application, ddd.catalog.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 그대로이고 src/ddd/catalog에 세 폴더가 보인다
+  - Why: 상품과 재고는 주문을 돕는 지원 하위 도메인이다. 재고를 줄이는 처리기도 상품 쪽에 두면 상품 규칙이 한 컨텍스트에 모인다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+- [ ] T5 주문 컨텍스트 만들기
+  - 근거: S5, S6
+  - 파일: ddd/src/ddd/domain 아래 남은 열두 파일, ddd/src/ddd/application 아래 남은 네 파일, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/domain 아래 열두 파일, ddd/src/ddd/order/application 아래 네 파일, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/Main.java, ddd/context-map.md
+  - 실행하면: ddd.order 아래 세 패키지를 만들고 남은 클래스를 옮긴 뒤 빈 패키지를 지우면 출력은 그대로이고 src/ddd에는 Main.java와 catalog, member, order, shared만 남는다. context-map.md에 컨텍스트 사이 표가 보인다
+  - Why: 핵심 하위 도메인인 주문을 자기 경계 안에 두면, 다른 컨텍스트를 가져다 쓰는 곳이 import로 드러나 컨텍스트 맵에 적을 수 있다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
