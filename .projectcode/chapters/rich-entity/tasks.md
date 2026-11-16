@@ -19,7 +19,7 @@
   - 실행하면: 출력은 T2와 같고 규칙이 OrderService에서 Order로 옮겨 간다
   - Why: 규칙은 그 규칙이 지키는 데이터 곁에 있어야 어느 길로 오든 지켜진다
   - 다른 장: anemic-order, ubiquitous-language
-- [ ] T4 상태를 바꾸는 길 막기
+- [x] T4 상태를 바꾸는 길 막기
   - 근거: S5
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/Main.java
   - 실행하면: 마지막 줄이 결제 없이 배송: 결제하지 않은 주문은 배송할 수 없습니다로 바뀐다

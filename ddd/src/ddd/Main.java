@@ -26,7 +26,11 @@ public class Main {
         }
 
         Order order2 = orderService.placeOrder("이영희", "자바 책", 15000, 1, "부산시 해운대구");
-        order2.setStatus("배송 중");
-        System.out.println("결제 없이 배송: " + order2.getStatus());
+        try {
+            order2.ship();
+            System.out.println("결제 없이 배송: " + order2.getStatus());
+        } catch (IllegalStateException e) {
+            System.out.println("결제 없이 배송: " + e.getMessage());
+        }
     }
 }
