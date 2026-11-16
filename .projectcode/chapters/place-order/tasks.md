@@ -13,6 +13,6 @@
   - 실행하면: 출력은 그대로이고, 용어집에 주문 응용 서비스, 주문하기 명령, 주문 항목 명령 줄이 보인다
   - Why: 꺼내고 시키고 저장하기만 하는 클래스라는 것을 이름에 담아야 뒤에 올 도메인 서비스와 헷갈리지 않는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
