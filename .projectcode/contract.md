@@ -18,7 +18,7 @@
 | 무엇 | 폴더 |
 |---|---|
 | 학생 코드 | ddd |
-| 행동 테스트 | tests |
+| 행동 테스트 | tests/ddd. 패키지 ddd. 클래스 이름은 장 이름 + Test. 이클립스에 붙이지 않는다 |
 | jar | ddd/lib. JUnit jar, 23장의 ojdbc jar |
 | 컴파일 결과 | ddd/bin, ddd/bin-test. git에 올리지 않는다 |
 
