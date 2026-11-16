@@ -19,6 +19,6 @@
   - 실행하면: ddd.infrastructure 패키지를 만들고 메모리 주문 저장소를 끌어 놓으면 출력은 그대로이고 src/ddd에는 Main과 세 묶음만 남는다
   - Why: 저장하는 방법은 도메인의 주문 저장소 약속을 바깥에서 구현하는 일이라, 저장소를 바꿔도 도메인과 응용 계층은 바뀌지 않는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
