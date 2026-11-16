@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -65,16 +67,16 @@ class ValueObjectTest {
     @DisplayName("S4 주문의 가격과 주문 금액은 돈이다. 음수 가격으로 주문하면 주문이 만들어지지 않고 거절 메시지를 보여준다")
     void s4() {
         OrderService service = new OrderService();
-        Order order = service.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
+        Order order = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
 
-        assertEquals(new Money(15000), order.getPrice());
+        assertEquals(new Money(15000), order.getOrderLines().get(0).price());
         assertEquals(new Money(30000), order.getTotalPrice());
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder("박민수", "자바 책", -15000, 2, "대구시 수성구"));
+                () -> service.placeOrder("박민수", List.of(new OrderLine("자바 책", new Money(-15000), 2)), "대구시 수성구"));
         assertEquals("금액은 0원 이상이어야 합니다", error.getMessage());
 
         String printed = runMain();
-        assertTrue(printed.contains("주문: 1번, 김철수, 자바 책 2개, 30000원, 주문 접수"));
+        assertTrue(printed.contains("주문: 1번, 김철수, 31000원, 주문 접수"));
         assertTrue(printed.contains("음수 금액 주문: 금액은 0원 이상이어야 합니다"));
     }
 
@@ -88,10 +90,10 @@ class ValueObjectTest {
         assertNotEquals(new Address("부산시 해운대구"), new Address("서울시 강남구"));
 
         OrderService service = new OrderService();
-        Order order = service.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
+        Order order = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
         assertEquals(new Address("서울시 강남구"), order.getAddress());
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder("최지우", "자바 책", 15000, 1, ""));
+                () -> service.placeOrder("최지우", List.of(new OrderLine("자바 책", new Money(15000), 1)), ""));
         assertEquals("배송 주소를 입력해야 합니다", error.getMessage());
 
         assertTrue(runMain().contains("빈 주소 주문: 배송 주소를 입력해야 합니다"));

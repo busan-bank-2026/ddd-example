@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +18,7 @@ class AnemicOrderTest {
     private final OrderService service = new OrderService();
 
     private Order newOrder() {
-        return service.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
+        return service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
     }
 
     @Test
@@ -25,9 +27,9 @@ class AnemicOrderTest {
         Order order = newOrder();
 
         assertEquals("김철수", order.getCustomerName());
-        assertEquals("자바 책", order.getProductName());
-        assertEquals(15000, order.getPrice().amount());
-        assertEquals(2, order.getQuantity());
+        assertEquals("자바 책", order.getOrderLines().get(0).productName());
+        assertEquals(15000, order.getOrderLines().get(0).price().amount());
+        assertEquals(2, order.getOrderLines().get(0).quantity());
         assertEquals("서울시 강남구", order.getAddress().value());
         assertEquals(30000, order.getTotalPrice().amount());
         assertEquals("주문 접수", order.getStatus());
@@ -98,7 +100,8 @@ class AnemicOrderTest {
         }
         String printed = out.toString(StandardCharsets.UTF_8);
 
-        assertTrue(printed.contains("김철수, 자바 책 2개, 30000원, 주문 접수"));
+        assertTrue(printed.contains("김철수, 31000원, 주문 접수"));
+        assertTrue(printed.contains("주문 항목: 자바 책 2개, 30000원"));
         assertTrue(printed.contains("결제: 결제 완료"));
         assertTrue(printed.contains("배송: 배송 중"));
         assertTrue(printed.contains("취소: 배송 중인 주문은 취소할 수 없습니다"));

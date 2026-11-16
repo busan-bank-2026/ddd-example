@@ -1,6 +1,6 @@
 # order-aggregate 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 주문 항목 여러 개로 주문하기
   - 근거: S1, S2, S8
   - 파일: ddd/src/ddd/OrderLine.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
