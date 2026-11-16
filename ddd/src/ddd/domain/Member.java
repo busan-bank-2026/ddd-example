@@ -4,10 +4,12 @@ public class Member {
 
     private final long id;
     private final String name;
+    private final MemberGrade grade;
 
-    public Member(long id, String name) {
+    public Member(long id, String name, MemberGrade grade) {
         this.id = id;
         this.name = name;
+        this.grade = grade;
     }
 
     public long getId() {
@@ -16,6 +18,10 @@ public class Member {
 
     public String getName() {
         return name;
+    }
+
+    public MemberGrade getGrade() {
+        return grade;
     }
 
     @Override

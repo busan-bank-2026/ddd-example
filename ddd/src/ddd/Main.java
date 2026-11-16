@@ -6,6 +6,7 @@ import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
 import ddd.domain.Member;
+import ddd.domain.MemberGrade;
 import ddd.domain.MemberRepository;
 import ddd.domain.Money;
 import ddd.domain.Order;
@@ -23,8 +24,8 @@ public class Main {
         System.out.println("온라인 주문 프로그램을 시작합니다");
 
         MemberRepository memberRepository = new MemoryMemberRepository();
-        memberRepository.save(new Member(1, "김철수"));
-        memberRepository.save(new Member(2, "이영희"));
+        memberRepository.save(new Member(1, "김철수", MemberGrade.VIP));
+        memberRepository.save(new Member(2, "이영희", MemberGrade.BASIC));
 
         ProductRepository productRepository = new MemoryProductRepository();
         productRepository.save(new Product(1, "자바 책", new Money(15000)));

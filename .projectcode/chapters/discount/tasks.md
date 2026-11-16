@@ -1,7 +1,7 @@
 # discount 작업
 
 - [x] 테스트 작성
-- [ ] T1 회원에 등급 더하기
+- [x] T1 회원에 등급 더하기
   - 근거: S1, S5
   - 파일: ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 김철수를 VIP로, 이영희를 일반으로 저장했는데 출력 스무 줄은 그대로이고, src/ddd/domain에 MemberGrade가 더 보인다
