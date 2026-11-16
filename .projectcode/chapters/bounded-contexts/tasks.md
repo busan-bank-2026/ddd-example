@@ -30,6 +30,6 @@
   - 실행하면: ddd.order 아래 세 패키지를 만들고 남은 클래스를 옮긴 뒤 빈 패키지를 지우면 출력은 그대로이고 src/ddd에는 Main.java와 catalog, member, order, shared만 남는다. context-map.md에 컨텍스트 사이 표가 보인다
   - Why: 핵심 하위 도메인인 주문을 자기 경계 안에 두면, 다른 컨텍스트를 가져다 쓰는 곳이 import로 드러나 컨텍스트 맵에 적을 수 있다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
