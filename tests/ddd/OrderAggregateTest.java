@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 class OrderAggregateTest {
 
-    private final OrderService service = new OrderService(new MemoryOrderRepository());
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
 
     private String runMain() {
         PrintStream original = System.out;
@@ -36,9 +36,9 @@ class OrderAggregateTest {
     }
 
     private long newOrderId() {
-        return service.placeOrder("김철수", List.of(
-                new OrderLine("자바 책", new Money(15000), 2),
-                new OrderLine("볼펜", new Money(1000), 1)), "서울시 강남구");
+        return service.placeOrder(new PlaceOrderCommand("김철수", List.of(
+                new OrderLineCommand("자바 책", 15000, 2),
+                new OrderLineCommand("볼펜", 1000, 1)), "서울시 강남구"));
     }
 
     @Test
@@ -82,9 +82,8 @@ class OrderAggregateTest {
 
         List<OrderLine> given = new ArrayList<>();
         given.add(new OrderLine("자바 책", new Money(15000), 2));
-        long fromGivenId = service.placeOrder("김철수", given, "서울시 강남구");
+        Order fromGiven = new Order(1, "김철수", given, new Address("서울시 강남구"));
         given.add(new OrderLine("공책", new Money(2000), 5));
-        Order fromGiven = service.findOrder(fromGivenId);
         assertEquals(1, fromGiven.getOrderLines().size());
         assertEquals(new Money(30000), fromGiven.getTotalPrice());
     }
@@ -122,7 +121,7 @@ class OrderAggregateTest {
     @DisplayName("S6 주문은 항목이 하나 이상이어야 한다. 항목 없이 주문하면 거절한다")
     void s6() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder("강민준", List.of(), "인천시 연수구"));
+                () -> service.placeOrder(new PlaceOrderCommand("강민준", List.of(), "인천시 연수구")));
         assertEquals("주문 항목이 하나 이상 있어야 합니다", error.getMessage());
         assertThrows(IllegalArgumentException.class,
                 () -> new Order(1, "강민준", List.of(), new Address("인천시 연수구")));

@@ -53,9 +53,9 @@ class RichEntityTest {
         assertEquals(first.hashCode(), sameNumber.hashCode());
         assertNotEquals(first, otherNumber);
 
-        OrderService service = new OrderService(new MemoryOrderRepository());
-        long placed1 = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
-        long placed2 = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+        long placed1 = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        long placed2 = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
         assertEquals(1, placed1);
         assertEquals(2, placed2);
         assertEquals(1, service.findOrder(placed1).getId());
@@ -93,8 +93,8 @@ class RichEntityTest {
         unpaid.cancel();
         assertEquals("취소", unpaid.getStatus().label());
 
-        OrderService service = new OrderService(new MemoryOrderRepository());
-        long placed = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+        long placed = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
         service.pay(placed);
         service.ship(placed);
         assertEquals("배송 중", service.findOrder(placed).getStatus().label());

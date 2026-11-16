@@ -82,10 +82,10 @@ class OrderRepositoryTest {
     @DisplayName("S3 주문하기는 주문을 주문 저장소에 저장하고 주문 번호를 돌려준다")
     void s3() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderService service = new OrderService(repository);
+        OrderApplicationService service = new OrderApplicationService(repository);
 
-        long firstId = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
-        long secondId = service.placeOrder("이영희", List.of(new OrderLine("볼펜", new Money(1000), 1)), "부산시 해운대구");
+        long firstId = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
+        long secondId = service.placeOrder(new PlaceOrderCommand("이영희", List.of(new OrderLineCommand("볼펜", 1000, 1)), "부산시 해운대구"));
 
         assertEquals(1, firstId);
         assertEquals(2, secondId);
@@ -101,10 +101,10 @@ class OrderRepositoryTest {
     @DisplayName("S4 결제하기, 배송하기, 배송 완료하기, 주문 취소하기, 주문 항목 더하기는 주문 번호를 받아 저장소에서 주문을 꺼내 주문에게 시키고 다시 저장한다")
     void s4() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderService service = new OrderService(repository);
-        long orderId = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
+        OrderApplicationService service = new OrderApplicationService(repository);
+        long orderId = service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
 
-        service.addOrderLine(orderId, new OrderLine("공책", new Money(2000), 5));
+        service.addOrderLine(orderId, new OrderLineCommand("공책", 2000, 5));
         assertEquals(2, repository.findById(orderId).orElseThrow().getOrderLines().size());
         assertEquals(new Money(40000), repository.findById(orderId).orElseThrow().getTotalPrice());
 
@@ -115,7 +115,7 @@ class OrderRepositoryTest {
         service.deliver(orderId);
         assertEquals(OrderStatus.DELIVERED, repository.findById(orderId).orElseThrow().getStatus());
 
-        long canceledId = service.placeOrder("이영희", List.of(new OrderLine("볼펜", new Money(1000), 1)), "부산시 해운대구");
+        long canceledId = service.placeOrder(new PlaceOrderCommand("이영희", List.of(new OrderLineCommand("볼펜", 1000, 1)), "부산시 해운대구"));
         service.cancel(canceledId);
         assertEquals(OrderStatus.CANCELED, repository.findById(canceledId).orElseThrow().getStatus());
 
@@ -129,8 +129,8 @@ class OrderRepositoryTest {
     @Test
     @DisplayName("S5 없는 주문 번호로 결제하면 주문이 없습니다로 거절한다")
     void s5() {
-        OrderService service = new OrderService(new MemoryOrderRepository());
-        service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+        service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
 
         IllegalArgumentException payError = assertThrows(IllegalArgumentException.class, () -> service.pay(100));
         assertEquals("주문이 없습니다", payError.getMessage());

@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 
 class AnemicOrderTest {
 
-    private final OrderService service = new OrderService(new MemoryOrderRepository());
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
 
     private long newOrder() {
-        return service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
+        return service.placeOrder(new PlaceOrderCommand("김철수", List.of(new OrderLineCommand("자바 책", 15000, 2)), "서울시 강남구"));
     }
 
     @Test

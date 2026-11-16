@@ -1,6 +1,6 @@
 # place-order 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 주문하기 명령으로 주문하기
   - 근거: S1, S2, S3, S4
   - 파일: ddd/src/ddd/PlaceOrderCommand.java, ddd/src/ddd/OrderLineCommand.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
