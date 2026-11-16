@@ -1,0 +1,21 @@
+# project-setup 작업
+
+- [ ] 테스트 작성
+- [ ] T1 시작 글을 보여주는 Main 만들기
+  - 근거: S1
+  - 파일: ddd/src/ddd/Main.java, .gitignore
+  - 실행하면: 콘솔에 온라인 주문 프로그램을 시작합니다가 찍힌다
+  - Why: 프로그램이 도는 것을 먼저 확인해야 다음 장에서 주문 코드를 얹을 수 있다
+- [ ] T2 이클립스 프로젝트로 열기
+  - 근거: S2
+  - 파일: ddd/.project, ddd/.classpath, ddd/.settings/org.eclipse.jdt.core.prefs, ddd/.settings/org.eclipse.core.resources.prefs
+  - 실행하면: 이클립스에서 ddd를 열고 Main을 Run 하면 Console 창에 같은 글이 찍힌다
+  - Why: 학생은 강의 내내 이클립스에서 코드를 치고 실행한다
+- [ ] T3 테스트 실행기 붙이기
+  - 근거: S3
+  - 파일: ddd/lib/junit-platform-console-standalone.jar, ddd/.project, ddd/.classpath, .projectcode/contract.md, .gitignore
+  - 실행하면: ddd 폴더에서 테스트 명령을 치면 3 tests successful이 나오고 이클립스에서도 ProjectSetupTest를 JUnit Test로 돌릴 수 있다
+  - Why: 뒤 장마다 행동 테스트로 규칙이 지켜지는지 확인한다
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
