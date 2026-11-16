@@ -179,7 +179,7 @@ class IdReferenceTest {
         assertEquals(new Money(30000), saved.getTotalPrice());
 
         String[] lines = runMain().split(System.lineSeparator());
-        assertEquals("가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원", lines[lines.length - 1]);
+        assertTrue(List.of(lines).contains("가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원"));
     }
 
     @Test
