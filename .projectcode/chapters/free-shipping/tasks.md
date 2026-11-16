@@ -1,6 +1,6 @@
 # free-shipping 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 무료 배송 명세로 배송비 정하기
   - 근거: S1, S2, S4
   - 파일: ddd/src/ddd/domain/FreeShippingSpecification.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
