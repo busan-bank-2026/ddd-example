@@ -93,5 +93,8 @@ public class Main {
         } catch (IllegalStateException e) {
             System.out.println("두 번 결제: " + e.getMessage());
         }
+
+        orderService.deliver(order);
+        System.out.println("배송 완료: " + order.getStatus().label());
     }
 }

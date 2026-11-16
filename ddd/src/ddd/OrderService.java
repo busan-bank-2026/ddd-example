@@ -18,6 +18,10 @@ public class OrderService {
         order.ship();
     }
 
+    public void deliver(Order order) {
+        order.deliver();
+    }
+
     public void cancel(Order order) {
         order.cancel();
     }

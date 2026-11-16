@@ -73,6 +73,13 @@ public class Order {
         status = OrderStatus.SHIPPING;
     }
 
+    public void deliver() {
+        if (!status.canChangeTo(OrderStatus.DELIVERED)) {
+            throw new IllegalStateException(status.label() + "인 주문은 배송 완료할 수 없습니다");
+        }
+        status = OrderStatus.DELIVERED;
+    }
+
     public void cancel() {
         if (!status.canChangeTo(OrderStatus.CANCELED)) {
             throw new IllegalStateException(status.label() + "인 주문은 취소할 수 없습니다");
