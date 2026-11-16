@@ -13,7 +13,7 @@
   - 실행하면: 출력은 T1과 같아 결제 실패 뒤: 노트북 재고 9개, 주문 접수가 그대로 찍히고, catalog/application에 IncreaseStockHandler.java가 보인다
   - Why: 재고를 줄인 단계를 되돌리는 반대 일이 먼저 있어야 실패했을 때 보상으로 부를 수 있다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context, payment-acl, order-query
-- [ ] T3 결제가 거절되면 주문 취소로 보상하기
+- [x] T3 결제가 거절되면 주문 취소로 보상하기
   - 근거: S4, S5
   - 파일: ddd/src/ddd/order/application/OrderApplicationService.java, ddd/glossary.md
   - 실행하면: 한도 넘은 결제 줄이 취소로 바뀌고, 마지막 줄이 결제 실패 뒤: 노트북 재고 10개, 취소로 바뀐다

@@ -65,6 +65,7 @@ public class OrderApplicationService {
         order.pay(discountPolicy.discount(member, order));
         PaymentResult result = paymentGateway.pay(order.getPaymentPrice());
         if (!result.approved()) {
+            cancel(orderId);
             throw new IllegalStateException(result.reason());
         }
         orderRepository.save(order);
