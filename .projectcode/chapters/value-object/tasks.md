@@ -13,7 +13,7 @@
   - 실행하면: 마지막 줄이 음수 금액 주문: 금액은 0원 이상이어야 합니다로 바뀐다
   - Why: 돈이 스스로 0원 이상을 지키면 돈을 쓰는 어디에서도 음수 금액이 생기지 않는다
   - 다른 장: anemic-order, ubiquitous-language, rich-entity, project-setup
-- [ ] T3 주소를 주소 값 객체로 바꾸기
+- [x] T3 주소를 주소 값 객체로 바꾸기
   - 근거: S5, S6
   - 파일: ddd/src/ddd/Address.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 마지막에 빈 주소 주문: 배송 주소를 입력해야 합니다가 더 찍힌다

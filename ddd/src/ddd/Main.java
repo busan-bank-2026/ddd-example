@@ -39,5 +39,12 @@ public class Main {
         } catch (IllegalArgumentException e) {
             System.out.println("음수 금액 주문: " + e.getMessage());
         }
+
+        try {
+            Order order4 = orderService.placeOrder("최지우", "자바 책", 15000, 1, "");
+            System.out.println("빈 주소 주문: " + order4.getStatus());
+        } catch (IllegalArgumentException e) {
+            System.out.println("빈 주소 주문: " + e.getMessage());
+        }
     }
 }

@@ -7,11 +7,11 @@ public class Order {
     private String productName;
     private Money price;
     private int quantity;
-    private String address;
+    private Address address;
     private Money totalPrice;
     private String status;
 
-    public Order(long id, String customerName, String productName, Money price, int quantity, String address) {
+    public Order(long id, String customerName, String productName, Money price, int quantity, Address address) {
         this.id = id;
         this.customerName = customerName;
         this.productName = productName;
@@ -42,7 +42,7 @@ public class Order {
         return quantity;
     }
 
-    public String getAddress() {
+    public Address getAddress() {
         return address;
     }
 
