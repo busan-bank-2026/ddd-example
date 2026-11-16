@@ -19,7 +19,7 @@
   - 실행하면: 이어서 배송: 배송 중이 찍힌다
   - Why: 결제했는지 확인하는 규칙이 서비스에 들어가는 모습을 본다
   - 다른 장: project-setup
-- [ ] T4 주문 취소하기
+- [x] T4 주문 취소하기
   - 근거: S5, S6, S7
   - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
   - 실행하면: 마지막에 취소: 배송 중인 주문은 취소할 수 없습니다가 찍힌다

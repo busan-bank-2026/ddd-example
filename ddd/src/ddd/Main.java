@@ -16,5 +16,12 @@ public class Main {
 
         orderService.updateDelivery(order);
         System.out.println("배송: " + order.getStatus());
+
+        try {
+            orderService.deleteOrder(order);
+            System.out.println("취소: " + order.getStatus());
+        } catch (IllegalStateException e) {
+            System.out.println("취소: " + e.getMessage());
+        }
     }
 }
