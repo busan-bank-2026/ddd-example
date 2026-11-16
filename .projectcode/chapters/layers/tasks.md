@@ -1,0 +1,24 @@
+# layers 작업
+
+- [ ] 테스트 작성
+- [ ] T1 도메인 계층 만들기
+  - 근거: S1
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/OrderStatus.java, ddd/src/ddd/OrderRepository.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/OrderApplicationService.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Main.java
+  - 실행하면: 이클립스에서 ddd.domain 패키지를 만들고 여섯 클래스를 끌어 놓으면 출력 열여덟 줄이 그대로 나오고 src/ddd/domain에 여섯 파일이 보인다
+  - Why: 업무 규칙을 가진 클래스를 한 묶음에 모아야 무엇이 도메인이고 무엇이 그 밖인지 한눈에 보인다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
+- [ ] T2 응용 계층 만들기
+  - 근거: S2
+  - 파일: ddd/src/ddd/OrderApplicationService.java, ddd/src/ddd/PlaceOrderCommand.java, ddd/src/ddd/OrderLineCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/Main.java
+  - 실행하면: ddd.application 패키지를 만들고 세 클래스를 끌어 놓으면 출력은 그대로이고 src/ddd/application에 세 파일이 보인다
+  - Why: 유스케이스를 하는 곳을 도메인과 나눠야 규칙은 도메인에, 꺼내고 시키고 저장하는 일은 응용 계층에 있다는 것이 자리로 드러난다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
+- [ ] T3 인프라 계층 만들기
+  - 근거: S3, S4
+  - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java
+  - 실행하면: ddd.infrastructure 패키지를 만들고 메모리 주문 저장소를 끌어 놓으면 출력은 그대로이고 src/ddd에는 Main과 세 묶음만 남는다
+  - Why: 저장하는 방법은 도메인의 주문 저장소 약속을 바깥에서 구현하는 일이라, 저장소를 바꿔도 도메인과 응용 계층은 바뀌지 않는다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
