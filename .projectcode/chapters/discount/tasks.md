@@ -1,6 +1,6 @@
 # discount 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 회원에 등급 더하기
   - 근거: S1, S5
   - 파일: ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/Main.java, ddd/glossary.md

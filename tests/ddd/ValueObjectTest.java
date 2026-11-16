@@ -20,15 +20,27 @@ import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
 import ddd.domain.Address;
+import ddd.domain.DiscountPolicy;
+import ddd.domain.Member;
+import ddd.domain.MemberGrade;
+import ddd.domain.MemberRepository;
 import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLineFactory;
 import ddd.domain.Product;
 import ddd.domain.ProductRepository;
+import ddd.infrastructure.MemoryMemberRepository;
 import ddd.infrastructure.MemoryOrderRepository;
 import ddd.infrastructure.MemoryProductRepository;
 
 class ValueObjectTest {
+
+    private static MemberRepository members() {
+        MemberRepository members = new MemoryMemberRepository();
+        members.save(new Member(1, "김철수", MemberGrade.BASIC));
+        members.save(new Member(2, "이영희", MemberGrade.BASIC));
+        return members;
+    }
 
     private static OrderLineFactory orderLineFactory() {
         ProductRepository products = new MemoryProductRepository();
@@ -86,7 +98,7 @@ class ValueObjectTest {
     @Test
     @DisplayName("S4 주문의 가격과 주문 금액은 돈이다. 음수 가격으로 주문하면 주문이 만들어지지 않고 거절 메시지를 보여준다")
     void s4() {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
         Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구")));
 
         assertEquals(new Money(15000), order.getOrderLines().get(0).price());
@@ -109,7 +121,7 @@ class ValueObjectTest {
         assertEquals(new Address("서울시 강남구"), new Address("서울시 강남구"));
         assertNotEquals(new Address("부산시 해운대구"), new Address("서울시 강남구"));
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
         Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구")));
         assertEquals(new Address("서울시 강남구"), order.getAddress());
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,

@@ -14,14 +14,26 @@ import org.junit.jupiter.api.Test;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
+import ddd.domain.DiscountPolicy;
+import ddd.domain.Member;
+import ddd.domain.MemberGrade;
+import ddd.domain.MemberRepository;
 import ddd.domain.Money;
 import ddd.domain.OrderLineFactory;
 import ddd.domain.Product;
 import ddd.domain.ProductRepository;
+import ddd.infrastructure.MemoryMemberRepository;
 import ddd.infrastructure.MemoryOrderRepository;
 import ddd.infrastructure.MemoryProductRepository;
 
 class UbiquitousLanguageTest {
+
+    private static MemberRepository members() {
+        MemberRepository members = new MemoryMemberRepository();
+        members.save(new Member(1, "김철수", MemberGrade.BASIC));
+        members.save(new Member(2, "이영희", MemberGrade.BASIC));
+        return members;
+    }
 
     private static OrderLineFactory orderLineFactory() {
         ProductRepository products = new MemoryProductRepository();
@@ -31,7 +43,7 @@ class UbiquitousLanguageTest {
         return new OrderLineFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
 
     @Test
     @DisplayName("S1 주문을 만드는 일을 업무 말인 주문하기로 부른다")

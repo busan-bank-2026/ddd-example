@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
+import ddd.domain.DiscountPolicy;
 import ddd.domain.Member;
+import ddd.domain.MemberGrade;
 import ddd.domain.MemberRepository;
 import ddd.domain.Money;
 import ddd.domain.Order;
@@ -35,6 +37,13 @@ import ddd.infrastructure.MemoryOrderRepository;
 import ddd.infrastructure.MemoryProductRepository;
 
 class IdReferenceTest {
+
+    private static MemberRepository members() {
+        MemberRepository members = new MemoryMemberRepository();
+        members.save(new Member(1, "김철수", MemberGrade.BASIC));
+        members.save(new Member(2, "이영희", MemberGrade.BASIC));
+        return members;
+    }
 
     private static OrderLineFactory orderLineFactory() {
         ProductRepository products = new MemoryProductRepository();
@@ -59,12 +68,12 @@ class IdReferenceTest {
     @Test
     @DisplayName("S1 회원은 회원 번호와 이름을, 상품은 상품 번호, 이름, 가격을 가진다. 번호가 같으면 같은 회원, 같은 상품이다")
     void s1() {
-        Member member = new Member(1, "김철수");
+        Member member = new Member(1, "김철수", MemberGrade.BASIC);
         assertEquals(1L, member.getId());
         assertEquals("김철수", member.getName());
-        assertEquals(member, new Member(1, "김영수"));
-        assertEquals(member.hashCode(), new Member(1, "김영수").hashCode());
-        assertNotEquals(member, new Member(2, "김철수"));
+        assertEquals(member, new Member(1, "김영수", MemberGrade.BASIC));
+        assertEquals(member.hashCode(), new Member(1, "김영수", MemberGrade.BASIC).hashCode());
+        assertNotEquals(member, new Member(2, "김철수", MemberGrade.BASIC));
 
         Product product = new Product(1, "자바 책", new Money(15000));
         assertEquals(1L, product.getId());
@@ -79,8 +88,8 @@ class IdReferenceTest {
     @DisplayName("S2 회원 저장소와 상품 저장소에 회원과 상품을 저장하고 번호로 꺼낸다. 저장소 약속은 도메인 계층에, 메모리 구현은 인프라 계층에 두고, Main이 주문 전에 회원과 상품을 먼저 저장한다")
     void s2() throws Exception {
         MemberRepository members = new MemoryMemberRepository();
-        members.save(new Member(1, "김철수"));
-        members.save(new Member(2, "이영희"));
+        members.save(new Member(1, "김철수", MemberGrade.BASIC));
+        members.save(new Member(2, "이영희", MemberGrade.BASIC));
         assertEquals("김철수", members.findById(1).orElseThrow().getName());
         assertEquals("이영희", members.findById(2).orElseThrow().getName());
         assertTrue(members.findById(3).isEmpty());
@@ -101,8 +110,8 @@ class IdReferenceTest {
 
         String main = Files.readString(Path.of("src/ddd/Main.java"));
         int firstOrder = main.indexOf("placeOrder(");
-        assertTrue(main.indexOf("new Member(1, \"김철수\")") > 0);
-        assertTrue(main.indexOf("new Member(1, \"김철수\")") < firstOrder);
+        assertTrue(main.indexOf("new Member(1, \"김철수\", MemberGrade.VIP)") > 0);
+        assertTrue(main.indexOf("new Member(1, \"김철수\", MemberGrade.VIP)") < firstOrder);
         assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000))") > 0);
         assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000))") < firstOrder);
     }
@@ -110,7 +119,7 @@ class IdReferenceTest {
     @Test
     @DisplayName("S3 주문은 회원을 객체로 갖지 않고 회원 번호로 가리킨다. 주문하기 명령은 주문자 이름 대신 회원 번호를 담고, Main은 주문의 회원 번호로 회원 저장소에서 회원을 찾아 이름을 보여준다")
     void s3() throws Exception {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
         PlaceOrderCommand command = new PlaceOrderCommand(7,
                 List.of(new OrderLineCommand(1, 2)), "서울시 강남구");
         assertEquals(7L, command.memberId());
@@ -133,7 +142,7 @@ class IdReferenceTest {
         OrderLineCommand command = new OrderLineCommand(2, 3);
         assertEquals(2L, command.productId());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(command), "서울시 강남구"));
         service.addOrderLine(orderId, new OrderLineCommand(3, 5));
 
@@ -157,7 +166,7 @@ class IdReferenceTest {
         Product book = products.findById(1).orElseThrow();
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products));
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products), members(), new DiscountPolicy());
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(
                 new OrderLineCommand(book.getId(), 2)), "서울시 강남구"));
 

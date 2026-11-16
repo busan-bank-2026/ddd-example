@@ -18,6 +18,10 @@ import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
 import ddd.domain.Address;
+import ddd.domain.DiscountPolicy;
+import ddd.domain.Member;
+import ddd.domain.MemberGrade;
+import ddd.domain.MemberRepository;
 import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
@@ -26,10 +30,18 @@ import ddd.domain.OrderRepository;
 import ddd.domain.OrderStatus;
 import ddd.domain.Product;
 import ddd.domain.ProductRepository;
+import ddd.infrastructure.MemoryMemberRepository;
 import ddd.infrastructure.MemoryOrderRepository;
 import ddd.infrastructure.MemoryProductRepository;
 
 class OrderRepositoryTest {
+
+    private static MemberRepository members() {
+        MemberRepository members = new MemoryMemberRepository();
+        members.save(new Member(1, "김철수", MemberGrade.BASIC));
+        members.save(new Member(2, "이영희", MemberGrade.BASIC));
+        return members;
+    }
 
     private static OrderLineFactory orderLineFactory() {
         ProductRepository products = new MemoryProductRepository();
@@ -81,7 +93,7 @@ class OrderRepositoryTest {
         Order order = newOrder(1);
         repository.save(order);
 
-        order.pay();
+        order.pay(new Money(0));
         assertEquals(OrderStatus.ORDERED, repository.findById(1).orElseThrow().getStatus());
 
         Order found = repository.findById(1).orElseThrow();
@@ -105,7 +117,7 @@ class OrderRepositoryTest {
     @DisplayName("S3 주문하기는 주문을 주문 저장소에 저장하고 주문 번호를 돌려준다")
     void s3() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy());
 
         long firstId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         long secondId = service.placeOrder(new PlaceOrderCommand(2, List.of(new OrderLineCommand(2, 1)), "부산시 해운대구"));
@@ -124,7 +136,7 @@ class OrderRepositoryTest {
     @DisplayName("S4 결제하기, 배송하기, 배송 완료하기, 주문 취소하기, 주문 항목 더하기는 주문 번호를 받아 저장소에서 주문을 꺼내 주문에게 시키고 다시 저장한다")
     void s4() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy());
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
 
         service.addOrderLine(orderId, new OrderLineCommand(3, 5));
@@ -152,7 +164,7 @@ class OrderRepositoryTest {
     @Test
     @DisplayName("S5 없는 주문 번호로 결제하면 주문이 없습니다로 거절한다")
     void s5() {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
         service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
 
         IllegalArgumentException payError = assertThrows(IllegalArgumentException.class, () -> service.pay(100));

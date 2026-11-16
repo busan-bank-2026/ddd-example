@@ -23,16 +23,28 @@ import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
 import ddd.domain.Address;
+import ddd.domain.DiscountPolicy;
+import ddd.domain.Member;
+import ddd.domain.MemberGrade;
+import ddd.domain.MemberRepository;
 import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
 import ddd.domain.OrderLineFactory;
 import ddd.domain.Product;
 import ddd.domain.ProductRepository;
+import ddd.infrastructure.MemoryMemberRepository;
 import ddd.infrastructure.MemoryOrderRepository;
 import ddd.infrastructure.MemoryProductRepository;
 
 class RichEntityTest {
+
+    private static MemberRepository members() {
+        MemberRepository members = new MemoryMemberRepository();
+        members.save(new Member(1, "김철수", MemberGrade.BASIC));
+        members.save(new Member(2, "이영희", MemberGrade.BASIC));
+        return members;
+    }
 
     private static OrderLineFactory orderLineFactory() {
         ProductRepository products = new MemoryProductRepository();
@@ -74,7 +86,7 @@ class RichEntityTest {
         assertEquals(first.hashCode(), sameNumber.hashCode());
         assertNotEquals(first, otherNumber);
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
         long placed1 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         long placed2 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         assertEquals(1, placed1);
@@ -100,7 +112,7 @@ class RichEntityTest {
     void s4() {
         Order order = new Order(1, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
 
-        order.pay();
+        order.pay(new Money(0));
         assertEquals("결제 완료", order.getStatus().label());
         order.ship();
         assertEquals("배송 중", order.getStatus().label());
@@ -114,7 +126,7 @@ class RichEntityTest {
         unpaid.cancel();
         assertEquals("취소", unpaid.getStatus().label());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy());
         long placed = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         service.pay(placed);
         service.ship(placed);
