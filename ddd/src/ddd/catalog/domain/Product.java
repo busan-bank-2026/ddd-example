@@ -36,6 +36,10 @@ public class Product {
         stock = stock - quantity;
     }
 
+    public void increaseStock(int quantity) {
+        stock = stock + quantity;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Product other)) {

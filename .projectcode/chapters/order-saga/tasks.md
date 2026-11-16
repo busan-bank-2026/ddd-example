@@ -7,7 +7,7 @@
   - 실행하면: 주문 목록 줄 다음에 결제 실패 뒤: 노트북 재고 9개, 주문 접수가 찍힌다. 결제는 거절됐는데 재고는 줄었다
   - Why: 주문, 재고, 결제는 따로 저장되는 일이라 뒤 단계가 실패해도 앞 단계는 그대로 남는다. 그 어긋남을 먼저 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context, payment-acl, order-query
-- [ ] T2 주문을 취소하면 재고 되돌리기
+- [x] T2 주문을 취소하면 재고 되돌리기
   - 근거: S2, S3, S5
   - 파일: ddd/src/ddd/order/domain/OrderCanceled.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/application/IncreaseStockHandler.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 출력은 T1과 같아 결제 실패 뒤: 노트북 재고 9개, 주문 접수가 그대로 찍히고, catalog/application에 IncreaseStockHandler.java가 보인다

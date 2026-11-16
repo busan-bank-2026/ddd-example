@@ -8,6 +8,7 @@ import ddd.member.domain.MemberRepository;
 import ddd.order.domain.Address;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
+import ddd.order.domain.OrderCanceled;
 import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
@@ -86,5 +87,6 @@ public class OrderApplicationService {
         Order order = findOrder(orderId);
         order.cancel();
         orderRepository.save(order);
+        eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getOrderLines())));
     }
 }

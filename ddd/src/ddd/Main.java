@@ -3,6 +3,7 @@ package ddd;
 import java.util.List;
 
 import ddd.catalog.application.DecreaseStockHandler;
+import ddd.catalog.application.IncreaseStockHandler;
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;
 import ddd.catalog.infrastructure.MemoryProductRepository;
@@ -18,6 +19,7 @@ import ddd.order.application.OrderSummary;
 import ddd.order.application.PlaceOrderCommand;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
+import ddd.order.domain.OrderCanceled;
 import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderPlaced;
@@ -48,6 +50,8 @@ public class Main {
         EventPublisher eventPublisher = new EventPublisher();
         DecreaseStockHandler decreaseStockHandler = new DecreaseStockHandler(productRepository);
         eventPublisher.subscribe(OrderPlaced.class, decreaseStockHandler::handle);
+        IncreaseStockHandler increaseStockHandler = new IncreaseStockHandler(productRepository);
+        eventPublisher.subscribe(OrderCanceled.class, increaseStockHandler::handle);
         OrderRepository orderRepository = new MemoryOrderRepository();
         OrderApplicationService orderService = new OrderApplicationService(orderRepository,
                 new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
