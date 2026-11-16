@@ -1,7 +1,11 @@
 # optimistic-lock 작업
 
 - [x] 테스트 작성
-- [ ] T1 같은 주문을 두 번 꺼내 덮어쓰기
+- [x] 테스트 보강
+  - 근거: 앞 장 테스트 고치기에서 빠짐. IdReferenceTest가 Main 마지막 줄을 가격 바뀐 뒤 줄로 본다
+  - 파일: tests/ddd/IdReferenceTest.java
+  - 다른 장: id-reference
+- [x] T1 같은 주문을 두 번 꺼내 덮어쓰기
   - 근거: S1
   - 파일: ddd/src/ddd/Main.java
   - 실행하면: 가격 바뀐 뒤 줄 다음에 동시 수정: 취소가 찍힌다. 배송 중이던 주문이 취소로 덮였다

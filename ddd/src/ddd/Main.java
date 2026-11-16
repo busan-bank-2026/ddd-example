@@ -16,6 +16,7 @@ import ddd.domain.Order;
 import ddd.domain.OrderLine;
 import ddd.domain.OrderLineFactory;
 import ddd.domain.OrderPlaced;
+import ddd.domain.OrderRepository;
 import ddd.domain.Product;
 import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryMemberRepository;
@@ -39,7 +40,8 @@ public class Main {
         EventPublisher eventPublisher = new EventPublisher();
         DecreaseStockHandler decreaseStockHandler = new DecreaseStockHandler(productRepository);
         eventPublisher.subscribe(OrderPlaced.class, decreaseStockHandler::handle);
-        OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository(),
+        OrderRepository orderRepository = new MemoryOrderRepository();
+        OrderApplicationService orderService = new OrderApplicationService(orderRepository,
                 new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher);
 
         List<OrderLineCommand> orderLines = List.of(
@@ -175,5 +177,13 @@ public class Main {
         Product book = productRepository.findById(bookLine.productId()).orElseThrow();
         System.out.println("가격 바뀐 뒤: " + book.getId() + "번 상품 " + book.getPrice().amount() + "원, 주문 항목 "
                 + bookLine.price().amount() + "원, 주문 금액 " + firstOrder.getTotalPrice().amount() + "원");
+
+        Order orderA = orderService.findOrder(order5Id);
+        Order orderB = orderService.findOrder(order5Id);
+        orderA.ship();
+        orderRepository.save(orderA);
+        orderB.cancel();
+        orderRepository.save(orderB);
+        System.out.println("동시 수정: " + orderService.findOrder(order5Id).getStatus().label());
     }
 }
