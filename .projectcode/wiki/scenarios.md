@@ -7,9 +7,10 @@ flowchart LR
   A[이클립스 Run] --> B[ddd.Main]
   B --> C[OrderService]
   C --> D[Order]
+  B --> D
 ```
 
-만든 장: project-setup, anemic-order, ubiquitous-language
+만든 장: project-setup, anemic-order, ubiquitous-language, rich-entity
 맡는 파일
 - ddd/src/ddd/Main.java
 - ddd/src/ddd/OrderService.java

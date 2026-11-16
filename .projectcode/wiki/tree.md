@@ -1,6 +1,6 @@
 # 폴더 구조
 
-ubiquitous-language 장 끝 기준이다.
+rich-entity 장 끝 기준이다.
 
 ```
 ddd/
