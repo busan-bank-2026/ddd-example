@@ -10,7 +10,6 @@
 | 학생 코드 라이브러리 | 없음 |
 | 저장소 | HashMap. 23장만 Oracle XE 21c |
 | 테스트 | JUnit 5 (test-lib/junit-platform-console-standalone.jar) |
-| DB 드라이버 | 23장만 ojdbc11.jar (오라클 설치 폴더에서 복사) |
 | 메시지 형식 | 한 줄 글자. 타입|키=값|키=값 |
 
 ## 폴더
