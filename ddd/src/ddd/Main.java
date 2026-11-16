@@ -11,10 +11,10 @@ public class Main {
         System.out.println("주문: " + order.getCustomerName() + ", " + order.getProductName() + " "
                 + order.getQuantity() + "개, " + order.getTotalPrice() + "원, " + order.getStatus());
 
-        orderService.updatePayment(order);
+        orderService.pay(order);
         System.out.println("결제: " + order.getStatus());
 
-        orderService.updateDelivery(order);
+        orderService.ship(order);
         System.out.println("배송: " + order.getStatus());
 
         try {

@@ -12,7 +12,7 @@
   - 실행하면: 출력 다섯 줄이 그대로 나온다
   - Why: 업무에서는 주문을 만든다고 하지 않고 주문한다고 한다
   - 다른 장: anemic-order, project-setup
-- [ ] T3 결제하기와 배송하기로 이름 바꾸기
+- [x] T3 결제하기와 배송하기로 이름 바꾸기
   - 근거: S2, S3
   - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
   - 실행하면: 출력 다섯 줄이 그대로 나온다
