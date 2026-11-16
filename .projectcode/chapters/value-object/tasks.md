@@ -1,0 +1,24 @@
+# value-object 작업
+
+- [ ] 테스트 작성
+- [ ] T1 음수 금액으로 주문해 보기
+  - 근거: S1
+  - 파일: ddd/src/ddd/Main.java
+  - 실행하면: 앞 장 여섯 줄 뒤에 음수 금액 주문: -30000원이 찍힌다
+  - Why: 금액이 그냥 숫자면 말이 안 되는 금액도 주문에 들어가는 것을 먼저 눈으로 본다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity
+- [ ] T2 금액을 돈 값 객체로 바꾸기
+  - 근거: S2, S3, S4, S6
+  - 파일: ddd/src/ddd/Money.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 마지막 줄이 음수 금액 주문: 금액은 0원 이상이어야 합니다로 바뀐다
+  - Why: 돈이 스스로 0원 이상을 지키면 돈을 쓰는 어디에서도 음수 금액이 생기지 않는다
+  - 다른 장: anemic-order, ubiquitous-language, rich-entity, project-setup
+- [ ] T3 주소를 주소 값 객체로 바꾸기
+  - 근거: S5, S6
+  - 파일: ddd/src/ddd/Address.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 마지막에 빈 주소 주문: 배송 주소를 입력해야 합니다가 더 찍힌다
+  - Why: 주소도 글자가 아니라 업무의 값이다. 빈 주소는 주소가 될 수 없게 주소가 스스로 막는다
+  - 다른 장: anemic-order, ubiquitous-language, rich-entity, project-setup
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
