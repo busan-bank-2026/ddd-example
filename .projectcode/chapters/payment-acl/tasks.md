@@ -1,0 +1,25 @@
+# payment-acl 작업
+
+- [ ] 테스트 작성
+- [ ] T1 외부 결제 모듈 붙여넣기
+  - 근거: S1
+  - 진행: 붙여넣기. LegacyPayGateway.java 전체
+  - 파일: ddd/src/legacypay/LegacyPayGateway.java, ddd/src/ddd/Main.java
+  - 실행하면: 배송 컨텍스트 줄 다음에 외부 결제 응답: 27900원 0000, 108000원 E101이 찍히고, src에 ddd와 나란히 legacypay 폴더가 보인다
+  - Why: 바깥 모듈은 우리가 고칠 수 없고 우리와 다른 말을 쓴다. 그 말을 먼저 들어 봐야 무엇을 번역할지 안다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
+- [ ] T2 결제 어댑터로 외부 말을 우리 말로 바꾸기
+  - 근거: S2, S3, S4, S5
+  - 파일: ddd/src/ddd/order/domain/PaymentGateway.java, ddd/src/ddd/order/domain/PaymentResult.java, ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 외부 결제 응답 줄 다음에 한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수가 찍히고, 앞 결제 두 건은 그대로 결제 완료다
+  - Why: 주문은 결제 창구와 결제 결과라는 우리 말만 쓰고, 코드 글자와 원 단위 int는 어댑터 한 곳에서 번역하면 외부 모듈이 바뀌어도 주문 모델은 그대로다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
+- [ ] T3 컨텍스트 맵에 부패 방지 계층 적기
+  - 근거: S6
+  - 파일: ddd/context-map.md, ddd/glossary.md
+  - 실행하면: 출력 서른한 줄이 그대로 나오고, context-map.md에 부패 방지 계층 절과 외부 말과 우리 말 표, 결제 하위 도메인 줄이 보인다
+  - Why: 어느 경계에서 누가 번역하는지 지도에 적어야 다음 사람이 외부 말을 주문 안으로 끌어들이지 않는다
+  - 다른 장: ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
