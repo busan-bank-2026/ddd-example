@@ -70,8 +70,9 @@ class PaymentAclTest {
             "결제 완료 메시지: ORDER_PAID|orderId=4|address=광주시 북구",
             "배송 컨텍스트: 1번 주문, 서울시 강남구",
             "외부 결제 응답: 27900원 0000, 108000원 E101",
-            "한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수",
-            "주문 목록: 1번, 김철수, 항목 2개, 27900원, 배송 완료") + System.lineSeparator();
+            "한도 넘은 결제: 결제 한도를 넘었습니다, 취소",
+            "주문 목록: 1번, 김철수, 항목 2개, 27900원, 배송 완료",
+            "결제 실패 뒤: 노트북 재고 10개, 취소") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
@@ -186,7 +187,7 @@ class PaymentAclTest {
         long bigId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 7)), "부산시 해운대구"));
         IllegalStateException limit = assertThrows(IllegalStateException.class, () -> service.pay(bigId));
         assertEquals("결제 한도를 넘었습니다", limit.getMessage());
-        assertEquals("주문 접수", service.findOrder(bigId).getStatus().label());
+        assertEquals("취소", service.findOrder(bigId).getStatus().label());
         publisher.processEvents();
         assertEquals(List.of("ORDER_PAID|orderId=" + smallId + "|address=서울시 강남구"), messages);
 
@@ -199,7 +200,7 @@ class PaymentAclTest {
         IllegalStateException card = assertThrows(IllegalStateException.class, () -> rejecting.pay(orderId));
         assertEquals("카드가 막혔습니다", card.getMessage());
         assertEquals(List.of(new Money(15000)), asked);
-        assertEquals("주문 접수", rejecting.findOrder(orderId).getStatus().label());
+        assertEquals("취소", rejecting.findOrder(orderId).getStatus().label());
 
         assertEquals(EXPECTED, runMain());
     }
