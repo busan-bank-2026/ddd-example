@@ -13,7 +13,7 @@
   - 실행하면: 주문 줄이 주문: 1번, 김철수, 자바 책 2개, 30000원, 주문 접수로 찍힌다
   - Why: 주문은 내용이 바뀌어도 같은 주문이다. 번호로 알아보고, 만들 때부터 올바른 금액과 상태를 갖게 한다
   - 다른 장: anemic-order, ubiquitous-language, project-setup
-- [ ] T3 결제, 배송, 취소를 주문에게 시키기
+- [x] T3 결제, 배송, 취소를 주문에게 시키기
   - 근거: S4
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java
   - 실행하면: 출력은 T2와 같고 규칙이 OrderService에서 Order로 옮겨 간다

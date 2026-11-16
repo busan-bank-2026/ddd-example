@@ -9,20 +9,14 @@ public class OrderService {
     }
 
     public void pay(Order order) {
-        order.setStatus("결제 완료");
+        order.pay();
     }
 
     public void ship(Order order) {
-        if (!order.getStatus().equals("결제 완료")) {
-            throw new IllegalStateException("결제하지 않은 주문은 배송할 수 없습니다");
-        }
-        order.setStatus("배송 중");
+        order.ship();
     }
 
     public void cancel(Order order) {
-        if (order.getStatus().equals("배송 중")) {
-            throw new IllegalStateException("배송 중인 주문은 취소할 수 없습니다");
-        }
-        order.setStatus("취소");
+        order.cancel();
     }
 }
