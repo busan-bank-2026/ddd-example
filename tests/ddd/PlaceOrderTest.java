@@ -14,26 +14,26 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import ddd.application.EventPublisher;
-import ddd.application.OrderApplicationService;
-import ddd.application.OrderLineCommand;
-import ddd.application.PlaceOrderCommand;
-import ddd.domain.Address;
-import ddd.domain.DiscountPolicy;
-import ddd.domain.Member;
-import ddd.domain.MemberGrade;
-import ddd.domain.MemberRepository;
-import ddd.domain.Money;
-import ddd.domain.Order;
-import ddd.domain.OrderLine;
-import ddd.domain.OrderLineFactory;
-import ddd.domain.OrderRepository;
-import ddd.domain.OrderStatus;
-import ddd.domain.Product;
-import ddd.domain.ProductRepository;
-import ddd.infrastructure.MemoryMemberRepository;
-import ddd.infrastructure.MemoryOrderRepository;
-import ddd.infrastructure.MemoryProductRepository;
+import ddd.catalog.domain.Product;
+import ddd.catalog.domain.ProductRepository;
+import ddd.catalog.infrastructure.MemoryProductRepository;
+import ddd.member.domain.Member;
+import ddd.member.domain.MemberGrade;
+import ddd.member.domain.MemberRepository;
+import ddd.member.infrastructure.MemoryMemberRepository;
+import ddd.order.application.EventPublisher;
+import ddd.order.application.OrderApplicationService;
+import ddd.order.application.OrderLineCommand;
+import ddd.order.application.PlaceOrderCommand;
+import ddd.order.domain.Address;
+import ddd.order.domain.DiscountPolicy;
+import ddd.order.domain.Order;
+import ddd.order.domain.OrderLine;
+import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderRepository;
+import ddd.order.domain.OrderStatus;
+import ddd.order.infrastructure.MemoryOrderRepository;
+import ddd.shared.Money;
 
 class PlaceOrderTest {
 

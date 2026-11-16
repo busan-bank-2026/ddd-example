@@ -1,6 +1,6 @@
 # bounded-contexts 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 하위 도메인과 컨텍스트 정하기
   - 근거: S1
   - 파일: ddd/context-map.md

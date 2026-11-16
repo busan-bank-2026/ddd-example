@@ -14,15 +14,15 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import ddd.domain.Address;
-import ddd.domain.FreeShippingAreaSpecification;
-import ddd.domain.FreeShippingPriceSpecification;
-import ddd.domain.FreeShippingSpecification;
-import ddd.domain.Money;
-import ddd.domain.Order;
-import ddd.domain.OrderLine;
-import ddd.domain.OrderSpecification;
-import ddd.domain.OrderStatus;
+import ddd.order.domain.Address;
+import ddd.order.domain.FreeShippingAreaSpecification;
+import ddd.order.domain.FreeShippingPriceSpecification;
+import ddd.order.domain.FreeShippingSpecification;
+import ddd.order.domain.Order;
+import ddd.order.domain.OrderLine;
+import ddd.order.domain.OrderSpecification;
+import ddd.order.domain.OrderStatus;
+import ddd.shared.Money;
 
 class FreeShippingTest {
 
@@ -89,7 +89,7 @@ class FreeShippingTest {
 
         assertEquals(boolean.class, FreeShippingSpecification.class.getMethod("isSatisfiedBy", Order.class).getReturnType());
         assertEquals(0, FreeShippingSpecification.class.getDeclaredFields().length);
-        assertEquals("ddd.domain", FreeShippingSpecification.class.getPackageName());
+        assertEquals("ddd.order.domain", FreeShippingSpecification.class.getPackageName());
     }
 
     @Test
