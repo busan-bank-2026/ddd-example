@@ -1,0 +1,30 @@
+# order-saga 작업
+
+- [ ] 테스트 작성
+- [ ] T1 결제가 실패해도 줄어 있는 재고 보기
+  - 근거: S1
+  - 파일: ddd/src/ddd/Main.java
+  - 실행하면: 주문 목록 줄 다음에 결제 실패 뒤: 노트북 재고 9개, 주문 접수가 찍힌다. 결제는 거절됐는데 재고는 줄었다
+  - Why: 주문, 재고, 결제는 따로 저장되는 일이라 뒤 단계가 실패해도 앞 단계는 그대로 남는다. 그 어긋남을 먼저 눈으로 본다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context, payment-acl, order-query
+- [ ] T2 주문을 취소하면 재고 되돌리기
+  - 근거: S2, S3, S5
+  - 파일: ddd/src/ddd/order/domain/OrderCanceled.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/application/IncreaseStockHandler.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 출력은 T1과 같아 결제 실패 뒤: 노트북 재고 9개, 주문 접수가 그대로 찍히고, catalog/application에 IncreaseStockHandler.java가 보인다
+  - Why: 재고를 줄인 단계를 되돌리는 반대 일이 먼저 있어야 실패했을 때 보상으로 부를 수 있다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context, payment-acl, order-query
+- [ ] T3 결제가 거절되면 주문 취소로 보상하기
+  - 근거: S4, S5
+  - 파일: ddd/src/ddd/order/application/OrderApplicationService.java, ddd/glossary.md
+  - 실행하면: 한도 넘은 결제 줄이 취소로 바뀌고, 마지막 줄이 결제 실패 뒤: 노트북 재고 10개, 취소로 바뀐다
+  - Why: 여러 저장에 걸친 일은 한 번에 되돌릴 수 없다. 실패하면 끝난 단계마다 반대 일을 해서 처음과 맞춘다
+  - 다른 장: anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context, payment-acl, order-query
+- [ ] T4 규칙 두는 곳 정리하기
+  - 근거: S6, S7
+  - 파일: ddd/where-rules-live.md, ddd/context-map.md
+  - 실행하면: 출력 서른세 줄이 그대로 나오고, ddd에 where-rules-live.md가 보이고, 컨텍스트 맵에 재고 되돌리기와 주문 조회 서비스가 보인다
+  - Why: 규칙마다 둘 곳을 고르는 기준을 한 장에 모아 두어야 새 규칙이 생겨도 응용 서비스에 쌓지 않는다
+  - 다른 장: bounded-contexts, shipping-context, payment-acl
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
