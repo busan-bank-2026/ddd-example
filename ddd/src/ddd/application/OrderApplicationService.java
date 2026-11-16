@@ -4,24 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ddd.domain.Address;
-import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
+import ddd.domain.OrderLineFactory;
 import ddd.domain.OrderRepository;
 
 public class OrderApplicationService {
 
     private final OrderRepository orderRepository;
+    private final OrderLineFactory orderLineFactory;
     private long nextId = 1;
 
-    public OrderApplicationService(OrderRepository orderRepository) {
+    public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory) {
         this.orderRepository = orderRepository;
+        this.orderLineFactory = orderLineFactory;
     }
 
     public long placeOrder(PlaceOrderCommand command) {
         List<OrderLine> orderLines = new ArrayList<>();
         for (OrderLineCommand orderLineCommand : command.orderLines()) {
-            orderLines.add(toOrderLine(orderLineCommand));
+            orderLines.add(orderLineFactory.create(orderLineCommand.productId(), orderLineCommand.quantity()));
         }
         Order order = new Order(nextId++, command.memberId(), orderLines, new Address(command.address()));
         orderRepository.save(order);
@@ -34,7 +36,7 @@ public class OrderApplicationService {
 
     public void addOrderLine(long orderId, OrderLineCommand command) {
         Order order = findOrder(orderId);
-        order.addOrderLine(toOrderLine(command));
+        order.addOrderLine(orderLineFactory.create(command.productId(), command.quantity()));
         orderRepository.save(order);
     }
 
@@ -60,9 +62,5 @@ public class OrderApplicationService {
         Order order = findOrder(orderId);
         order.cancel();
         orderRepository.save(order);
-    }
-
-    private OrderLine toOrderLine(OrderLineCommand command) {
-        return new OrderLine(command.productId(), command.productName(), new Money(command.price()), command.quantity());
     }
 }
