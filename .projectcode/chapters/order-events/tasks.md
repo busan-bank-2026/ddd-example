@@ -20,6 +20,6 @@
   - 실행하면: 주문 뒤 줄 다음에 이벤트 처리 뒤: 자바 책 재고 8개가 찍히고, src/ddd/application에 DecreaseStockHandler가 더 보인다
   - Why: 재고는 주문과 같은 때에 바뀌지 않아도 된다. 이벤트를 처리하면 나중에 맞춰진다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
