@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 class OrderStatusTest {
 
-    private final OrderService service = new OrderService();
+    private final OrderService service = new OrderService(new MemoryOrderRepository());
 
     private String runMain() {
         PrintStream original = System.out;
@@ -31,29 +31,29 @@ class OrderStatusTest {
         return out.toString(StandardCharsets.UTF_8);
     }
 
-    private Order newOrder() {
+    private long newOrder() {
         return service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
     }
 
     @Test
     @DisplayName("S1 주문 상태는 주문 접수, 결제 완료, 배송 중, 취소 중 하나로 정해져 있고 출력에는 업무 말로 보여준다")
     void s1() {
-        Order order = newOrder();
+        long orderId = newOrder();
 
-        assertEquals(OrderStatus.ORDERED, order.getStatus());
+        assertEquals(OrderStatus.ORDERED, service.findOrder(orderId).getStatus());
         assertEquals("주문 접수", OrderStatus.ORDERED.label());
         assertEquals("결제 완료", OrderStatus.PAID.label());
         assertEquals("배송 중", OrderStatus.SHIPPING.label());
         assertEquals("취소", OrderStatus.CANCELED.label());
 
-        service.pay(order);
-        assertEquals(OrderStatus.PAID, order.getStatus());
-        service.ship(order);
-        assertEquals(OrderStatus.SHIPPING, order.getStatus());
+        service.pay(orderId);
+        assertEquals(OrderStatus.PAID, service.findOrder(orderId).getStatus());
+        service.ship(orderId);
+        assertEquals(OrderStatus.SHIPPING, service.findOrder(orderId).getStatus());
 
-        Order canceled = newOrder();
-        service.cancel(canceled);
-        assertEquals(OrderStatus.CANCELED, canceled.getStatus());
+        long canceledId = newOrder();
+        service.cancel(canceledId);
+        assertEquals(OrderStatus.CANCELED, service.findOrder(canceledId).getStatus());
 
         String printed = runMain();
         assertTrue(printed.contains("주문: 1번, 김철수, 31000원, 주문 접수"));
@@ -80,28 +80,28 @@ class OrderStatusTest {
             assertFalse(OrderStatus.CANCELED.canChangeTo(next));
         }
 
-        Order canceled = newOrder();
-        service.cancel(canceled);
-        assertThrows(IllegalStateException.class, () -> service.pay(canceled));
-        assertEquals(OrderStatus.CANCELED, canceled.getStatus());
+        long canceledId = newOrder();
+        service.cancel(canceledId);
+        assertThrows(IllegalStateException.class, () -> service.pay(canceledId));
+        assertEquals(OrderStatus.CANCELED, service.findOrder(canceledId).getStatus());
     }
 
     @Test
     @DisplayName("S3 바꿀 수 없는 상태로 바꾸라고 하면 지금 상태를 넣은 말로 거절한다")
     void s3() {
-        Order unpaid = newOrder();
-        IllegalStateException shipError = assertThrows(IllegalStateException.class, () -> service.ship(unpaid));
+        long unpaidId = newOrder();
+        IllegalStateException shipError = assertThrows(IllegalStateException.class, () -> service.ship(unpaidId));
         assertEquals("주문 접수인 주문은 배송할 수 없습니다", shipError.getMessage());
 
-        Order shipping = newOrder();
-        service.pay(shipping);
-        service.ship(shipping);
-        IllegalStateException cancelError = assertThrows(IllegalStateException.class, () -> service.cancel(shipping));
+        long shippingId = newOrder();
+        service.pay(shippingId);
+        service.ship(shippingId);
+        IllegalStateException cancelError = assertThrows(IllegalStateException.class, () -> service.cancel(shippingId));
         assertEquals("배송 중인 주문은 취소할 수 없습니다", cancelError.getMessage());
 
-        Order canceled = newOrder();
-        service.cancel(canceled);
-        IllegalStateException againError = assertThrows(IllegalStateException.class, () -> service.cancel(canceled));
+        long canceledId = newOrder();
+        service.cancel(canceledId);
+        IllegalStateException againError = assertThrows(IllegalStateException.class, () -> service.cancel(canceledId));
         assertEquals("취소인 주문은 취소할 수 없습니다", againError.getMessage());
 
         assertTrue(runMain().contains("결제 없이 배송: 주문 접수인 주문은 배송할 수 없습니다"));
@@ -110,36 +110,36 @@ class OrderStatusTest {
     @Test
     @DisplayName("S4 결제 완료인 주문을 다시 결제하면 거절한다")
     void s4() {
-        Order order = newOrder();
-        service.pay(order);
+        long orderId = newOrder();
+        service.pay(orderId);
 
-        IllegalStateException error = assertThrows(IllegalStateException.class, () -> service.pay(order));
+        IllegalStateException error = assertThrows(IllegalStateException.class, () -> service.pay(orderId));
 
         assertEquals("결제 완료인 주문은 결제할 수 없습니다", error.getMessage());
-        assertEquals(OrderStatus.PAID, order.getStatus());
+        assertEquals(OrderStatus.PAID, service.findOrder(orderId).getStatus());
         assertTrue(runMain().contains("두 번 결제: 결제 완료인 주문은 결제할 수 없습니다"));
     }
 
     @Test
     @DisplayName("S5 배송 중인 주문을 배송 완료하면 배송 완료가 된다. 배송 완료인 주문은 다른 상태로 바뀌지 않는다")
     void s5() {
-        Order order = newOrder();
-        service.pay(order);
-        service.ship(order);
+        long orderId = newOrder();
+        service.pay(orderId);
+        service.ship(orderId);
 
-        service.deliver(order);
+        service.deliver(orderId);
 
-        assertEquals(OrderStatus.DELIVERED, order.getStatus());
-        assertEquals("배송 완료", order.getStatus().label());
+        assertEquals(OrderStatus.DELIVERED, service.findOrder(orderId).getStatus());
+        assertEquals("배송 완료", service.findOrder(orderId).getStatus().label());
         assertTrue(OrderStatus.SHIPPING.canChangeTo(OrderStatus.DELIVERED));
         for (OrderStatus next : OrderStatus.values()) {
             assertFalse(OrderStatus.DELIVERED.canChangeTo(next));
         }
-        IllegalStateException cancelError = assertThrows(IllegalStateException.class, () -> service.cancel(order));
+        IllegalStateException cancelError = assertThrows(IllegalStateException.class, () -> service.cancel(orderId));
         assertEquals("배송 완료인 주문은 취소할 수 없습니다", cancelError.getMessage());
 
-        Order unpaid = newOrder();
-        IllegalStateException deliverError = assertThrows(IllegalStateException.class, () -> service.deliver(unpaid));
+        long unpaidId = newOrder();
+        IllegalStateException deliverError = assertThrows(IllegalStateException.class, () -> service.deliver(unpaidId));
         assertEquals("주문 접수인 주문은 배송 완료할 수 없습니다", deliverError.getMessage());
 
         assertTrue(runMain().contains("배송 완료: 배송 완료"));

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 class OrderAggregateTest {
 
-    private final OrderService service = new OrderService();
+    private final OrderService service = new OrderService(new MemoryOrderRepository());
 
     private String runMain() {
         PrintStream original = System.out;
@@ -32,6 +32,10 @@ class OrderAggregateTest {
     }
 
     private Order newOrder() {
+        return service.findOrder(newOrderId());
+    }
+
+    private long newOrderId() {
         return service.placeOrder("김철수", List.of(
                 new OrderLine("자바 책", new Money(15000), 2),
                 new OrderLine("볼펜", new Money(1000), 1)), "서울시 강남구");
@@ -78,8 +82,9 @@ class OrderAggregateTest {
 
         List<OrderLine> given = new ArrayList<>();
         given.add(new OrderLine("자바 책", new Money(15000), 2));
-        Order fromGiven = service.placeOrder("김철수", given, "서울시 강남구");
+        long fromGivenId = service.placeOrder("김철수", given, "서울시 강남구");
         given.add(new OrderLine("공책", new Money(2000), 5));
+        Order fromGiven = service.findOrder(fromGivenId);
         assertEquals(1, fromGiven.getOrderLines().size());
         assertEquals(new Money(30000), fromGiven.getTotalPrice());
     }
@@ -100,8 +105,9 @@ class OrderAggregateTest {
     @Test
     @DisplayName("S5 주문 접수가 아닌 주문에는 항목을 더할 수 없다. 결제한 주문에 항목을 더하면 거절한다")
     void s5() {
-        Order order = newOrder();
-        service.pay(order);
+        long orderId = newOrderId();
+        service.pay(orderId);
+        Order order = service.findOrder(orderId);
 
         IllegalStateException error = assertThrows(IllegalStateException.class,
                 () -> order.addOrderLine(new OrderLine("공책", new Money(2000), 5)));

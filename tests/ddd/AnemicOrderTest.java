@@ -15,16 +15,16 @@ import org.junit.jupiter.api.Test;
 
 class AnemicOrderTest {
 
-    private final OrderService service = new OrderService();
+    private final OrderService service = new OrderService(new MemoryOrderRepository());
 
-    private Order newOrder() {
+    private long newOrder() {
         return service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
     }
 
     @Test
     @DisplayName("S1 주문자 이름, 상품 이름, 가격, 수량, 배송 주소로 주문을 만들면 주문 금액은 가격 곱하기 수량이고 상태는 주문 접수다")
     void s1() {
-        Order order = newOrder();
+        Order order = service.findOrder(newOrder());
 
         assertEquals("김철수", order.getCustomerName());
         assertEquals("자바 책", order.getOrderLines().get(0).productName());
@@ -38,53 +38,53 @@ class AnemicOrderTest {
     @Test
     @DisplayName("S2 주문 접수인 주문을 결제하면 결제 완료가 된다")
     void s2() {
-        Order order = newOrder();
+        long orderId = newOrder();
 
-        service.pay(order);
+        service.pay(orderId);
 
-        assertEquals("결제 완료", order.getStatus().label());
+        assertEquals("결제 완료", service.findOrder(orderId).getStatus().label());
     }
 
     @Test
     @DisplayName("S3 결제 완료인 주문을 배송하면 배송 중이 된다")
     void s3() {
-        Order order = newOrder();
-        service.pay(order);
+        long orderId = newOrder();
+        service.pay(orderId);
 
-        service.ship(order);
+        service.ship(orderId);
 
-        assertEquals("배송 중", order.getStatus().label());
+        assertEquals("배송 중", service.findOrder(orderId).getStatus().label());
     }
 
     @Test
     @DisplayName("S4 결제하지 않은 주문을 배송하면 거절한다")
     void s4() {
-        Order order = newOrder();
+        long orderId = newOrder();
 
-        assertThrows(IllegalStateException.class, () -> service.ship(order));
-        assertEquals("주문 접수", order.getStatus().label());
+        assertThrows(IllegalStateException.class, () -> service.ship(orderId));
+        assertEquals("주문 접수", service.findOrder(orderId).getStatus().label());
     }
 
     @Test
     @DisplayName("S5 배송 전인 주문을 취소하면 취소가 된다")
     void s5() {
-        Order order = newOrder();
-        service.pay(order);
+        long orderId = newOrder();
+        service.pay(orderId);
 
-        service.cancel(order);
+        service.cancel(orderId);
 
-        assertEquals("취소", order.getStatus().label());
+        assertEquals("취소", service.findOrder(orderId).getStatus().label());
     }
 
     @Test
     @DisplayName("S6 배송 중인 주문을 취소하면 거절한다")
     void s6() {
-        Order order = newOrder();
-        service.pay(order);
-        service.ship(order);
+        long orderId = newOrder();
+        service.pay(orderId);
+        service.ship(orderId);
 
-        assertThrows(IllegalStateException.class, () -> service.cancel(order));
-        assertEquals("배송 중", order.getStatus().label());
+        assertThrows(IllegalStateException.class, () -> service.cancel(orderId));
+        assertEquals("배송 중", service.findOrder(orderId).getStatus().label());
     }
 
     @Test
