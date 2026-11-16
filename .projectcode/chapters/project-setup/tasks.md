@@ -1,7 +1,7 @@
 # project-setup 작업
 
 - [x] 테스트 작성
-- [ ] T1 시작 글을 보여주는 Main 만들기
+- [x] T1 시작 글을 보여주는 Main 만들기
   - 근거: S1
   - 파일: ddd/src/ddd/Main.java, .gitignore
   - 실행하면: 콘솔에 온라인 주문 프로그램을 시작합니다가 찍힌다
