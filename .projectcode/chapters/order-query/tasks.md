@@ -1,6 +1,6 @@
 # order-query 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 주문 요약으로 주문 목록 읽기
   - 근거: S1, S2, S3
   - 파일: ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/application/OrderSummary.java, ddd/src/ddd/order/application/OrderQueryService.java, ddd/src/ddd/Main.java

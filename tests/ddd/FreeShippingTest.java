@@ -57,7 +57,8 @@ class FreeShippingTest {
             "결제 완료 메시지: ORDER_PAID|orderId=4|address=광주시 북구",
             "배송 컨텍스트: 1번 주문, 서울시 강남구",
             "외부 결제 응답: 27900원 0000, 108000원 E101",
-            "한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수") + System.lineSeparator();
+            "한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수",
+            "주문 목록: 1번, 김철수, 항목 2개, 27900원, 배송 완료") + System.lineSeparator();
 
     private String runMain() {
         PrintStream original = System.out;
