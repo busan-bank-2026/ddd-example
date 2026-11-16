@@ -1,10 +1,12 @@
 # 개념
 
 ## 선수 지식
+
 - 자바: 클래스, 인터페이스, enum, record, 예외
 - 자바: 컬렉션(List, Map), 람다, 패키지
 
 ## 배울 것과 처음 나온 장
+
 | 개념 | 처음 나온 장 |
 |---|---|
 | 폴더 구조 | 1 project-setup |
@@ -45,4 +47,3 @@
 | 보상 | 21 order-saga |
 | 규칙 두는 곳 정리 | 21 order-saga |
 | 발행기를 바꿔 끼우기 | 22 socket-queue |
-| 리포지터리를 바꿔 끼우기 | 23 oracle-repository |

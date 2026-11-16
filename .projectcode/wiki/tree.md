@@ -1,6 +1,6 @@
 # 폴더 구조
 
-rich-entity 장 끝 기준이다.
+socket-queue 장 끝 기준이다.
 
 ```
 ddd/
@@ -9,12 +9,72 @@ ddd/
     org.eclipse.jdt.core.prefs
   src/
     ddd/
+      catalog/
+        application/
+          DecreaseStockHandler.java
+          IncreaseStockHandler.java
+        domain/
+          Product.java
+          ProductRepository.java
+        infrastructure/
+          MemoryProductRepository.java
+      member/
+        domain/
+          Member.java
+          MemberGrade.java
+          MemberRepository.java
+        infrastructure/
+          MemoryMemberRepository.java
+      order/
+        application/
+          EventPublisher.java
+          OrderApplicationService.java
+          OrderLineCommand.java
+          OrderOpenHostService.java
+          OrderQueryService.java
+          OrderSummary.java
+          PlaceOrderCommand.java
+          SocketEventPublisher.java
+        domain/
+          Address.java
+          DiscountPolicy.java
+          FreeShippingAreaSpecification.java
+          FreeShippingPriceSpecification.java
+          FreeShippingSpecification.java
+          Order.java
+          OrderCanceled.java
+          OrderLine.java
+          OrderLineFactory.java
+          OrderPlaced.java
+          OrderRepository.java
+          OrderSpecification.java
+          OrderStatus.java
+          PaymentGateway.java
+          PaymentResult.java
+        infrastructure/
+          LegacyPaymentAdapter.java
+          MemoryOrderRepository.java
+      shared/
+        Money.java
+      shipping/
+        application/
+          OrderPaidMessageHandler.java
+        domain/
+          Shipment.java
+          ShipmentRepository.java
+        infrastructure/
+          MemoryShipmentRepository.java
+          SocketMessageReceiver.java
       Main.java
-      Order.java
-      OrderService.java
+      OrderApp.java
+      ShippingApp.java
+    legacypay/
+      LegacyPayGateway.java
   .classpath
   .project
+  context-map.md
   glossary.md
+  where-rules-live.md
 test-lib/
   junit-platform-console-standalone.jar
 ```
