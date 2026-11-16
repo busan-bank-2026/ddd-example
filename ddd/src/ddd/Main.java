@@ -7,6 +7,7 @@ import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
+import ddd.infrastructure.MemoryOrderRepository;
 
 public class Main {
 

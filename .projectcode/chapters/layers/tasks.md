@@ -13,7 +13,7 @@
   - 실행하면: ddd.application 패키지를 만들고 세 클래스를 끌어 놓으면 출력은 그대로이고 src/ddd/application에 세 파일이 보인다
   - Why: 유스케이스를 하는 곳을 도메인과 나눠야 규칙은 도메인에, 꺼내고 시키고 저장하는 일은 응용 계층에 있다는 것이 자리로 드러난다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
-- [ ] T3 인프라 계층 만들기
+- [x] T3 인프라 계층 만들기
   - 근거: S3, S4
   - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java
   - 실행하면: ddd.infrastructure 패키지를 만들고 메모리 주문 저장소를 끌어 놓으면 출력은 그대로이고 src/ddd에는 Main과 세 묶음만 남는다

@@ -1,4 +1,4 @@
-package ddd;
+package ddd.infrastructure;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
