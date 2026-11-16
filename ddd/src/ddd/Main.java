@@ -5,14 +5,30 @@ import java.util.List;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
+import ddd.domain.Member;
+import ddd.domain.MemberRepository;
+import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
+import ddd.domain.Product;
+import ddd.domain.ProductRepository;
+import ddd.infrastructure.MemoryMemberRepository;
 import ddd.infrastructure.MemoryOrderRepository;
+import ddd.infrastructure.MemoryProductRepository;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("온라인 주문 프로그램을 시작합니다");
+
+        MemberRepository memberRepository = new MemoryMemberRepository();
+        memberRepository.save(new Member(1, "김철수"));
+        memberRepository.save(new Member(2, "이영희"));
+
+        ProductRepository productRepository = new MemoryProductRepository();
+        productRepository.save(new Product(1, "자바 책", new Money(15000)));
+        productRepository.save(new Product(2, "볼펜", new Money(1000)));
+        productRepository.save(new Product(3, "공책", new Money(2000)));
 
         OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository());
 

@@ -1,7 +1,7 @@
 # id-reference 작업
 
 - [x] 테스트 작성
-- [ ] T1 회원과 상품 저장하기
+- [x] T1 회원과 상품 저장하기
   - 근거: S1, S2, S6
   - 파일: ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 출력 열여덟 줄은 그대로이고, src/ddd/domain에 회원과 상품 네 파일, src/ddd/infrastructure에 메모리 저장소 두 파일이 더 보인다
