@@ -19,6 +19,6 @@
   - 실행하면: 마지막 줄에 가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원이 찍힌다
   - Why: 주문 항목이 주문 때의 이름과 가격을 담아 두었기 때문에 상품이 바뀌어도 이미 한 주문은 바뀌지 않는다는 것을 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
