@@ -17,5 +17,5 @@
   - 실행하면: ddd 폴더에서 테스트 명령을 치면 3 tests successful이 나오고 이클립스에서도 ProjectSetupTest를 JUnit Test로 돌릴 수 있다
   - Why: 뒤 장마다 행동 테스트로 규칙이 지켜지는지 확인한다
 - [x] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 캡처
+- [x] 도식

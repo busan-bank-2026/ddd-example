@@ -1,0 +1,2 @@
+$ javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main
+온라인 주문 프로그램을 시작합니다

@@ -1,0 +1,26 @@
+$ javac -d bin --source-path src src/ddd/Main.java && javac -d bin-test -cp "bin;lib/junit-platform-console-standalone.jar" ../tests/ddd/*.java && java -jar lib/junit-platform-console-standalone.jar execute -cp "bin;bin-test" --scan-classpath --disable-ansi-colors
+
+Thanks for using JUnit! Support its development at https://junit.org/sponsoring
+
+╷
+├─ JUnit Platform Suite ✔
+├─ JUnit Jupiter ✔
+│  └─ ProjectSetupTest ✔
+│     ├─ S1 프로그램을 실행하면 콘솔에 시작 글을 보여준다 ✔
+│     ├─ S2 이클립스에서 ddd 폴더를 프로젝트로 열고 Main을 실행할 수 있다 ✔
+│     └─ S3 테스트 명령을 실행하면 행동 테스트 결과를 보여준다 ✔
+└─ JUnit Vintage ✔
+
+Test run finished after 85 ms
+[         4 containers found      ]
+[         0 containers skipped    ]
+[         4 containers started    ]
+[         0 containers aborted    ]
+[         4 containers successful ]
+[         0 containers failed     ]
+[         3 tests found           ]
+[         0 tests skipped         ]
+[         3 tests started         ]
+[         0 tests aborted         ]
+[         3 tests successful      ]
+[         0 tests failed          ]
