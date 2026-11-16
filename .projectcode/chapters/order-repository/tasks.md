@@ -1,0 +1,25 @@
+# order-repository 작업
+
+- [ ] 테스트 작성
+- [ ] T1 주문을 저장소에 넣고 번호로 꺼내기
+  - 근거: S1, S3, S4, S6
+  - 파일: ddd/src/ddd/OrderRepository.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 출력은 앞 장 열여섯 줄과 같고, 주문이 저장소를 거쳐 주문 번호로 오간다
+  - Why: 주문을 들고 다니지 않고 저장소에 두면 주문 번호만으로 언제든 다시 꺼내 일을 시킬 수 있다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
+- [ ] T2 없는 주문 번호 거절하기
+  - 근거: S5
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 마지막에 없는 주문 결제: 주문이 없습니다가 더 찍힌다
+  - Why: 번호는 밖에서 들어온다. 없는 번호면 업무 말로 알려야 무엇이 틀렸는지 안다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
+- [ ] T3 복사본으로 저장하기
+  - 근거: S2
+  - 진행: 붙여넣기. MemoryOrderRepository의 copy 메서드와 네 파일의 implements Serializable
+  - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/Main.java
+  - 실행하면: 마지막에 저장 안 한 취소: 주문 접수가 더 찍힌다
+  - Why: 진짜 DB는 저장한 것만 남는다. 메모리 저장소도 복사본을 쓰면 다시 저장해야 바뀐 것이 남는다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
