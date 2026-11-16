@@ -25,6 +25,6 @@
   - 파일: ddd/.project, ddd/.classpath, .projectcode/contract.md
   - 실행하면: tests 폴더가 없는 학생 이클립스에서도 ddd가 오류 없이 열린다
   - Why: 학생은 tests 폴더를 받지 않는다. 연결이 남아 있으면 학생 이클립스에 폴더가 없다는 오류가 뜬다
-- [ ] 수렴 점검 (수정)
+- [x] 수렴 점검 (수정)
 - [ ] 캡처 (수정)
 - [ ] 도식 (수정)

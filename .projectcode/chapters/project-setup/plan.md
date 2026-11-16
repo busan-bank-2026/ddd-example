@@ -59,7 +59,7 @@ java -jar lib/junit-platform-console-standalone.jar execute -cp "bin;bin-test" -
 |---|---|
 | S1 | Main.java, .gitignore |
 | S2 | .project, .classpath, org.eclipse.jdt.core.prefs, org.eclipse.core.resources.prefs |
-| S3 | junit-platform-console-standalone.jar, .project, .classpath, ProjectSetupTest.java, contract.md, .gitignore |
+| S3 | junit-platform-console-standalone.jar, ProjectSetupTest.java, contract.md, .gitignore |
 
 ## 라이브러리
 - 추가 없음. contract의 JUnit 5를 쓴다

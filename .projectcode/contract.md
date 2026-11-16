@@ -25,7 +25,7 @@
 ## 실행
 
 - 실행: cd ddd, javac -d bin --source-path src src/ddd/Main.java, java -cp bin ddd.Main
-- 테스트: 저장소 루트에서 아래 네 줄을 실행한다. 테스트는 이클립스처럼 ddd 폴더에서 돈다. 맥과 리눅스는 ; 대신 :를 쓴다
+- 테스트: 저장소 루트에서 아래 네 줄을 실행한다. 테스트 명령이 ddd 폴더에서 돈다. 맥과 리눅스는 ; 대신 :를 쓴다
 
 ```
 cd ddd
