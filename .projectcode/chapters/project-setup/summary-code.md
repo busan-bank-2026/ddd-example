@@ -118,3 +118,43 @@ index 548767b..4c0b4e9 100644
 +    </linkedResources>
  </projectDescription>
 ```
+
+## T4 이클립스에서 tests 연결 빼기
+커밋: 1ee2df4
+
+| 파일 | 변경 |
+|---|---|
+| ddd/.project | 고침 |
+| ddd/.classpath | 고침 |
+
+```diff
+diff --git a/ddd/.classpath b/ddd/.classpath
+index 043d67b..6f52706 100644
+--- a/ddd/.classpath
++++ b/ddd/.classpath
+@@ -1,8 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <classpath>
+     <classpathentry kind="src" path="src"/>
+-    <classpathentry kind="src" path="tests"/>
+-    <classpathentry kind="lib" path="lib/junit-platform-console-standalone.jar"/>
+     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
+     <classpathentry kind="output" path="bin"/>
+ </classpath>
+diff --git a/ddd/.project b/ddd/.project
+index 4c0b4e9..548767b 100644
+--- a/ddd/.project
++++ b/ddd/.project
+@@ -14,11 +14,4 @@
+     <natures>
+         <nature>org.eclipse.jdt.core.javanature</nature>
+     </natures>
+-    <linkedResources>
+-        <link>
+-            <name>tests</name>
+-            <type>2</type>
+-            <locationURI>PARENT-1-PROJECT_LOC/tests</locationURI>
+-        </link>
+-    </linkedResources>
+ </projectDescription>
+```
