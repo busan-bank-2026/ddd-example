@@ -7,7 +7,7 @@
   - 실행하면: 이클립스에서 ddd.domain 패키지를 만들고 여섯 클래스를 끌어 놓으면 출력 열여덟 줄이 그대로 나오고 src/ddd/domain에 여섯 파일이 보인다
   - Why: 업무 규칙을 가진 클래스를 한 묶음에 모아야 무엇이 도메인이고 무엇이 그 밖인지 한눈에 보인다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
-- [ ] T2 응용 계층 만들기
+- [x] T2 응용 계층 만들기
   - 근거: S2
   - 파일: ddd/src/ddd/OrderApplicationService.java, ddd/src/ddd/PlaceOrderCommand.java, ddd/src/ddd/OrderLineCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/Main.java
   - 실행하면: ddd.application 패키지를 만들고 세 클래스를 끌어 놓으면 출력은 그대로이고 src/ddd/application에 세 파일이 보인다

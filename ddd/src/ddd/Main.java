@@ -2,6 +2,9 @@ package ddd;
 
 import java.util.List;
 
+import ddd.application.OrderApplicationService;
+import ddd.application.OrderLineCommand;
+import ddd.application.PlaceOrderCommand;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
 

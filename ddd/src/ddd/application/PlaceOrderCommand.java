@@ -1,4 +1,4 @@
-package ddd;
+package ddd.application;
 
 import java.util.List;
 
