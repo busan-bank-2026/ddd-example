@@ -60,8 +60,16 @@ public class Main {
         Order order5 = orderService.placeOrder("정하늘", List.of(
                 new OrderLine("자바 책", new Money(15000), 2),
                 new OrderLine("볼펜", new Money(1000), 1)), "광주시 북구");
-        order5.getOrderLines().add(new OrderLine("공책", new Money(2000), 5));
+        order5.addOrderLine(new OrderLine("공책", new Money(2000), 5));
         System.out.println("항목 더하기: 항목 " + order5.getOrderLines().size() + "개, 주문 금액 "
                 + order5.getTotalPrice().amount() + "원");
+
+        orderService.pay(order5);
+        try {
+            order5.addOrderLine(new OrderLine("공책", new Money(2000), 1));
+            System.out.println("결제 뒤 항목 더하기: 항목 " + order5.getOrderLines().size() + "개");
+        } catch (IllegalStateException e) {
+            System.out.println("결제 뒤 항목 더하기: " + e.getMessage());
+        }
     }
 }

@@ -33,7 +33,7 @@ public class Order {
     }
 
     public List<OrderLine> getOrderLines() {
-        return orderLines;
+        return List.copyOf(orderLines);
     }
 
     public Address getAddress() {
@@ -46,6 +46,14 @@ public class Order {
 
     public String getStatus() {
         return status;
+    }
+
+    public void addOrderLine(OrderLine orderLine) {
+        if (!status.equals("주문 접수")) {
+            throw new IllegalStateException("주문 접수인 주문에만 항목을 더할 수 있습니다");
+        }
+        orderLines.add(orderLine);
+        totalPrice = totalPrice.plus(orderLine.amount());
     }
 
     public void pay() {

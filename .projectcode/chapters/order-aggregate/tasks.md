@@ -7,7 +7,7 @@
   - 실행하면: 주문 줄 아래에 항목 두 줄이 찍히고, 마지막에 항목 더하기: 항목 3개, 주문 금액 31000원이 찍힌다
   - Why: 항목 목록을 그대로 내주면 밖에서 항목을 더해도 주문 금액이 따라오지 않는 것을 먼저 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object
-- [ ] T2 항목 더하기를 주문에게 시키기
+- [x] T2 항목 더하기를 주문에게 시키기
   - 근거: S3, S4, S5, S8
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 항목 더하기 줄이 41000원으로 바뀌고, 결제 뒤 항목 더하기: 주문 접수인 주문에만 항목을 더할 수 있습니다가 더 찍힌다
