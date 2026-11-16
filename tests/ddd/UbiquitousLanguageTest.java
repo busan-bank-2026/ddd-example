@@ -20,7 +20,7 @@ class UbiquitousLanguageTest {
     void s1() {
         Order order = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
 
-        assertEquals("주문 접수", order.getStatus());
+        assertEquals("주문 접수", order.getStatus().label());
         assertEquals(30000, order.getTotalPrice().amount());
     }
 
@@ -31,7 +31,7 @@ class UbiquitousLanguageTest {
 
         service.pay(order);
 
-        assertEquals("결제 완료", order.getStatus());
+        assertEquals("결제 완료", order.getStatus().label());
     }
 
     @Test
@@ -42,7 +42,7 @@ class UbiquitousLanguageTest {
 
         service.ship(order);
 
-        assertEquals("배송 중", order.getStatus());
+        assertEquals("배송 중", order.getStatus().label());
     }
 
     @Test
@@ -52,7 +52,7 @@ class UbiquitousLanguageTest {
 
         service.cancel(order);
 
-        assertEquals("취소", order.getStatus());
+        assertEquals("취소", order.getStatus().label());
         assertEquals("김철수", order.getCustomerName());
     }
 

@@ -50,7 +50,7 @@ class OrderAggregateTest {
         assertEquals(2, order.getOrderLines().size());
         assertEquals("볼펜", order.getOrderLines().get(1).productName());
         assertEquals(new Money(31000), order.getTotalPrice());
-        assertEquals("주문 접수", order.getStatus());
+        assertEquals("주문 접수", order.getStatus().label());
 
         String printed = runMain();
         assertTrue(printed.contains("주문: 1번, 김철수, 31000원, 주문 접수"));

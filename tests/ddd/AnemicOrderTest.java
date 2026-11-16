@@ -32,7 +32,7 @@ class AnemicOrderTest {
         assertEquals(2, order.getOrderLines().get(0).quantity());
         assertEquals("서울시 강남구", order.getAddress().value());
         assertEquals(30000, order.getTotalPrice().amount());
-        assertEquals("주문 접수", order.getStatus());
+        assertEquals("주문 접수", order.getStatus().label());
     }
 
     @Test
@@ -42,7 +42,7 @@ class AnemicOrderTest {
 
         service.pay(order);
 
-        assertEquals("결제 완료", order.getStatus());
+        assertEquals("결제 완료", order.getStatus().label());
     }
 
     @Test
@@ -53,7 +53,7 @@ class AnemicOrderTest {
 
         service.ship(order);
 
-        assertEquals("배송 중", order.getStatus());
+        assertEquals("배송 중", order.getStatus().label());
     }
 
     @Test
@@ -62,7 +62,7 @@ class AnemicOrderTest {
         Order order = newOrder();
 
         assertThrows(IllegalStateException.class, () -> service.ship(order));
-        assertEquals("주문 접수", order.getStatus());
+        assertEquals("주문 접수", order.getStatus().label());
     }
 
     @Test
@@ -73,7 +73,7 @@ class AnemicOrderTest {
 
         service.cancel(order);
 
-        assertEquals("취소", order.getStatus());
+        assertEquals("취소", order.getStatus().label());
     }
 
     @Test
@@ -84,7 +84,7 @@ class AnemicOrderTest {
         service.ship(order);
 
         assertThrows(IllegalStateException.class, () -> service.cancel(order));
-        assertEquals("배송 중", order.getStatus());
+        assertEquals("배송 중", order.getStatus().label());
     }
 
     @Test

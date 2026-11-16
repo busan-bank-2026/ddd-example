@@ -68,7 +68,7 @@ class RichEntityTest {
         Order order = new Order(1, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
 
         assertEquals(30000, order.getTotalPrice().amount());
-        assertEquals("주문 접수", order.getStatus());
+        assertEquals("주문 접수", order.getStatus().label());
         assertEquals("김철수", order.getCustomerName());
         assertEquals("서울시 강남구", order.getAddress().value());
     }
@@ -79,24 +79,24 @@ class RichEntityTest {
         Order order = new Order(1, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
 
         order.pay();
-        assertEquals("결제 완료", order.getStatus());
+        assertEquals("결제 완료", order.getStatus().label());
         order.ship();
-        assertEquals("배송 중", order.getStatus());
+        assertEquals("배송 중", order.getStatus().label());
         IllegalStateException cancelError = assertThrows(IllegalStateException.class, order::cancel);
         assertEquals("배송 중인 주문은 취소할 수 없습니다", cancelError.getMessage());
-        assertEquals("배송 중", order.getStatus());
+        assertEquals("배송 중", order.getStatus().label());
 
         Order unpaid = new Order(2, "김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
         IllegalStateException shipError = assertThrows(IllegalStateException.class, unpaid::ship);
-        assertEquals("결제하지 않은 주문은 배송할 수 없습니다", shipError.getMessage());
+        assertEquals("주문 접수인 주문은 배송할 수 없습니다", shipError.getMessage());
         unpaid.cancel();
-        assertEquals("취소", unpaid.getStatus());
+        assertEquals("취소", unpaid.getStatus().label());
 
         OrderService service = new OrderService();
         Order placed = service.placeOrder("김철수", List.of(new OrderLine("자바 책", new Money(15000), 2)), "서울시 강남구");
         service.pay(placed);
         service.ship(placed);
-        assertEquals("배송 중", placed.getStatus());
+        assertEquals("배송 중", placed.getStatus().label());
         assertThrows(IllegalStateException.class, () -> service.cancel(placed));
     }
 
@@ -109,7 +109,7 @@ class RichEntityTest {
                 .anyMatch(name -> name.startsWith("set"));
 
         assertTrue(!hasSetter);
-        assertTrue(runMain().contains("결제 없이 배송: 결제하지 않은 주문은 배송할 수 없습니다"));
+        assertTrue(runMain().contains("결제 없이 배송: 주문 접수인 주문은 배송할 수 없습니다"));
     }
 
     @Test
