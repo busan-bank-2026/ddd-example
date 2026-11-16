@@ -1,6 +1,6 @@
 # anemic-order 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 주문 만들기
   - 근거: S1
   - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
