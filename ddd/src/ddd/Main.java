@@ -134,6 +134,14 @@ public class Main {
             System.out.println("없는 주문 결제: " + e.getMessage());
         }
 
+        try {
+            long order8Id = orderService.placeOrder(new PlaceOrderCommand(2,
+                    List.of(new OrderLineCommand(100, 1)), "울산시 남구"));
+            System.out.println("없는 상품 주문: " + orderService.findOrder(order8Id).getStatus().label());
+        } catch (IllegalArgumentException e) {
+            System.out.println("없는 상품 주문: " + e.getMessage());
+        }
+
         Order notSaved = orderService.findOrder(order2Id);
         notSaved.cancel();
         System.out.println("저장 안 한 취소: " + orderService.findOrder(order2Id).getStatus().label());
