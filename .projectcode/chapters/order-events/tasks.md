@@ -1,0 +1,25 @@
+# order-events 작업
+
+- [ ] 테스트 작성
+- [ ] T1 주문이 주문 접수됨 이벤트 남기기
+  - 근거: S1, S2, S5
+  - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/OrderPlaced.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 볼펜 항목 줄 다음에 주문 뒤: 이벤트 1개, 자바 책 재고 10개가 찍히고, src/ddd/domain에 OrderPlaced가 더 보인다
+  - Why: 주문이 재고를 직접 줄이면 주문이 상품까지 바꾼다. 주문은 주문 접수됨이라는 일어난 일만 남기고 재고는 건드리지 않는다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
+- [ ] T2 저장 뒤 이벤트를 발행기에 넘기기
+  - 근거: S3, S5
+  - 진행: 붙여넣기. EventPublisher.java 전체
+  - 파일: ddd/src/ddd/application/EventPublisher.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 출력은 T1과 같다. 이벤트는 발행기에 쌓이기만 해서 자바 책 재고는 그대로 10개이고, src/ddd/application에 EventPublisher가 더 보인다
+  - Why: 주문 저장은 주문 응용 서비스 한 번의 일로 끝낸다. 저장한 뒤에 일어난 일을 발행기에 넘기면 재고 줄이기는 그 일 밖에서 따로 한다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
+- [ ] T3 재고 줄이기 처리기로 재고 맞추기
+  - 근거: S4, S5
+  - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 주문 뒤 줄 다음에 이벤트 처리 뒤: 자바 책 재고 8개가 찍히고, src/ddd/application에 DecreaseStockHandler가 더 보인다
+  - Why: 재고는 주문과 같은 때에 바뀌지 않아도 된다. 이벤트를 처리하면 나중에 맞춰진다
+  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
