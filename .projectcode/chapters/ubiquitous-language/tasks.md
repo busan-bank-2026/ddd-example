@@ -1,7 +1,7 @@
 # ubiquitous-language 작업
 
 - [x] 테스트 작성
-- [ ] T1 용어집 만들기
+- [x] T1 용어집 만들기
   - 근거: S5
   - 파일: ddd/glossary.md
   - 실행하면: 출력은 그대로이고 이클립스의 ddd 아래에 glossary.md가 보인다
