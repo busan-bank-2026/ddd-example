@@ -13,6 +13,6 @@
   - 실행하면: 가격 바뀐 뒤 줄 앞에 6만원 주문 배송비: 서울 0원, 제주 3000원이 찍히고, src/ddd/domain에 OrderSpecification, FreeShippingPriceSpecification, FreeShippingAreaSpecification이 더 보인다
   - Why: 제주는 무료 배송에서 빠진다는 조건이 하나 더 생겼다. 조건마다 명세를 만들고 and로 묶으면 주문은 그대로 무료 배송 명세에게만 묻는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
