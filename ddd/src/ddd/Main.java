@@ -152,6 +152,13 @@ public class Main {
         notSaved.cancel();
         System.out.println("저장 안 한 취소: " + orderService.findOrder(order2Id).getStatus().label());
 
+        long seoulOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+                List.of(new OrderLineCommand(1, 4)), "서울시 마포구"));
+        long jejuOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+                List.of(new OrderLineCommand(1, 4)), "제주시 연동"));
+        System.out.println("6만원 주문 배송비: 서울 " + orderService.findOrder(seoulOrderId).getShippingFee().amount()
+                + "원, 제주 " + orderService.findOrder(jejuOrderId).getShippingFee().amount() + "원");
+
         productRepository.save(new Product(1, "자바 책", new Money(18000)));
         Order firstOrder = orderService.findOrder(orderId);
         OrderLine bookLine = firstOrder.getOrderLines().get(0);

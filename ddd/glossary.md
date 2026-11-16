@@ -41,5 +41,8 @@
 | 할인 정책 | DiscountPolicy | 회원 등급과 주문 금액으로 할인 금액을 계산하는 도메인 서비스. VIP는 주문 금액의 10%, 일반은 0원이다. 계산만 하고 주문을 바꾸지 않는다 |
 | 할인 금액 | discountPrice | 결제할 때 주문 금액에서 깎는 돈. 결제 전에는 0원이다 |
 | 결제 금액 | paymentPrice | 주문 금액에서 할인 금액을 뺀 돈. 실제로 치르는 돈이다 |
-| 무료 배송 명세 | FreeShippingSpecification | 주문이 무료 배송인지 참 거짓으로만 답하는 명세. 결제 금액이 50000원 이상이면 참이다 |
+| 무료 배송 명세 | FreeShippingSpecification | 주문이 무료 배송인지 참 거짓으로만 답하는 명세. 무료 배송 금액 명세와 무료 배송 지역 명세를 and로 묶었다. 둘 다 참이면 참이다 |
 | 배송비 | shippingFee | 주문을 보내는 데 받는 돈. 결제 금액과 따로 받는다. 무료 배송 명세를 만족하면 0원, 아니면 3000원이다 |
+| 주문 명세 | OrderSpecification | 주문 하나를 받아 조건을 만족하는지 참 거짓으로만 답하는 것. and로 두 명세를 묶으면 다시 주문 명세가 된다 |
+| 무료 배송 금액 명세 | FreeShippingPriceSpecification | 결제 금액이 50000원 이상인지 답하는 명세 |
+| 무료 배송 지역 명세 | FreeShippingAreaSpecification | 배송 주소가 제주가 아닌지 답하는 명세 |
