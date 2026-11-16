@@ -24,6 +24,6 @@
   - 실행하면: 출력 서른한 줄이 그대로 나오고, context-map.md에 부패 방지 계층 절과 외부 말과 우리 말 표, 결제 하위 도메인 줄이 보인다
   - Why: 어느 경계에서 누가 번역하는지 지도에 적어야 다음 사람이 외부 말을 주문 안으로 끌어들이지 않는다
   - 다른 장: ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
