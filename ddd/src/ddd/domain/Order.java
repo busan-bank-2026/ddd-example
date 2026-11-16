@@ -13,6 +13,7 @@ public class Order implements Serializable {
     private List<OrderLine> orderLines;
     private Address address;
     private Money totalPrice;
+    private Money discountPrice;
     private OrderStatus status;
 
     public Order(long id, long memberId, List<OrderLine> orderLines, Address address) {
@@ -27,6 +28,7 @@ public class Order implements Serializable {
         for (OrderLine orderLine : orderLines) {
             totalPrice = totalPrice.plus(orderLine.amount());
         }
+        this.discountPrice = new Money(0);
         this.status = OrderStatus.ORDERED;
     }
 
@@ -50,6 +52,14 @@ public class Order implements Serializable {
         return totalPrice;
     }
 
+    public Money getDiscountPrice() {
+        return discountPrice;
+    }
+
+    public Money getPaymentPrice() {
+        return totalPrice.minus(discountPrice);
+    }
+
     public OrderStatus getStatus() {
         return status;
     }
@@ -62,10 +72,11 @@ public class Order implements Serializable {
         totalPrice = totalPrice.plus(orderLine.amount());
     }
 
-    public void pay() {
+    public void pay(Money discountPrice) {
         if (!status.canChangeTo(OrderStatus.PAID)) {
             throw new IllegalStateException(status.label() + "인 주문은 결제할 수 없습니다");
         }
+        this.discountPrice = discountPrice;
         status = OrderStatus.PAID;
     }
 

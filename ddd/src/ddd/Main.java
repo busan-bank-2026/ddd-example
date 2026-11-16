@@ -5,6 +5,7 @@ import java.util.List;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
+import ddd.domain.DiscountPolicy;
 import ddd.domain.Member;
 import ddd.domain.MemberGrade;
 import ddd.domain.MemberRepository;
@@ -33,7 +34,7 @@ public class Main {
         productRepository.save(new Product(3, "공책", new Money(2000)));
 
         OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository(),
-                new OrderLineFactory(productRepository));
+                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy());
 
         List<OrderLineCommand> orderLines = List.of(
                 new OrderLineCommand(1, 2),
@@ -50,6 +51,9 @@ public class Main {
 
         orderService.pay(orderId);
         System.out.println("결제: " + orderService.findOrder(orderId).getStatus().label());
+        Order paidOrder = orderService.findOrder(orderId);
+        System.out.println("할인: " + member.getGrade() + " " + paidOrder.getDiscountPrice().amount() + "원, 결제 금액 "
+                + paidOrder.getPaymentPrice().amount() + "원");
 
         orderService.ship(orderId);
         System.out.println("배송: " + orderService.findOrder(orderId).getStatus().label());

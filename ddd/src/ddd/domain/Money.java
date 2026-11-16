@@ -17,4 +17,8 @@ public record Money(int amount) implements Serializable {
     public Money plus(Money other) {
         return new Money(amount + other.amount);
     }
+
+    public Money minus(Money other) {
+        return new Money(amount - other.amount);
+    }
 }

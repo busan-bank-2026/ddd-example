@@ -7,7 +7,7 @@
   - 실행하면: 김철수를 VIP로, 이영희를 일반으로 저장했는데 출력 스무 줄은 그대로이고, src/ddd/domain에 MemberGrade가 더 보인다
   - Why: 할인을 정하려면 회원이 어떤 등급인지 먼저 알아야 한다. 등급은 회원이 누구인지를 말하므로 회원이 갖는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory
-- [ ] T2 할인 정책으로 결제 금액 정하기
+- [x] T2 할인 정책으로 결제 금액 정하기
   - 근거: S2, S3, S4, S5
   - 파일: ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 결제: 결제 완료 줄 다음에 할인: VIP 3100원, 결제 금액 27900원이 찍힌다

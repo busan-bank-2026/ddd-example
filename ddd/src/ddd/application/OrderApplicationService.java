@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ddd.domain.Address;
+import ddd.domain.DiscountPolicy;
+import ddd.domain.Member;
+import ddd.domain.MemberRepository;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
 import ddd.domain.OrderLineFactory;
@@ -13,11 +16,16 @@ public class OrderApplicationService {
 
     private final OrderRepository orderRepository;
     private final OrderLineFactory orderLineFactory;
+    private final MemberRepository memberRepository;
+    private final DiscountPolicy discountPolicy;
     private long nextId = 1;
 
-    public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory) {
+    public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory,
+            MemberRepository memberRepository, DiscountPolicy discountPolicy) {
         this.orderRepository = orderRepository;
         this.orderLineFactory = orderLineFactory;
+        this.memberRepository = memberRepository;
+        this.discountPolicy = discountPolicy;
     }
 
     public long placeOrder(PlaceOrderCommand command) {
@@ -42,7 +50,8 @@ public class OrderApplicationService {
 
     public void pay(long orderId) {
         Order order = findOrder(orderId);
-        order.pay();
+        Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
+        order.pay(discountPolicy.discount(member, order));
         orderRepository.save(order);
     }
 
