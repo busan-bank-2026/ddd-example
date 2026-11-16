@@ -9,7 +9,7 @@
 | 빌드 도구 | 없음 |
 | 학생 코드 라이브러리 | 없음 |
 | 저장소 | HashMap. 23장만 Oracle XE 21c |
-| 테스트 | JUnit 5 (ddd/lib/junit-platform-console-standalone.jar) |
+| 테스트 | JUnit 5 (test-lib/junit-platform-console-standalone.jar) |
 | DB 드라이버 | 23장만 ojdbc11.jar (오라클 설치 폴더에서 복사) |
 | 메시지 형식 | 한 줄 글자. 타입|키=값|키=값 |
 
@@ -19,8 +19,8 @@
 |---|---|
 | 학생 코드 | ddd |
 | 행동 테스트 | tests/ddd. 패키지 ddd. 클래스 이름은 장 이름 + Test. 이클립스에 붙이지 않는다 |
-| jar | ddd/lib. JUnit jar, 23장의 ojdbc jar |
-| 컴파일 결과 | ddd/bin, ddd/bin-test. git에 올리지 않는다 |
+| jar | 테스트용 JUnit jar는 test-lib. 23장의 ojdbc jar는 ddd/lib |
+| 컴파일 결과 | ddd/bin, bin-test. git에 올리지 않는다 |
 
 ## 실행
 
@@ -30,8 +30,8 @@
 ```
 cd ddd
 javac -d bin --source-path src src/ddd/Main.java
-javac -d bin-test -cp "bin;lib/junit-platform-console-standalone.jar" ../tests/ddd/*.java
-java -jar lib/junit-platform-console-standalone.jar execute -cp "bin;bin-test" --scan-classpath
+javac -d ../bin-test -cp "bin;../test-lib/junit-platform-console-standalone.jar" ../tests/ddd/*.java
+java -jar ../test-lib/junit-platform-console-standalone.jar execute -cp "bin;../bin-test" --scan-classpath
 ```
 - 빌드: javac -d bin --source-path src src/ddd/Main.java
 

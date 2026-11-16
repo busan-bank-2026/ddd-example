@@ -29,7 +29,7 @@
 - [x] 캡처 (수정)
 - [x] 도식 (수정)
 - [x] 테스트 보강 (2)
-- [ ] T5 테스트용 파일을 학생 프로젝트 밖으로 빼기
+- [x] T5 테스트용 파일을 학생 프로젝트 밖으로 빼기
   - 근거: S3, 고침 T3
   - 파일: test-lib/junit-platform-console-standalone.jar, ddd/lib/junit-platform-console-standalone.jar, .projectcode/contract.md, .gitignore
   - 실행하면: ddd 폴더에는 이클립스가 만드는 파일만 있고 테스트 명령은 3 tests successful이 나온다

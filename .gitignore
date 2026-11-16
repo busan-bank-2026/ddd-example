@@ -1,3 +1,4 @@
 node_modules/
 ddd/bin/
-ddd/bin-test/
+bin-test/
+/.metadata/
