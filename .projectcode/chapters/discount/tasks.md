@@ -13,6 +13,6 @@
   - 실행하면: 결제: 결제 완료 줄 다음에 할인: VIP 3100원, 결제 금액 27900원이 찍힌다
   - Why: 할인은 회원 등급과 주문 금액을 함께 봐야 해서 회원에도 주문에도 속하지 않는다. 계산은 도메인 서비스가 하고, 할인 금액을 기억하며 결제 완료가 되는 일은 주문이 한다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory
-- [ ] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 수렴 점검
+- [x] 캡처
+- [x] 도식
