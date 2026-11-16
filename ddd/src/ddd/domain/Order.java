@@ -60,6 +60,13 @@ public class Order implements Serializable {
         return totalPrice.minus(discountPrice);
     }
 
+    public Money getShippingFee() {
+        if (new FreeShippingSpecification().isSatisfiedBy(this)) {
+            return new Money(0);
+        }
+        return new Money(3000);
+    }
+
     public OrderStatus getStatus() {
         return status;
     }

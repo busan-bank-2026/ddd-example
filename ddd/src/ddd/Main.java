@@ -54,6 +54,7 @@ public class Main {
         Order paidOrder = orderService.findOrder(orderId);
         System.out.println("할인: " + member.getGrade() + " " + paidOrder.getDiscountPrice().amount() + "원, 결제 금액 "
                 + paidOrder.getPaymentPrice().amount() + "원");
+        System.out.println("배송비: " + paidOrder.getShippingFee().amount() + "원");
 
         orderService.ship(orderId);
         System.out.println("배송: " + orderService.findOrder(orderId).getStatus().label());

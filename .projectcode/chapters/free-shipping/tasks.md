@@ -1,7 +1,7 @@
 # free-shipping 작업
 
 - [x] 테스트 작성
-- [ ] T1 무료 배송 명세로 배송비 정하기
+- [x] T1 무료 배송 명세로 배송비 정하기
   - 근거: S1, S2, S4
   - 파일: ddd/src/ddd/domain/FreeShippingSpecification.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 할인: VIP 3100원, 결제 금액 27900원 줄 다음에 배송비: 3000원이 찍히고, src/ddd/domain에 FreeShippingSpecification이 더 보인다
