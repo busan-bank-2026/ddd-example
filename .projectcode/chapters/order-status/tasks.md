@@ -7,7 +7,7 @@
   - 실행하면: 출력은 앞 장과 같고, 상태가 글자 대신 주문 상태 묶음에서 나온다
   - Why: 상태를 글자로 두면 오타도 상태가 된다. 있을 수 있는 상태를 한 묶음으로 정해 둔다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate
-- [ ] T2 상태 전이 규칙을 주문 상태에 모으기
+- [x] T2 상태 전이 규칙을 주문 상태에 모으기
   - 근거: S2, S3, S4
   - 파일: ddd/src/ddd/OrderStatus.java, ddd/src/ddd/Order.java, ddd/src/ddd/Main.java
   - 실행하면: 결제 없이 배송 줄이 주문 접수인 주문은 배송할 수 없습니다로 바뀌고, 마지막에 두 번 결제: 결제 완료인 주문은 결제할 수 없습니다가 더 찍힌다

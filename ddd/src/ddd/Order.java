@@ -60,19 +60,22 @@ public class Order {
     }
 
     public void pay() {
+        if (!status.canChangeTo(OrderStatus.PAID)) {
+            throw new IllegalStateException(status.label() + "인 주문은 결제할 수 없습니다");
+        }
         status = OrderStatus.PAID;
     }
 
     public void ship() {
-        if (status != OrderStatus.PAID) {
-            throw new IllegalStateException("결제하지 않은 주문은 배송할 수 없습니다");
+        if (!status.canChangeTo(OrderStatus.SHIPPING)) {
+            throw new IllegalStateException(status.label() + "인 주문은 배송할 수 없습니다");
         }
         status = OrderStatus.SHIPPING;
     }
 
     public void cancel() {
-        if (status == OrderStatus.SHIPPING) {
-            throw new IllegalStateException("배송 중인 주문은 취소할 수 없습니다");
+        if (!status.canChangeTo(OrderStatus.CANCELED)) {
+            throw new IllegalStateException(status.label() + "인 주문은 취소할 수 없습니다");
         }
         status = OrderStatus.CANCELED;
     }

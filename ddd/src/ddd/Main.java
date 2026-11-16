@@ -86,5 +86,12 @@ public class Main {
         } catch (IllegalArgumentException e) {
             System.out.println("0개 항목 주문: " + e.getMessage());
         }
+
+        try {
+            orderService.pay(order5);
+            System.out.println("두 번 결제: " + order5.getStatus().label());
+        } catch (IllegalStateException e) {
+            System.out.println("두 번 결제: " + e.getMessage());
+        }
     }
 }
