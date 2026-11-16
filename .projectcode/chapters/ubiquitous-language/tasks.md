@@ -18,7 +18,7 @@
   - 실행하면: 출력 다섯 줄이 그대로 나온다
   - Why: 상태를 고친다는 말 대신 업무에서 하는 일 이름을 쓴다
   - 다른 장: anemic-order, project-setup
-- [ ] T4 주문 취소하기로 이름 바꾸기
+- [x] T4 주문 취소하기로 이름 바꾸기
   - 근거: S4
   - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
   - 실행하면: 출력 다섯 줄이 그대로 나오고 지우기가 아니라 취소라는 것이 이름에 드러난다

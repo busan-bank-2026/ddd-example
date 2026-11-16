@@ -25,7 +25,7 @@ public class OrderService {
         order.setStatus("배송 중");
     }
 
-    public void deleteOrder(Order order) {
+    public void cancel(Order order) {
         if (order.getStatus().equals("배송 중")) {
             throw new IllegalStateException("배송 중인 주문은 취소할 수 없습니다");
         }
