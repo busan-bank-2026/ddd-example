@@ -22,6 +22,10 @@ import ddd.order.domain.OrderPlaced;
 import ddd.order.domain.OrderRepository;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
+import ddd.shipping.application.OrderPaidMessageHandler;
+import ddd.shipping.domain.Shipment;
+import ddd.shipping.domain.ShipmentRepository;
+import ddd.shipping.infrastructure.MemoryShipmentRepository;
 
 public class Main {
 
@@ -190,7 +194,12 @@ public class Main {
             System.out.println("동시 수정: " + e.getMessage());
         }
 
+        ShipmentRepository shipmentRepository = new MemoryShipmentRepository();
+        OrderPaidMessageHandler orderPaidMessageHandler = new OrderPaidMessageHandler(shipmentRepository);
         eventPublisher.subscribe(String.class, message -> System.out.println("결제 완료 메시지: " + message));
+        eventPublisher.subscribe(String.class, orderPaidMessageHandler::handle);
         eventPublisher.processEvents();
+        Shipment shipment = shipmentRepository.findByOrderId(orderId).orElseThrow();
+        System.out.println("배송 컨텍스트: " + shipment.getOrderId() + "번 주문, " + shipment.getAddress());
     }
 }
