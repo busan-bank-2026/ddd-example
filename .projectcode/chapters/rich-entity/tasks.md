@@ -1,6 +1,6 @@
 # rich-entity 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 결제 없이 배송해 보기
   - 근거: S1
   - 파일: ddd/src/ddd/Main.java

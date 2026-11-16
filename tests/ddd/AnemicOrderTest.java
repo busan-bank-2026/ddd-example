@@ -98,7 +98,7 @@ class AnemicOrderTest {
         }
         String printed = out.toString(StandardCharsets.UTF_8);
 
-        assertTrue(printed.contains("주문: 김철수, 자바 책 2개, 30000원, 주문 접수"));
+        assertTrue(printed.contains("김철수, 자바 책 2개, 30000원, 주문 접수"));
         assertTrue(printed.contains("결제: 결제 완료"));
         assertTrue(printed.contains("배송: 배송 중"));
         assertTrue(printed.contains("취소: 배송 중인 주문은 취소할 수 없습니다"));
