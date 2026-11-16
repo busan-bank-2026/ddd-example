@@ -1,0 +1,30 @@
+# anemic-order 작업
+
+- [ ] 테스트 작성
+- [ ] T1 주문 만들기
+  - 근거: S1
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 시작 글 아래에 주문: 김철수, 자바 책 2개, 30000원, 주문 접수가 찍힌다
+  - Why: 주문 데이터가 있어야 결제, 배송, 취소를 할 수 있다
+  - 다른 장: project-setup
+- [ ] T2 주문 결제하기
+  - 근거: S2
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 이어서 결제: 결제 완료가 찍힌다
+  - Why: 결제한 주문만 배송하려면 결제 상태가 먼저 있어야 한다
+  - 다른 장: project-setup
+- [ ] T3 주문 배송하기
+  - 근거: S3, S4
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 이어서 배송: 배송 중이 찍힌다
+  - Why: 결제했는지 확인하는 규칙이 서비스에 들어가는 모습을 본다
+  - 다른 장: project-setup
+- [ ] T4 주문 취소하기
+  - 근거: S5, S6, S7
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
+  - 실행하면: 마지막에 취소: 배송 중인 주문은 취소할 수 없습니다가 찍힌다
+  - Why: 규칙이 하나 더 서비스에 쌓이면서 규칙이 서비스에 흩어지는 모습이 완성된다
+  - 다른 장: project-setup
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
