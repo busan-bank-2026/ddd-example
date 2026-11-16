@@ -16,6 +16,7 @@ public class Order implements Serializable {
     private Money discountPrice;
     private OrderStatus status;
     private List<Object> events;
+    private long version;
 
     public Order(long id, long memberId, List<OrderLine> orderLines, Address address) {
         if (orderLines.isEmpty()) {
@@ -76,6 +77,14 @@ public class Order implements Serializable {
 
     public List<Object> getEvents() {
         return List.copyOf(events);
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void increaseVersion() {
+        version++;
     }
 
     public void addOrderLine(OrderLine orderLine) {

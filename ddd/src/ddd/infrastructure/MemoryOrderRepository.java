@@ -18,6 +18,7 @@ public class MemoryOrderRepository implements OrderRepository {
 
     @Override
     public void save(Order order) {
+        order.increaseVersion();
         orders.put(order.getId(), copy(order));
     }
 

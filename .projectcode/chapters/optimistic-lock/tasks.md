@@ -11,7 +11,7 @@
   - 실행하면: 가격 바뀐 뒤 줄 다음에 동시 수정: 취소가 찍힌다. 배송 중이던 주문이 취소로 덮였다
   - Why: 같은 주문을 두 곳에서 들고 있다가 나중에 저장한 쪽이 앞 저장을 지우는 것을 먼저 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
-- [ ] T2 저장할 때마다 주문 버전 올리기
+- [x] T2 저장할 때마다 주문 버전 올리기
   - 근거: S2, S4
   - 파일: ddd/src/ddd/domain/Order.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/glossary.md
   - 실행하면: 출력은 T1과 같아 동시 수정: 취소가 그대로 찍히고, 용어집에 버전 version 줄이 더 보인다
