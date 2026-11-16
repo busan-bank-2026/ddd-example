@@ -1,7 +1,7 @@
 # order-query 작업
 
 - [x] 테스트 작성
-- [ ] T1 주문 요약으로 주문 목록 읽기
+- [x] T1 주문 요약으로 주문 목록 읽기
   - 근거: S1, S2, S3
   - 파일: ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/application/OrderSummary.java, ddd/src/ddd/order/application/OrderQueryService.java, ddd/src/ddd/Main.java
   - 실행하면: 한도 넘은 결제 줄 다음에 주문 목록: 1번, 김철수, 항목 2개, 27900원, 배송 완료가 찍히고, order/application에 OrderQueryService.java와 OrderSummary.java가 보인다

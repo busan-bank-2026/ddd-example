@@ -13,6 +13,8 @@ import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
 import ddd.order.application.OrderApplicationService;
 import ddd.order.application.OrderLineCommand;
+import ddd.order.application.OrderQueryService;
+import ddd.order.application.OrderSummary;
 import ddd.order.application.PlaceOrderCommand;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
@@ -217,6 +219,12 @@ public class Main {
         } catch (IllegalStateException e) {
             System.out.println("한도 넘은 결제: " + e.getMessage() + ", "
                     + orderService.findOrder(bigOrderId).getStatus().label());
+        }
+
+        OrderQueryService orderQueryService = new OrderQueryService(orderRepository, memberRepository);
+        for (OrderSummary summary : orderQueryService.findOrderSummaries(1)) {
+            System.out.println("주문 목록: " + summary.orderId() + "번, " + summary.memberName() + ", 항목 "
+                    + summary.orderLineCount() + "개, " + summary.paymentPrice() + "원, " + summary.status());
         }
     }
 }

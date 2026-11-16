@@ -5,7 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,6 +35,17 @@ public class MemoryOrderRepository implements OrderRepository {
             return Optional.empty();
         }
         return Optional.of(copy(order));
+    }
+
+    @Override
+    public List<Order> findByMemberId(long memberId) {
+        List<Order> found = new ArrayList<>();
+        for (Order order : orders.values()) {
+            if (order.getMemberId() == memberId) {
+                found.add(copy(order));
+            }
+        }
+        return found;
     }
 
     private Order copy(Order order) {
