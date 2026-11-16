@@ -6,7 +6,7 @@
   - 파일: ddd/src/ddd/Main.java, .gitignore
   - 실행하면: 콘솔에 온라인 주문 프로그램을 시작합니다가 찍힌다
   - Why: 프로그램이 도는 것을 먼저 확인해야 다음 장에서 주문 코드를 얹을 수 있다
-- [ ] T2 이클립스 프로젝트로 열기
+- [x] T2 이클립스 프로젝트로 열기
   - 근거: S2
   - 파일: ddd/.project, ddd/.classpath, ddd/.settings/org.eclipse.jdt.core.prefs, ddd/.settings/org.eclipse.core.resources.prefs
   - 실행하면: 이클립스에서 ddd를 열고 Main을 Run 하면 Console 창에 같은 글이 찍힌다
