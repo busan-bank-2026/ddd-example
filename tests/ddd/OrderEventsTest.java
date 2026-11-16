@@ -167,7 +167,7 @@ class OrderEventsTest {
         assertEquals("ddd.order.application", EventPublisher.class.getPackageName());
 
         Class<?>[] parameters = OrderApplicationService.class.getConstructors()[0].getParameterTypes();
-        assertEquals(EventPublisher.class, parameters[parameters.length - 1]);
+        assertEquals(EventPublisher.class, parameters[4]);
 
         EventPublisher servicePublisher = new EventPublisher();
         List<OrderPlaced> placed = new ArrayList<>();

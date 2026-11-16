@@ -1,6 +1,10 @@
 # payment-acl 작업
 
 - [x] 테스트 작성
+- [x] 테스트 보강
+  - 근거: 앞 장 테스트 고치기에서 빠짐. 세 테스트가 주문 응용 서비스 생성자 매개변수를 다섯 개로 본다
+  - 파일: tests/ddd/DiscountTest.java, tests/ddd/OrderEventsTest.java, tests/ddd/OrderFactoryTest.java
+  - 다른 장: discount, order-events, order-factory
 - [x] T1 외부 결제 모듈 붙여넣기
   - 근거: S1
   - 진행: 붙여넣기. LegacyPayGateway.java 전체

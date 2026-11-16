@@ -32,6 +32,7 @@ import ddd.order.domain.Order;
 import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
+import ddd.order.domain.PaymentGateway;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
@@ -131,7 +132,8 @@ class OrderFactoryTest {
     @Test
     @DisplayName("S3 주문 응용 서비스는 주문하기와 주문 항목 더하기에서 주문 항목 팩토리에게 주문 항목을 만들게 한다. Main은 팩토리를 만들어 주문 응용 서비스에 넘기고, 앞 장 출력 열아홉 줄은 그대로다")
     void s3() throws Exception {
-        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class),
+        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class,
+                PaymentGateway.class),
                 List.of(OrderApplicationService.class.getConstructors()[0].getParameterTypes()));
 
         OrderRepository orders = new MemoryOrderRepository();

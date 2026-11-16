@@ -33,6 +33,7 @@ import ddd.order.domain.OrderLine;
 import ddd.order.domain.OrderLineFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
+import ddd.order.domain.PaymentGateway;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
 import ddd.shared.Money;
@@ -153,7 +154,8 @@ class DiscountTest {
     @Test
     @DisplayName("S4 주문 응용 서비스는 결제하기에서 주문을 꺼내고, 회원을 찾고, 할인 정책에게 할인 금액을 계산하게 하고, 주문에게 결제를 시키고, 저장한다. Main이 첫 주문의 할인 장면을 보여준다")
     void s4() {
-        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class),
+        assertEquals(List.of(OrderRepository.class, OrderLineFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class,
+                PaymentGateway.class),
                 List.of(OrderApplicationService.class.getConstructors()[0].getParameterTypes()));
 
         ProductRepository products = new MemoryProductRepository();
