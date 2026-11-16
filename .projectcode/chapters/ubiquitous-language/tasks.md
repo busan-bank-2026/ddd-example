@@ -1,6 +1,6 @@
 # ubiquitous-language 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 용어집 만들기
   - 근거: S5
   - 파일: ddd/glossary.md

@@ -16,7 +16,7 @@ class AnemicOrderTest {
     private final OrderService service = new OrderService();
 
     private Order newOrder() {
-        return service.createOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
+        return service.placeOrder("김철수", "자바 책", 15000, 2, "서울시 강남구");
     }
 
     @Test
@@ -38,7 +38,7 @@ class AnemicOrderTest {
     void s2() {
         Order order = newOrder();
 
-        service.updatePayment(order);
+        service.pay(order);
 
         assertEquals("결제 완료", order.getStatus());
     }
@@ -47,9 +47,9 @@ class AnemicOrderTest {
     @DisplayName("S3 결제 완료인 주문을 배송하면 배송 중이 된다")
     void s3() {
         Order order = newOrder();
-        service.updatePayment(order);
+        service.pay(order);
 
-        service.updateDelivery(order);
+        service.ship(order);
 
         assertEquals("배송 중", order.getStatus());
     }
@@ -59,7 +59,7 @@ class AnemicOrderTest {
     void s4() {
         Order order = newOrder();
 
-        assertThrows(IllegalStateException.class, () -> service.updateDelivery(order));
+        assertThrows(IllegalStateException.class, () -> service.ship(order));
         assertEquals("주문 접수", order.getStatus());
     }
 
@@ -67,9 +67,9 @@ class AnemicOrderTest {
     @DisplayName("S5 배송 전인 주문을 취소하면 취소가 된다")
     void s5() {
         Order order = newOrder();
-        service.updatePayment(order);
+        service.pay(order);
 
-        service.deleteOrder(order);
+        service.cancel(order);
 
         assertEquals("취소", order.getStatus());
     }
@@ -78,10 +78,10 @@ class AnemicOrderTest {
     @DisplayName("S6 배송 중인 주문을 취소하면 거절한다")
     void s6() {
         Order order = newOrder();
-        service.updatePayment(order);
-        service.updateDelivery(order);
+        service.pay(order);
+        service.ship(order);
 
-        assertThrows(IllegalStateException.class, () -> service.deleteOrder(order));
+        assertThrows(IllegalStateException.class, () -> service.cancel(order));
         assertEquals("배송 중", order.getStatus());
     }
 
