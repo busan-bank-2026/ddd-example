@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("온라인 주문 프로그램을 시작합니다");
 
-        OrderService orderService = new OrderService(new MemoryOrderRepository());
+        OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository());
 
         List<OrderLineCommand> orderLines = List.of(
                 new OrderLineCommand("자바 책", 15000, 2),

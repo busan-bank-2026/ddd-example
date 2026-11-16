@@ -3,12 +3,12 @@ package ddd;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderService {
+public class OrderApplicationService {
 
     private final OrderRepository orderRepository;
     private long nextId = 1;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderApplicationService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
