@@ -14,8 +14,17 @@
 - [x] T3 테스트 실행기 붙이기
   - 근거: S3
   - 파일: ddd/lib/junit-platform-console-standalone.jar, ddd/.project, ddd/.classpath, .projectcode/contract.md, .gitignore
-  - 실행하면: ddd 폴더에서 테스트 명령을 치면 3 tests successful이 나오고 이클립스에서도 ProjectSetupTest를 JUnit Test로 돌릴 수 있다
+  - 실행하면: ddd 폴더에서 테스트 명령을 치면 3 tests successful이 나온다
   - Why: 뒤 장마다 행동 테스트로 규칙이 지켜지는지 확인한다
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
+- [ ] 테스트 보강
+- [ ] T4 이클립스에서 tests 연결 빼기
+  - 근거: S2, 고침 T3
+  - 파일: ddd/.project, ddd/.classpath, .projectcode/contract.md
+  - 실행하면: tests 폴더가 없는 학생 이클립스에서도 ddd가 오류 없이 열린다
+  - Why: 학생은 tests 폴더를 받지 않는다. 연결이 남아 있으면 학생 이클립스에 폴더가 없다는 오류가 뜬다
+- [ ] 수렴 점검 (수정)
+- [ ] 캡처 (수정)
+- [ ] 도식 (수정)

@@ -4,8 +4,8 @@
 | 파일 | 새로 또는 고침 | 하는 일 |
 |---|---|---|
 | ddd/src/ddd/Main.java | 새로 | 시작 글을 콘솔에 보여준다 |
-| ddd/.project | 새로 | 이클립스 프로젝트. tests 폴더를 링크 폴더로 붙인다 |
-| ddd/.classpath | 새로 | src, tests 링크, JUnit jar, 출력 폴더 bin |
+| ddd/.project | 새로 | 이클립스 프로젝트 |
+| ddd/.classpath | 새로 | src, JRE, 출력 폴더 bin |
 | ddd/.settings/org.eclipse.jdt.core.prefs | 새로 | Java 21로 컴파일하고 공백 4칸으로 포맷한다 |
 | ddd/.settings/org.eclipse.core.resources.prefs | 새로 | 파일 인코딩을 UTF-8로 정한다 |
 | ddd/lib/junit-platform-console-standalone.jar | 새로 | JUnit 5 실행기. Maven Central 1.11.4 |
@@ -20,11 +20,10 @@ Main.java
 
 .project
 - 이름은 ddd, Java 빌더와 Java 성격을 넣는다
-- tests 링크 폴더는 PARENT-1-PROJECT_LOC/tests를 가리킨다
+- tests 폴더는 이클립스에 붙이지 않는다. 학생은 tests 폴더를 받지 않는다
 
 .classpath
-- 소스 폴더 src와 tests
-- lib의 JUnit jar를 라이브러리로 넣는다
+- 소스 폴더 src
 - JRE는 JavaSE-21
 - 출력은 bin
 
@@ -35,10 +34,10 @@ Main.java
 ProjectSetupTest.java
 - System.out을 잠시 바꿔 Main.main의 출력을 모은다
 - S1 출력에 온라인 주문 프로그램을 시작합니다가 들어 있는지 확인한다
-- S2 이클립스 파일에 프로젝트 이름, src, Java 21, UTF-8이 있는지 확인한다
-- S3 JUnit jar와 tests 링크가 있는지 확인한다
+- S2 이클립스 파일에 프로젝트 이름, src, Java 21, UTF-8이 있고 tests 연결이 없는지 확인한다
+- S3 JUnit jar가 있는지 확인한다
 - 테스트는 패키지 폴더 tests/ddd에 둔다. 장 ID의 -는 패키지 이름이 될 수 없다
-- 파일 경로는 ddd 폴더 기준으로 찾는다. 이클립스가 ddd 폴더에서 테스트를 돌린다
+- 파일 경로는 ddd 폴더 기준으로 찾는다. 테스트 명령이 ddd 폴더에서 돈다
 
 포맷
 - 이클립스 포맷터를 공백 4칸으로 맞춘다. lint 도구는 두지 않는다
