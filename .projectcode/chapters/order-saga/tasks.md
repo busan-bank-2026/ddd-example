@@ -19,7 +19,7 @@
   - 실행하면: 한도 넘은 결제 줄이 취소로 바뀌고, 마지막 줄이 결제 실패 뒤: 노트북 재고 10개, 취소로 바뀐다
   - Why: 여러 저장에 걸친 일은 한 번에 되돌릴 수 없다. 실패하면 끝난 단계마다 반대 일을 해서 처음과 맞춘다
   - 다른 장: anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context, payment-acl, order-query
-- [ ] T4 규칙 두는 곳 정리하기
+- [x] T4 규칙 두는 곳 정리하기
   - 근거: S6, S7
   - 파일: ddd/where-rules-live.md, ddd/context-map.md
   - 실행하면: 출력 서른세 줄이 그대로 나오고, ddd에 where-rules-live.md가 보이고, 컨텍스트 맵에 재고 되돌리기와 주문 조회 서비스가 보인다
