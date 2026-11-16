@@ -5,11 +5,13 @@ public class Product {
     private final long id;
     private final String name;
     private final Money price;
+    private int stock;
 
-    public Product(long id, String name, Money price) {
+    public Product(long id, String name, Money price, int stock) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.stock = stock;
     }
 
     public long getId() {
@@ -22,6 +24,10 @@ public class Product {
 
     public Money getPrice() {
         return price;
+    }
+
+    public int getStock() {
+        return stock;
     }
 
     @Override

@@ -15,6 +15,7 @@ public class Order implements Serializable {
     private Money totalPrice;
     private Money discountPrice;
     private OrderStatus status;
+    private List<Object> events;
 
     public Order(long id, long memberId, List<OrderLine> orderLines, Address address) {
         if (orderLines.isEmpty()) {
@@ -30,6 +31,8 @@ public class Order implements Serializable {
         }
         this.discountPrice = new Money(0);
         this.status = OrderStatus.ORDERED;
+        this.events = new ArrayList<>();
+        events.add(new OrderPlaced(id, List.copyOf(orderLines)));
     }
 
     public long getId() {
@@ -69,6 +72,10 @@ public class Order implements Serializable {
 
     public OrderStatus getStatus() {
         return status;
+    }
+
+    public List<Object> getEvents() {
+        return List.copyOf(events);
     }
 
     public void addOrderLine(OrderLine orderLine) {

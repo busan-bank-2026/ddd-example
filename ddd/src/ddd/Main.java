@@ -29,9 +29,9 @@ public class Main {
         memberRepository.save(new Member(2, "이영희", MemberGrade.BASIC));
 
         ProductRepository productRepository = new MemoryProductRepository();
-        productRepository.save(new Product(1, "자바 책", new Money(15000)));
-        productRepository.save(new Product(2, "볼펜", new Money(1000)));
-        productRepository.save(new Product(3, "공책", new Money(2000)));
+        productRepository.save(new Product(1, "자바 책", new Money(15000), 10));
+        productRepository.save(new Product(2, "볼펜", new Money(1000), 10));
+        productRepository.save(new Product(3, "공책", new Money(2000), 10));
 
         OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository(),
                 new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy());
@@ -48,6 +48,8 @@ public class Main {
             System.out.println("주문 항목: " + orderLine.productName() + " " + orderLine.quantity() + "개, "
                     + orderLine.amount().amount() + "원");
         }
+        System.out.println("주문 뒤: 이벤트 " + order.getEvents().size() + "개, 자바 책 재고 "
+                + productRepository.findById(1).orElseThrow().getStock() + "개");
 
         orderService.pay(orderId);
         System.out.println("결제: " + orderService.findOrder(orderId).getStatus().label());
@@ -76,7 +78,7 @@ public class Main {
         }
 
         try {
-            productRepository.save(new Product(4, "할인 책", new Money(-15000)));
+            productRepository.save(new Product(4, "할인 책", new Money(-15000), 10));
             long order3Id = orderService.placeOrder(new PlaceOrderCommand(2,
                     List.of(new OrderLineCommand(4, 2)), "대구시 수성구"));
             System.out.println("음수 금액 주문: " + orderService.findOrder(order3Id).getTotalPrice().amount() + "원");
@@ -159,7 +161,7 @@ public class Main {
         System.out.println("6만원 주문 배송비: 서울 " + orderService.findOrder(seoulOrderId).getShippingFee().amount()
                 + "원, 제주 " + orderService.findOrder(jejuOrderId).getShippingFee().amount() + "원");
 
-        productRepository.save(new Product(1, "자바 책", new Money(18000)));
+        productRepository.save(new Product(1, "자바 책", new Money(18000), 10));
         Order firstOrder = orderService.findOrder(orderId);
         OrderLine bookLine = firstOrder.getOrderLines().get(0);
         Product book = productRepository.findById(bookLine.productId()).orElseThrow();

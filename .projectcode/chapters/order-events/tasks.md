@@ -1,7 +1,7 @@
 # order-events 작업
 
 - [x] 테스트 작성
-- [ ] T1 주문이 주문 접수됨 이벤트 남기기
+- [x] T1 주문이 주문 접수됨 이벤트 남기기
   - 근거: S1, S2, S5
   - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/OrderPlaced.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 볼펜 항목 줄 다음에 주문 뒤: 이벤트 1개, 자바 책 재고 10개가 찍히고, src/ddd/domain에 OrderPlaced가 더 보인다
