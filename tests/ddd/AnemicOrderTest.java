@@ -16,15 +16,28 @@ import org.junit.jupiter.api.Test;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
+import ddd.domain.Money;
 import ddd.domain.Order;
+import ddd.domain.OrderLineFactory;
+import ddd.domain.Product;
+import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryOrderRepository;
+import ddd.infrastructure.MemoryProductRepository;
 
 class AnemicOrderTest {
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+    private static OrderLineFactory orderLineFactory() {
+        ProductRepository products = new MemoryProductRepository();
+        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(2, "볼펜", new Money(1000)));
+        products.save(new Product(3, "공책", new Money(2000)));
+        return new OrderLineFactory(products);
+    }
+
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
 
     private long newOrder() {
-        return service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        return service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
     }
 
     @Test

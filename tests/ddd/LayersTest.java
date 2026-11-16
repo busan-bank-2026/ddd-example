@@ -35,6 +35,7 @@ class LayersTest {
             "두 번 결제: 결제 완료인 주문은 결제할 수 없습니다",
             "배송 완료: 배송 완료",
             "없는 주문 결제: 주문이 없습니다",
+            "없는 상품 주문: 상품이 없습니다",
             "저장 안 한 취소: 주문 접수",
             "가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원") + System.lineSeparator();
 
@@ -85,7 +86,7 @@ class LayersTest {
             assertMoved("application", name);
         }
         Class<?> service = Class.forName("ddd.application.OrderApplicationService");
-        assertEquals(List.of(Class.forName("ddd.domain.OrderRepository")),
+        assertEquals(List.of(Class.forName("ddd.domain.OrderRepository"), Class.forName("ddd.domain.OrderLineFactory")),
                 List.of(service.getConstructors()[0].getParameterTypes()));
         assertEquals(EXPECTED, runMain());
     }

@@ -22,9 +22,21 @@ import ddd.application.PlaceOrderCommand;
 import ddd.domain.Address;
 import ddd.domain.Money;
 import ddd.domain.Order;
+import ddd.domain.OrderLineFactory;
+import ddd.domain.Product;
+import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryOrderRepository;
+import ddd.infrastructure.MemoryProductRepository;
 
 class ValueObjectTest {
+
+    private static OrderLineFactory orderLineFactory() {
+        ProductRepository products = new MemoryProductRepository();
+        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(2, "볼펜", new Money(1000)));
+        products.save(new Product(3, "공책", new Money(2000)));
+        return new OrderLineFactory(products);
+    }
 
     private String runMain() {
         PrintStream original = System.out;
@@ -74,13 +86,13 @@ class ValueObjectTest {
     @Test
     @DisplayName("S4 주문의 가격과 주문 금액은 돈이다. 음수 가격으로 주문하면 주문이 만들어지지 않고 거절 메시지를 보여준다")
     void s4() {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
-        Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구")));
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구")));
 
         assertEquals(new Money(15000), order.getOrderLines().get(0).price());
         assertEquals(new Money(30000), order.getTotalPrice());
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand(2, List.of(new OrderLineCommand(1, "자바 책", -15000, 2)), "대구시 수성구")));
+                () -> new Product(4, "할인 책", new Money(-15000)));
         assertEquals("금액은 0원 이상이어야 합니다", error.getMessage());
 
         String printed = runMain();
@@ -97,11 +109,11 @@ class ValueObjectTest {
         assertEquals(new Address("서울시 강남구"), new Address("서울시 강남구"));
         assertNotEquals(new Address("부산시 해운대구"), new Address("서울시 강남구"));
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
-        Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구")));
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        Order order = service.findOrder(service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구")));
         assertEquals(new Address("서울시 강남구"), order.getAddress());
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand(2, List.of(new OrderLineCommand(1, "자바 책", 15000, 1)), "")));
+                () -> service.placeOrder(new PlaceOrderCommand(2, List.of(new OrderLineCommand(1, 1)), "")));
         assertEquals("배송 주소를 입력해야 합니다", error.getMessage());
 
         assertTrue(runMain().contains("빈 주소 주문: 배송 주소를 입력해야 합니다"));

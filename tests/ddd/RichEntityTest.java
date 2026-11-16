@@ -26,9 +26,21 @@ import ddd.domain.Address;
 import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
+import ddd.domain.OrderLineFactory;
+import ddd.domain.Product;
+import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryOrderRepository;
+import ddd.infrastructure.MemoryProductRepository;
 
 class RichEntityTest {
+
+    private static OrderLineFactory orderLineFactory() {
+        ProductRepository products = new MemoryProductRepository();
+        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(2, "볼펜", new Money(1000)));
+        products.save(new Product(3, "공책", new Money(2000)));
+        return new OrderLineFactory(products);
+    }
 
     private String runMain() {
         PrintStream original = System.out;
@@ -62,9 +74,9 @@ class RichEntityTest {
         assertEquals(first.hashCode(), sameNumber.hashCode());
         assertNotEquals(first, otherNumber);
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
-        long placed1 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
-        long placed2 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        long placed1 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        long placed2 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         assertEquals(1, placed1);
         assertEquals(2, placed2);
         assertEquals(1, service.findOrder(placed1).getId());
@@ -102,8 +114,8 @@ class RichEntityTest {
         unpaid.cancel();
         assertEquals("취소", unpaid.getStatus().label());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
-        long placed = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
+        long placed = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         service.pay(placed);
         service.ship(placed);
         assertEquals("배송 중", service.findOrder(placed).getStatus().label());

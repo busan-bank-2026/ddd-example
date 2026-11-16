@@ -1,6 +1,6 @@
 # order-factory 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 팩토리로 주문 항목 만들기
   - 근거: S1, S2, S3, S5
   - 파일: ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md

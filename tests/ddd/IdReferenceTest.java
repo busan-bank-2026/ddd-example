@@ -26,6 +26,7 @@ import ddd.domain.MemberRepository;
 import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
+import ddd.domain.OrderLineFactory;
 import ddd.domain.OrderRepository;
 import ddd.domain.Product;
 import ddd.domain.ProductRepository;
@@ -34,6 +35,14 @@ import ddd.infrastructure.MemoryOrderRepository;
 import ddd.infrastructure.MemoryProductRepository;
 
 class IdReferenceTest {
+
+    private static OrderLineFactory orderLineFactory() {
+        ProductRepository products = new MemoryProductRepository();
+        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(2, "볼펜", new Money(1000)));
+        products.save(new Product(3, "공책", new Money(2000)));
+        return new OrderLineFactory(products);
+    }
 
     private String runMain() {
         PrintStream original = System.out;
@@ -101,9 +110,9 @@ class IdReferenceTest {
     @Test
     @DisplayName("S3 주문은 회원을 객체로 갖지 않고 회원 번호로 가리킨다. 주문하기 명령은 주문자 이름 대신 회원 번호를 담고, Main은 주문의 회원 번호로 회원 저장소에서 회원을 찾아 이름을 보여준다")
     void s3() throws Exception {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
         PlaceOrderCommand command = new PlaceOrderCommand(7,
-                List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구");
+                List.of(new OrderLineCommand(1, 2)), "서울시 강남구");
         assertEquals(7L, command.memberId());
 
         Order order = service.findOrder(service.placeOrder(command));
@@ -121,12 +130,12 @@ class IdReferenceTest {
     @Test
     @DisplayName("S4 주문 항목은 상품을 객체로 갖지 않고 상품 번호로 가리킨다. 주문 항목 명령과 주문 항목은 상품 번호, 주문 때의 상품 이름, 가격, 수량을 담는다")
     void s4() {
-        OrderLineCommand command = new OrderLineCommand(2, "볼펜", 1000, 3);
+        OrderLineCommand command = new OrderLineCommand(2, 3);
         assertEquals(2L, command.productId());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(command), "서울시 강남구"));
-        service.addOrderLine(orderId, new OrderLineCommand(3, "공책", 2000, 5));
+        service.addOrderLine(orderId, new OrderLineCommand(3, 5));
 
         List<OrderLine> orderLines = service.findOrder(orderId).getOrderLines();
         assertEquals(new OrderLine(2, "볼펜", new Money(1000), 3), orderLines.get(0));
@@ -148,9 +157,9 @@ class IdReferenceTest {
         Product book = products.findById(1).orElseThrow();
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders);
+        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products));
         long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(
-                new OrderLineCommand(book.getId(), book.getName(), book.getPrice().amount(), 2)), "서울시 강남구"));
+                new OrderLineCommand(book.getId(), 2)), "서울시 강남구"));
 
         products.save(new Product(1, "자바 책", new Money(18000)));
 

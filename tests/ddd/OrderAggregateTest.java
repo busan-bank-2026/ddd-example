@@ -22,11 +22,23 @@ import ddd.domain.Address;
 import ddd.domain.Money;
 import ddd.domain.Order;
 import ddd.domain.OrderLine;
+import ddd.domain.OrderLineFactory;
+import ddd.domain.Product;
+import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryOrderRepository;
+import ddd.infrastructure.MemoryProductRepository;
 
 class OrderAggregateTest {
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+    private static OrderLineFactory orderLineFactory() {
+        ProductRepository products = new MemoryProductRepository();
+        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(2, "볼펜", new Money(1000)));
+        products.save(new Product(3, "공책", new Money(2000)));
+        return new OrderLineFactory(products);
+    }
+
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
 
     private String runMain() {
         PrintStream original = System.out;
@@ -46,8 +58,8 @@ class OrderAggregateTest {
 
     private long newOrderId() {
         return service.placeOrder(new PlaceOrderCommand(1, List.of(
-                new OrderLineCommand(1, "자바 책", 15000, 2),
-                new OrderLineCommand(2, "볼펜", 1000, 1)), "서울시 강남구"));
+                new OrderLineCommand(1, 2),
+                new OrderLineCommand(2, 1)), "서울시 강남구"));
     }
 
     @Test

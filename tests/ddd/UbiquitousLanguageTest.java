@@ -14,16 +14,29 @@ import org.junit.jupiter.api.Test;
 import ddd.application.OrderApplicationService;
 import ddd.application.OrderLineCommand;
 import ddd.application.PlaceOrderCommand;
+import ddd.domain.Money;
+import ddd.domain.OrderLineFactory;
+import ddd.domain.Product;
+import ddd.domain.ProductRepository;
 import ddd.infrastructure.MemoryOrderRepository;
+import ddd.infrastructure.MemoryProductRepository;
 
 class UbiquitousLanguageTest {
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository());
+    private static OrderLineFactory orderLineFactory() {
+        ProductRepository products = new MemoryProductRepository();
+        products.save(new Product(1, "자바 책", new Money(15000)));
+        products.save(new Product(2, "볼펜", new Money(1000)));
+        products.save(new Product(3, "공책", new Money(2000)));
+        return new OrderLineFactory(products);
+    }
+
+    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory());
 
     @Test
     @DisplayName("S1 주문을 만드는 일을 업무 말인 주문하기로 부른다")
     void s1() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
 
         assertEquals("주문 접수", service.findOrder(orderId).getStatus().label());
         assertEquals(30000, service.findOrder(orderId).getTotalPrice().amount());
@@ -32,7 +45,7 @@ class UbiquitousLanguageTest {
     @Test
     @DisplayName("S2 결제 상태를 바꾸는 일을 결제하기로 부른다")
     void s2() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
 
         service.pay(orderId);
 
@@ -42,7 +55,7 @@ class UbiquitousLanguageTest {
     @Test
     @DisplayName("S3 배송 상태를 바꾸는 일을 배송하기로 부른다")
     void s3() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
         service.pay(orderId);
 
         service.ship(orderId);
@@ -53,7 +66,7 @@ class UbiquitousLanguageTest {
     @Test
     @DisplayName("S4 주문을 지우는 일을 주문 취소하기로 부른다. 주문은 지워지지 않고 취소 상태가 된다")
     void s4() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, "자바 책", 15000, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
 
         service.cancel(orderId);
 
