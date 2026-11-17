@@ -3,21 +3,21 @@
 - [x] 테스트 작성
 - [x] T1 회원에 등급 더하기
   - 근거: S1, S5
-  - 파일: ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 김철수를 VIP로, 이영희를 일반으로 저장했는데 출력 스무 줄은 그대로이고, src/ddd/domain에 MemberGrade가 더 보인다
+  - 파일: ddd/src/ddd/order/domain/MemberGrade.java, ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: ===== 회원 등급 할인 ===== 아래 [회원 등급 정하기]에 김철수 회원 등급: VIP와 이영희 회원 등급: BASIC이 찍히고, src/ddd/order/domain에 MemberGrade가 더 보인다
   - Why: 할인을 정하려면 회원이 어떤 등급인지 먼저 알아야 한다. 등급은 회원이 누구인지를 말하므로 회원이 갖는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory
 - [x] T2 할인 정책으로 결제 금액 정하기
   - 근거: S2, S3, S4, S5
-  - 파일: ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 결제: 결제 완료 줄 다음에 할인: VIP 3100원, 결제 금액 27900원이 찍힌다
+  - 파일: ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: [할인 정책으로 결제하기]에 김철수 VIP 결제 금액: 31000원 -> 27900원, 할인 3100원과 이영희 BASIC 결제 금액: 31000원 -> 31000원, 할인 0원이 찍힌다
   - Why: 할인은 회원 등급과 주문 금액을 함께 봐야 해서 회원에도 주문에도 속하지 않는다. 계산은 도메인 서비스가 하고, 할인 금액을 기억하며 결제 완료가 되는 일은 주문이 한다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T3 할인 금액을 int로 계산하기
+- [x] T3 할인 금액을 int로 계산하기
   - 근거: 고침 T1, T2
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/MemberGrade.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 돈 값 객체가 없어졌다. 출력은 이 장 장면만 보인다

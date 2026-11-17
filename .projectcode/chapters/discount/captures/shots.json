@@ -3,14 +3,14 @@
   "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main",
   "cwd": "ddd",
   "shots": [
-    { "file": "T1-회원-등급.txt", "task": "T1", "commit": "79f568c", "screen": "콘솔 실행과 domain 폴더",
-      "see": "김철수를 VIP로, 이영희를 일반으로 저장했는데 출력 스무 줄은 그대로이고, 이어서 src/ddd/domain에 MemberGrade가 더 보인다",
-      "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && dir /b src\\ddd\\domain" } },
-    { "file": "T2-할인-정책.txt", "task": "T2", "commit": "fd26f78", "screen": "콘솔 실행과 domain 폴더",
-      "see": "결제: 결제 완료 줄 다음에 할인: VIP 3100원, 결제 금액 27900원이 찍히고, 이어서 src/ddd/domain에 DiscountPolicy가 더 보인다",
-      "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && dir /b src\\ddd\\domain" } },
-    { "file": "done-주문-장면.txt", "task": "done", "commit": "fd26f78", "screen": "콘솔 실행 (이클립스 Run 대신)",
-      "see": "시작 글부터 가격 바뀐 뒤까지 스물한 줄이 spec 실행 결과와 같게 찍힌다",
+    { "file": "T1-회원-등급.txt", "task": "T1", "commit": "31a7a4b", "screen": "콘솔 실행과 domain 폴더",
+      "see": "===== 회원 등급 할인 ===== 아래 [회원 등급 정하기]에 김철수 회원 등급: VIP와 이영희 회원 등급: BASIC이 찍히고, 이어서 src/ddd/order/domain에 MemberGrade가 더 보인다",
+      "run": {"command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && dir /b src\\ddd\\order\\domain"} },
+    { "file": "T2-할인-정책.txt", "task": "T2", "commit": "f9ece31", "screen": "콘솔 실행과 domain 폴더",
+      "see": "[할인 정책으로 결제하기]에 김철수 VIP 결제 금액: 31000원 -> 27900원, 할인 3100원과 이영희 BASIC 결제 금액: 31000원 -> 31000원, 할인 0원이 찍히고, 이어서 src/ddd/order/domain에 DiscountPolicy가 더 보인다",
+      "run": {"command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && dir /b src\\ddd\\order\\domain"} },
+    { "file": "done-주문-장면.txt", "task": "done", "commit": "f9ece31", "screen": "콘솔 실행 (이클립스 Run 대신)",
+      "see": "===== 회원 등급 할인 =====부터 이영희 결제 금액 줄까지 spec 실행 결과와 같게 찍힌다",
       "run": {} }
   ]
 }

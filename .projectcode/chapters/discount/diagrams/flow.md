@@ -11,7 +11,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  S[OrderApplicationService] --> OR[OrderRepository]
+  S[OrderService] --> OR[OrderRepository]
   S --> MR[MemberRepository]
   S --> P[**DiscountPolicy**]
   P --> M[Member]
