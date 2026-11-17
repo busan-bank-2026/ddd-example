@@ -104,7 +104,7 @@ class OrderSagaTest {
     }
 
     @Test
-    @DisplayName("S1 결제가 거절된 주문도 이벤트를 처리하면 재고가 줄어 있고 주문은 주문 접수로 남는 문제를 실행해 보여준다. Main은 노트북(120000원, 재고 10개) 1개를 이영희가 주문하고 결제해 거절되면, 이벤트를 처리한 뒤 노트북 재고와 주문 상태를 보여준다")
+    @DisplayName("S1 결제가 거절된 주문도 이벤트를 처리하면 재고가 줄어 있고 주문은 주문 접수로 남는 문제를 실행해 보여준다. Main은 노트북(120000원, 재고 10개) 1개를 김철수가 주문하고 결제해 거절되면, 이벤트를 처리한 뒤 노트북 재고와 주문 상태를 보여준다")
     void s1() throws Exception {
         String main = Files.readString(Path.of("src/ddd/Main.java"));
         assertTrue(main.contains("new Product(1, \"노트북\", 120000, 10)"));
@@ -180,7 +180,7 @@ class OrderSagaTest {
     }
 
     @Test
-    @DisplayName("S4 결제하기가 결제 창구에서 거절되면 보상으로 주문 취소하기를 하고 거절 이유로 거절한다. 주문은 취소가 되고, 이벤트를 처리하면 재고는 주문 전과 같다. 결제 완료 메시지는 없다. Main의 한도 넘은 결제와 결제 실패 뒤 줄이 취소를 보여준다")
+    @DisplayName("S4 결제하기가 결제 창구에서 거절되면 보상으로 주문 취소하기를 하고 거절 이유로 거절한다. 주문은 취소가 되고, 이벤트를 처리하면 재고는 주문 전과 같다. 결제 완료 메시지는 없다. Main의 결제하기 장면이 주문 상태 취소와 되돌아온 노트북 재고를 보여준다")
     void s4() throws Exception {
         ProductRepository products = products();
         EventPublisher publisher = new EventPublisher();

@@ -58,7 +58,7 @@ class OrderEventsTest {
     }
 
     @Test
-    @DisplayName("S1 상품은 재고를 가진다. 상품을 만들 때 재고를 정하고 물으면 답한다. Main은 상품마다 재고 10개로 저장한다")
+    @DisplayName("S1 상품은 재고를 가진다. 상품을 만들 때 재고를 정하고 물으면 답한다. Main은 자바 책을 재고 10개로 저장한다")
     void s1() {
         Product book = new Product(1, "자바 책", 15000, 10);
         assertEquals(10, book.getStock());
@@ -66,7 +66,7 @@ class OrderEventsTest {
     }
 
     @Test
-    @DisplayName("S2 주문은 만들어질 때 주문 접수됨 이벤트를 남긴다. 이벤트는 주문 번호와 주문 항목을 담는다. 주문은 상품 재고를 직접 줄이지 않는다. Main이 첫 주문 항목 다음에 남긴 이벤트 수와 자바 책 재고를 보여준다")
+    @DisplayName("S2 주문은 만들어질 때 주문 접수됨 이벤트를 남긴다. 이벤트는 주문 번호와 주문 항목을 담는다. 주문은 상품 재고를 직접 줄이지 않는다. Main이 자바 책 2개 주문 뒤 남긴 이벤트 수와 자바 책 재고를 전 -> 후로 보여준다")
     void s2() {
         List<OrderItem> orderLines = List.of(new OrderItem(1, "자바 책", 15000, 2),
                 new OrderItem(2, "볼펜", 1000, 1));
@@ -86,7 +86,7 @@ class OrderEventsTest {
     }
 
     @Test
-    @DisplayName("S3 주문 응용 서비스는 주문을 저장한 뒤 주문이 남긴 이벤트를 이벤트 발행기에 넘긴다. 이벤트 발행기는 받은 이벤트를 쌓아 두었다가, 이벤트를 처리할 때 그 이벤트를 구독한 곳에 한 번씩 보낸다")
+    @DisplayName("S3 주문 응용 서비스는 주문을 저장한 뒤 주문이 남긴 이벤트를 이벤트 발행기에 넘긴다. 이벤트 발행기는 받은 이벤트를 쌓아 두었다가, 이벤트를 처리할 때 구독한 이벤트 처리기마다 한 번씩 보낸다. 이벤트 처리기는 받은 이벤트 중 자기 것만 골라 처리한다")
     void s3() {
         EventPublisher publisher = new EventPublisher();
         List<Object> received = new ArrayList<>();
@@ -125,7 +125,7 @@ class OrderEventsTest {
     }
 
     @Test
-    @DisplayName("S4 재고 줄이기 처리기는 주문 접수됨 이벤트를 받아 주문 항목마다 상품 재고를 수량만큼 줄이고 저장한다. 이벤트를 처리하기 전에는 주문만 저장되고 재고는 그대로이고, 처리한 뒤에 재고가 맞춰진다. Main이 이벤트 처리 뒤 자바 책 재고를 보여준다")
+    @DisplayName("S4 재고 줄이기 처리기는 주문 접수됨 이벤트를 받아 주문 항목마다 상품 재고를 수량만큼 줄이고 저장한다. 이벤트를 처리하기 전에는 주문만 저장되고 재고는 그대로이고, 처리한 뒤에 재고가 맞춰진다. Main이 이벤트 처리 전 -> 후 자바 책 재고를 보여준다")
     void s4() {
         Product book = new Product(1, "자바 책", 15000, 10);
         book.decreaseStock(3);
@@ -157,7 +157,7 @@ class OrderEventsTest {
     }
 
     @Test
-    @DisplayName("S5 용어집에 재고, 주문 접수됨, 이벤트 발행기, 재고 줄이기, 재고 줄이기 처리기를 더하고 상품 줄에 재고를 넣는다")
+    @DisplayName("S5 용어집에 재고, 주문 접수됨, 이벤트 발행기, 이벤트 처리기, 재고 줄이기, 재고 줄이기 처리기를 더하고 상품 줄에 재고를 넣는다")
     void s5() throws Exception {
         String glossary = Files.readString(Path.of("glossary.md"));
 

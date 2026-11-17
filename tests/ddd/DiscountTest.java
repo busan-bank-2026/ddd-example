@@ -45,7 +45,7 @@ class DiscountTest {
     }
 
     @Test
-    @DisplayName("S1 회원은 회원 번호, 이름과 함께 회원 등급을 가진다. 등급은 일반과 VIP 둘이다. Main은 김철수를 VIP로, 이영희를 일반으로 저장하고, 앞 장 출력 스무 줄은 그대로다")
+    @DisplayName("S1 회원은 회원 번호, 이름과 함께 회원 등급을 가진다. 등급은 일반과 VIP 둘이다. Main은 김철수를 VIP로, 이영희를 일반으로 저장하고 두 회원의 등급을 보여준다")
     void s1() throws Exception {
         Member vip = new Member(1, "김철수", MemberGrade.VIP);
         assertEquals(1L, vip.getId());
@@ -93,7 +93,7 @@ class DiscountTest {
     }
 
     @Test
-    @DisplayName("S4 주문 응용 서비스는 결제하기에서 주문을 꺼내고, 회원을 찾고, 할인 정책에게 할인 금액을 계산하게 하고, 주문에게 결제를 시키고, 저장한다. Main이 첫 주문의 할인 장면을 보여준다")
+    @DisplayName("S4 주문 응용 서비스는 결제하기에서 주문을 꺼내고, 회원을 찾고, 할인 정책에게 할인 금액을 계산하게 하고, 주문에게 결제를 시키고, 저장한다. Main이 VIP 회원과 일반 회원이 같은 상품을 주문하고 결제한 결제 금액과 할인 금액을 보여준다")
     void s4() {
         assertEquals(List.of(OrderRepository.class, OrderItemFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class,
                 PaymentGateway.class, MessageSender.class),

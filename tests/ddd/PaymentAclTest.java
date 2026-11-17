@@ -118,7 +118,7 @@ class PaymentAclTest {
     }
 
     @Test
-    @DisplayName("S4 결제하기는 결제 금액을 결제 창구에 맡긴다. 승인이면 저장하고 결제 완료 메시지를 넘긴다. 거절이면 거절 이유로 결제를 거절하고, 주문은 주문 접수로 남고, 결제 완료 메시지도 없다. Main은 자바 책 6개 주문을 결제해 거절 이유와 주문 상태를 보여준다")
+    @DisplayName("S4 결제하기는 결제 금액을 결제 창구에 맡긴다. 승인이면 저장하고 결제 완료 메시지를 넘긴다. 거절이면 거절 이유로 결제를 거절하고, 주문은 주문 접수로 남고, 결제 완료 메시지도 없다. Main은 자바 책 2개 주문의 승인과 자바 책 8개 주문의 거절 이유와 주문 상태를 보여준다")
     void s4() throws Exception {
         List<String> messages = new ArrayList<>();
         OrderService service = service(new LegacyPaymentAdapter(new LegacyPayGateway()), messages::add);

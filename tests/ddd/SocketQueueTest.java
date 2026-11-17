@@ -103,7 +103,7 @@ class SocketQueueTest {
     }
 
     @Test
-    @DisplayName("S1 소켓 발행기는 이벤트 발행기 자리에 그대로 들어간다. 결제 완료 메시지 글자는 받는 쪽 포트로 소켓을 열어 한 줄로 보내고, 주문 접수됨 같은 다른 이벤트는 지금처럼 발행기 안에 모아 두었다가 처리할 때 구독자에게 넘긴다")
+    @DisplayName("S1 소켓 메시지 보내기는 메시지 보내기 자리에 그대로 들어간다. 결제 완료 메시지 글자를 받는 쪽 포트로 소켓을 열어 한 줄로 보낸다. 주문 접수됨 같은 도메인 이벤트는 지금처럼 이벤트 발행기에 남는다")
     void s1() throws Exception {
         assertTrue(MessageSender.class.isAssignableFrom(SocketMessageSender.class));
         assertEquals("ddd.order.infrastructure", SocketMessageSender.class.getPackageName());
@@ -177,7 +177,7 @@ class SocketQueueTest {
     }
 
     @Test
-    @DisplayName("S4 주문 앱(보내는 쪽 main)은 이벤트 발행기 자리에 9090번 포트로 보내는 소켓 발행기를 넣어 주문 응용 서비스를 만들고, 김철수가 자바 책 2개와 볼펜 1개를 서울시 강남구로 주문하고 결제한다. 결제 완료 메시지는 다른 프로그램인 배송 앱이 받는다")
+    @DisplayName("S4 주문 앱(보내는 쪽 main)은 메시지 보내기 자리에 9090번 포트로 보내는 소켓 메시지 보내기를 넣어 주문 응용 서비스를 만들고, 김철수가 자바 책 2개와 볼펜 1개를 서울시 강남구로 주문하고 결제한다. 결제 완료 메시지는 다른 프로그램인 배송 앱이 받는다")
     void s4() throws Exception {
         PrintStream original = System.out;
         ByteArrayOutputStream out = new ByteArrayOutputStream();

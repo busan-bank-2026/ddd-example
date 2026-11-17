@@ -52,7 +52,7 @@ class OptimisticLockTest {
     }
 
     @Test
-    @DisplayName("S1 결제 완료인 같은 주문을 두 번 꺼내 하나로 배송하고 저장한 뒤, 옛 상태인 다른 하나로 취소하고 저장하면 배송 중인 주문이 취소로 덮이는 문제를 실행해 보여준다")
+    @DisplayName("S1 결제 완료인 같은 주문을 두 번 꺼내 첫째로 배송하고 저장한 뒤, 옛 상태인 둘째로 취소하고 저장하면 배송 중인 주문이 취소로 덮이는 문제를 실행해 보여준다")
     void s1() {
         OrderRepository orders = new MemoryOrderRepository();
         Order order = newOrder();
@@ -69,7 +69,7 @@ class OptimisticLockTest {
     }
 
     @Test
-    @DisplayName("S2 주문은 버전을 가진다. 새 주문은 버전 0이고, 주문 저장소에 저장할 때마다 버전이 1씩 오른다. 꺼낸 주문은 저장된 버전을 가진다")
+    @DisplayName("S2 주문은 버전을 가진다. 새 주문은 버전 0이고, 주문 저장소에 저장할 때마다 버전이 1씩 오른다. 꺼낸 주문은 저장된 버전을 가진다. Main이 결제하고 저장한 주문의 버전을 전 -> 후로 보여준다")
     void s2() {
         Order order = newOrder();
         assertEquals(0, order.getVersion());
@@ -92,7 +92,7 @@ class OptimisticLockTest {
     }
 
     @Test
-    @DisplayName("S3 주문 저장소는 저장된 주문과 저장하려는 주문의 버전이 다르면 다른 곳에서 먼저 바꾼 주문이라고 저장을 거절한다. 거절되면 저장된 주문은 그대로다. Main의 동시 수정 장면은 거절 메시지를 보여준다")
+    @DisplayName("S3 주문 저장소는 저장된 주문과 저장하려는 주문의 버전이 다르면 다른 곳에서 먼저 바꾼 주문이라고 저장을 거절한다. 거절되면 저장된 주문은 그대로다. Main의 동시 수정 장면은 거절 메시지와 저장된 주문 상태를 보여준다")
     void s3() {
         OrderRepository orders = new MemoryOrderRepository();
         Order order = newOrder();

@@ -42,7 +42,7 @@ class LayersTest {
     }
 
     @Test
-    @DisplayName("S1 주문, 주문 항목, 주소, 주문 상태, 주문 저장소를 도메인 계층 묶음 ddd.domain에 둔다")
+    @DisplayName("S1 주문, 주문 항목, 주소, 주문 상태, 주문 저장소를 도메인 계층 묶음 ddd.order.domain에 둔다")
     void s1() throws Exception {
         for (String name : List.of("Order", "OrderItem", "Address", "OrderStatus", "OrderRepository")) {
             assertMoved("order.domain", name);
@@ -51,7 +51,7 @@ class LayersTest {
     }
 
     @Test
-    @DisplayName("S2 주문 응용 서비스, 주문 요청, 주문 항목 요청을 응용 계층 묶음 ddd.application에 둔다")
+    @DisplayName("S2 주문 응용 서비스, 주문 요청, 주문 항목 요청을 응용 계층 묶음 ddd.order.application에 둔다")
     void s2() throws Exception {
         for (String name : List.of("OrderService", "OrderRequest", "OrderItemRequest")) {
             assertMoved("order.application", name);
@@ -64,7 +64,7 @@ class LayersTest {
     }
 
     @Test
-    @DisplayName("S3 메모리 주문 저장소를 인프라 계층 묶음 ddd.infrastructure에 두고, 도메인 계층의 주문 저장소를 구현한다")
+    @DisplayName("S3 메모리 주문 저장소를 인프라 계층 묶음 ddd.order.infrastructure에 두고, 도메인 계층의 주문 저장소를 구현한다")
     void s3() throws Exception {
         assertMoved("order.infrastructure", "MemoryOrderRepository");
         Class<?> memory = Class.forName("ddd.order.infrastructure.MemoryOrderRepository");

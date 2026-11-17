@@ -63,7 +63,7 @@ class ShippingContextTest {
     }
 
     @Test
-    @DisplayName("S1 결제하기가 끝나면 주문 컨텍스트의 공개 호스트 서비스가 결제 완료 메시지를 정해진 한 줄 글자 ORDER_PAID|orderId=주문 번호|address=배송 주소로 만들어 이벤트 발행기에 넘긴다. Main은 이벤트를 처리할 때 받은 메시지를 보여준다")
+    @DisplayName("S1 결제하기가 끝나면 주문 컨텍스트의 공개 호스트 서비스인 결제 완료 알리미가 결제 완료 메시지를 정해진 한 줄 글자 ORDER_PAID|orderId=주문 번호|address=배송 주소로 만들어 메시지 보내기에 넘긴다. Main은 보낸 메시지와 주문 상태를 전 -> 후로 보여준다")
     void s1() throws Exception {
         assertEquals("ddd.order.application",
                 Class.forName("ddd.order.application.OrderPaidNotifier").getPackageName());
@@ -96,7 +96,7 @@ class ShippingContextTest {
     }
 
     @Test
-    @DisplayName("S2 컨텍스트 맵에 공개 호스트 서비스와 발행된 언어 절을 더해 결제 완료 메시지의 모양을 적고, 용어집에 공개 호스트 서비스와 결제 완료 메시지를 더한다")
+    @DisplayName("S2 컨텍스트 맵에 공개 호스트 서비스와 발행된 언어 절을 더해 결제 완료 메시지의 모양을 적고, 용어집에 결제 완료 알리미, 메시지 보내기, 결제 완료 메시지를 더한다")
     void s2() throws Exception {
         String host = section(Files.readString(Path.of("context-map.md")), "공개 호스트 서비스와 발행된 언어");
         assertTrue(host.contains("OrderPaidNotifier"));

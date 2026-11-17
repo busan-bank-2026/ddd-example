@@ -49,7 +49,7 @@ class FreeShippingTest {
     }
 
     @Test
-    @DisplayName("S2 주문은 배송비를 가진다. 무료 배송 명세를 만족하면 0원, 아니면 3000원이다. Main이 첫 주문의 할인 줄 다음에 배송비를 보여준다")
+    @DisplayName("S2 주문은 배송비를 가진다. 무료 배송 명세를 만족하면 0원, 아니면 3000원이다. Main이 30000원 주문과 60000원 주문의 배송비를 보여준다")
     void s2() {
         assertEquals(3000, newOrder(30000, "서울시 마포구").getShippingFee());
         assertEquals(0, newOrder(60000, "서울시 마포구").getShippingFee());

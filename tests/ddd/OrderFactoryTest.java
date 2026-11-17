@@ -86,7 +86,7 @@ class OrderFactoryTest {
     }
 
     @Test
-    @DisplayName("S3 주문 응용 서비스는 주문하기와 주문 항목 더하기에서 주문 항목 팩토리에게 주문 항목을 만들게 한다. Main은 팩토리를 만들어 주문 응용 서비스에 넘기고, 앞 장 출력 열아홉 줄은 그대로다")
+    @DisplayName("S3 주문 응용 서비스는 주문하기와 주문 항목 더하기에서 주문 항목 팩토리에게 주문 항목을 만들게 한다. Main은 팩토리를 만들어 주문 응용 서비스에 넘기고, 상품 번호와 수량으로 주문한 주문 항목의 이름과 가격을 보여준다")
     void s3() {
         assertEquals(List.of(OrderRepository.class, OrderItemFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class,
                 PaymentGateway.class, MessageSender.class),

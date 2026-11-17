@@ -92,7 +92,7 @@ class BoundedContextsTest {
     }
 
     @Test
-    @DisplayName("S4 남은 주문 쪽 클래스를 주문 컨텍스트 묶음 ddd.order 안의 domain, application, infrastructure에 둔다. src/ddd에는 Main과 네 묶음만 남는다")
+    @DisplayName("S4 주문 쪽 클래스는 layers 장부터 주문 컨텍스트 묶음 ddd.order 안의 domain, application, infrastructure에 있다. 회원과 상품을 옮기면 src/ddd에는 Main과 세 묶음만 남는다")
     void s4() throws Exception {
         for (String name : List.of("Address", "DiscountPolicy", "FreeShippingAreaSpecification",
                 "FreeShippingPriceSpecification", "FreeShippingSpecification", "Order", "OrderItem",
