@@ -2,12 +2,18 @@
 
 | 점검 | 결과 |
 |---|---|
-| 장 상태 | 맞음. 22장 모두 tasks.md가 모두 체크돼 있고 done 태그가 있다 |
-| 진행 중 | 맞음. 진행 중인 장이 없다 |
-| 장 자료 | 맞음. 22장 모두 captures.md, diagrams/tree.md, summary-code.md가 있고 장 끝 출력이 있다 |
-| 사진 | 맞음. captures.md의 파일이 모두 있다. 다시 찍지 못한 사진은 없다 |
+| 장 상태 | 22장 모두 완료이고 tasks.md의 작업이 모두 체크돼 있으며 done 태그가 있다 |
+| 진행 중 | 0개 |
+| 장 자료 | 22장 모두 captures/captures.md, diagrams/tree.md, summary-code.md와 장 끝 출력이 있다 |
+| 사진 | 캡처 목록 85개 파일의 존재를 확인했다 |
 | 미룬 것 | 일곱 개 모두 장 정하지 않음 |
-| 테스트 | 맞음. 118 tests successful |
+| 테스트 | 116 tests successful, 실패 0개 |
+
+확인 날짜: 2026-11-18
+테스트는 contract.md와 같은 소스 전체와 JUnit 명령으로 실행했다.
+bin-test 보호를 위해 컴파일 결과만 시스템 임시 폴더에 뒀다.
+콘솔 기록이 이클립스 화면을 대신한다.
+다시 찍지 못한 것으로 표시된 캡처는 없다.
 
 ## 어긋난 것
 

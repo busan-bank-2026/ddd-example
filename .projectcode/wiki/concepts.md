@@ -37,7 +37,6 @@
 | 하위 도메인 | 17 bounded-contexts |
 | 바운디드 컨텍스트 | 17 bounded-contexts |
 | 모듈 | 17 bounded-contexts |
-| 공유 커널 | 17 bounded-contexts |
 | 공개 호스트 서비스 | 18 shipping-context |
 | 발행된 언어 | 18 shipping-context |
 | 부패 방지 계층 | 19 payment-acl |

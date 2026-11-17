@@ -27,14 +27,15 @@ ddd/
           MemoryMemberRepository.java
       order/
         application/
+          EventHandler.java
           EventPublisher.java
-          OrderApplicationService.java
-          OrderLineCommand.java
-          OrderOpenHostService.java
+          MessageSender.java
+          OrderItemRequest.java
+          OrderPaidNotifier.java
           OrderQueryService.java
+          OrderRequest.java
+          OrderService.java
           OrderSummary.java
-          PlaceOrderCommand.java
-          SocketEventPublisher.java
         domain/
           Address.java
           DiscountPolicy.java
@@ -43,8 +44,8 @@ ddd/
           FreeShippingSpecification.java
           Order.java
           OrderCanceled.java
-          OrderLine.java
-          OrderLineFactory.java
+          OrderItem.java
+          OrderItemFactory.java
           OrderPlaced.java
           OrderRepository.java
           OrderSpecification.java
@@ -54,8 +55,7 @@ ddd/
         infrastructure/
           LegacyPaymentAdapter.java
           MemoryOrderRepository.java
-      shared/
-        Money.java
+          SocketMessageSender.java
       shipping/
         application/
           OrderPaidMessageHandler.java
@@ -75,6 +75,4 @@ ddd/
   context-map.md
   glossary.md
   where-rules-live.md
-test-lib/
-  junit-platform-console-standalone.jar
 ```
