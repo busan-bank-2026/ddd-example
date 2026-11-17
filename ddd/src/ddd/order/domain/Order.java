@@ -3,7 +3,6 @@ package ddd.order.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Order {
 
     private long id;

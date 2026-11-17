@@ -1,6 +1,5 @@
 package ddd.catalog.domain;
 
-
 public class Product {
 
     private final long id;
