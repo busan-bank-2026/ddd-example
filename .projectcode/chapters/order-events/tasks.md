@@ -3,28 +3,27 @@
 - [x] 테스트 작성
 - [x] T1 주문이 주문 접수됨 이벤트 남기기
   - 근거: S1, S2, S5
-  - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/OrderPlaced.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 볼펜 항목 줄 다음에 주문 뒤: 이벤트 1개, 자바 책 재고 10개가 찍히고, src/ddd/domain에 OrderPlaced가 더 보인다
+  - 파일: ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: ===== 주문 뒤 재고 줄이기 ===== 아래 [주문이 주문 접수됨 이벤트 남기기]에 자바 책 2개 주문: 1번 주문, 이벤트 1개와 자바 책 재고: 10개 -> 10개가 찍히고, src/ddd/order/domain에 OrderPlaced가 더 보인다
   - Why: 주문이 재고를 직접 줄이면 주문이 상품까지 바꾼다. 주문은 주문 접수됨이라는 일어난 일만 남기고 재고는 건드리지 않는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
 - [x] T2 저장 뒤 이벤트를 발행기에 넘기기
   - 근거: S3, S5
-  - 진행: 붙여넣기. EventPublisher.java 전체
-  - 파일: ddd/src/ddd/application/EventPublisher.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 출력은 T1과 같다. 이벤트는 발행기에 쌓이기만 해서 자바 책 재고는 그대로 10개이고, src/ddd/application에 EventPublisher가 더 보인다
+  - 파일: ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: 출력은 T1과 같다. 이벤트는 발행기에 쌓이기만 해서 자바 책 재고는 그대로 10개이고, src/ddd/order/application에 EventHandler와 EventPublisher가 더 보인다
   - Why: 주문 저장은 주문 응용 서비스 한 번의 일로 끝낸다. 저장한 뒤에 일어난 일을 발행기에 넘기면 재고 줄이기는 그 일 밖에서 따로 한다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
 - [x] T3 재고 줄이기 처리기로 재고 맞추기
   - 근거: S4, S5
-  - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 주문 뒤 줄 다음에 이벤트 처리 뒤: 자바 책 재고 8개가 찍히고, src/ddd/application에 DecreaseStockHandler가 더 보인다
+  - 파일: ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/application/DecreaseStockHandler.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: [이벤트를 처리해 재고 줄이기]에 자바 책 재고: 10개 -> 8개가 찍히고, src/ddd/order/application에 DecreaseStockHandler가 더 보인다
   - Why: 재고는 주문과 같은 때에 바뀌지 않아도 된다. 이벤트를 처리하면 나중에 맞춰진다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T4 이벤트 처리기 인터페이스로 구독하기
+- [x] T4 이벤트 처리기 인터페이스로 구독하기
   - 근거: 고침 T1, T2, T3
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/application/EventPublisher.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/FreeShippingAreaSpecification.java, ddd/src/ddd/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/domain/FreeShippingSpecification.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/domain/OrderPlaced.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/domain/OrderSpecification.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/order/application/DecreaseStockHandler.java, ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingAreaSpecification.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/FreeShippingSpecification.java, ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/MemberGrade.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/domain/OrderSpecification.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 제네릭과 Class, Consumer로 구독하는 발행기는 초보자가 읽기 어렵다. 처리기 인터페이스 하나면 누가 이벤트를 받는지 보인다
