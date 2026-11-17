@@ -141,7 +141,7 @@ const totalTask = chapters.reduce((n, c) => n + (+c.task || 0), 0)
 const totalShot = chapters.reduce((n, c) => n + (+c.shot || 0), 0)
 const done = chapters.filter((c) => c.state === "완료").length
 const testLine = (table(wiki.check).find((r) => r["점검"] === "테스트") || {})["결과"] || ""
-const testCount = (testLine.match(/(\d+)개 통과/) || [])[1]
+const testCount = (testLine.match(/(\d+)개 통과|([\d]+) tests successful/) || []).slice(1).find(Boolean)
 const stats = [
   [`${done}/${chapters.length}`, "장 완료"],
   [totalTask, "task"],
@@ -194,7 +194,11 @@ const map = `<section id="map"><h2><span class="num">2</span>장 지도</h2>
 const conceptRows = table(section(wiki.concepts, "배울 것과 처음 나온 장"))
 const concepts = `<section id="concepts"><h2><span class="num">3</span>개념은 어디서 처음 나오나</h2>
   <div class="dict">${conceptRows
-    .map((r) => `<div class="term-row"><span class="terms">${(r["배울 것"] || "").split(/,\s*/).map((t) => `<b>${esc(t)}</b>`).join("")}</span>${chLink(r["장"])}</div>`)
+    .map((r) => {
+      const terms = r["배울 것"] || r["개념"] || ""
+      const chapter = (r["장"] || r["처음 나온 장"] || "").replace(/^\d+\s+/, "")
+      return `<div class="term-row"><span class="terms">${terms.split(/,\s*/).map((t) => `<b>${esc(t)}</b>`).join("")}</span>${chLink(chapter)}</div>`
+    })
     .join("")}</div></section>`
 
 // 5 흐름 그림
