@@ -4,27 +4,26 @@
 - [x] T1 주문을 저장소에 넣고 번호로 꺼내기
   - 근거: S1, S3, S4, S6
   - 파일: ddd/src/ddd/OrderRepository.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 출력은 앞 장 열여섯 줄과 같고, 주문이 저장소를 거쳐 주문 번호로 오간다
+  - 실행하면: ===== 주문 저장소 ===== 아래에 주문하기: 1번 주문 저장, 1번 꺼내기 줄, 주문 상태: 주문 접수 -> 결제 완료가 찍힌다
   - Why: 주문을 들고 다니지 않고 저장소에 두면 주문 번호만으로 언제든 다시 꺼내 일을 시킬 수 있다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
 - [x] T2 없는 주문 번호 거절하기
   - 근거: S5
   - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java
-  - 실행하면: 마지막에 없는 주문 결제: 주문이 없습니다가 더 찍힌다
+  - 실행하면: [없는 주문 결제하기]에 없는 주문 결제: 주문이 없습니다가 찍힌다
   - Why: 번호는 밖에서 들어온다. 없는 번호면 업무 말로 알려야 무엇이 틀렸는지 안다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
 - [x] T3 복사본으로 저장하기
   - 근거: S2
-  - 진행: 붙여넣기. MemoryOrderRepository의 copy 메서드와 네 파일의 implements Serializable
-  - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderItem.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/Main.java
-  - 실행하면: 마지막에 저장 안 한 취소: 주문 접수가 더 찍힌다
+  - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Order.java, ddd/src/ddd/Main.java
+  - 실행하면: [꺼낸 주문만 바꾸기]에 꺼낸 주문 상태: 주문 접수 -> 취소와 저장소 주문 상태: 주문 접수가 찍힌다
   - Why: 진짜 DB는 저장한 것만 남는다. 메모리 저장소도 복사본을 쓰면 다시 저장해야 바뀐 것이 남는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T4 복사 생성자로 주문 복사하기
+- [x] T4 복사 생성자로 주문 복사하기
   - 근거: 고침 T1, T2, T3
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/OrderItem.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/OrderStatus.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 직렬화는 DDD와 상관없고 어렵다. 복사 생성자는 무엇을 복사하는지 눈에 보인다. 붙여넣지 않고 따라 친다

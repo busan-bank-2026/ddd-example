@@ -18,4 +18,4 @@ sequenceDiagram
   S-->>M: 주문이 없습니다
 ```
 
-서비스는 OrderRepository 인터페이스만 안다. 저장소는 복사본을 쓰므로 꺼낸 주문을 바꾼 뒤 save를 해야 바뀐 것이 남는다.
+서비스는 OrderRepository 인터페이스만 안다. 저장소는 new Order(order) 복사본을 쓰므로 꺼낸 주문을 바꾼 뒤 save를 해야 바뀐 것이 남는다.

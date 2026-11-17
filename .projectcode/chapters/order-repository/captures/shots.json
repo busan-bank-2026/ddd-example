@@ -3,17 +3,17 @@
   "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main",
   "cwd": "ddd",
   "shots": [
-    { "file": "T1-저장소에-넣고-꺼내기.txt", "task": "T1", "commit": "60382d4", "screen": "콘솔 실행과 glossary.md",
-      "see": "출력은 앞 장 열여섯 줄과 같고, 이어서 용어집에 주문 저장소 OrderRepository, 저장하기 save, 주문 번호로 찾기 findById 줄이 보인다",
+    { "file": "T1-저장소에-넣고-꺼내기.txt", "task": "T1", "commit": "63a6ee9", "screen": "콘솔 실행과 glossary.md",
+      "see": "===== 주문 저장소 ===== 아래에 1번 주문 저장, 1번 꺼내기, 주문 상태: 주문 접수 -> 결제 완료가 찍힌다. 이어서 용어집에 주문 저장소 OrderRepository, 저장하기 save, 주문 번호로 찾기 findById 줄이 보인다",
       "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && type glossary.md" } },
-    { "file": "T2-없는-주문-거절.txt", "task": "T2", "commit": "b033e70", "screen": "콘솔 실행",
-      "see": "마지막에 없는 주문 결제: 주문이 없습니다가 더 찍힌다",
+    { "file": "T2-없는-주문-거절.txt", "task": "T2", "commit": "f41ab42", "screen": "콘솔 실행",
+      "see": "[없는 주문 결제하기]에 없는 주문 결제: 주문이 없습니다가 찍힌다",
       "run": {} },
-    { "file": "T3-복사본으로-저장.txt", "task": "T3", "commit": "00ae372", "screen": "콘솔 실행",
-      "see": "마지막에 저장 안 한 취소: 주문 접수가 더 찍힌다",
+    { "file": "T3-복사본으로-저장.txt", "task": "T3", "commit": "433501c", "screen": "콘솔 실행",
+      "see": "[꺼낸 주문만 바꾸기]에 꺼낸 주문 상태: 주문 접수 -> 취소와 저장소 주문 상태: 주문 접수가 찍힌다",
       "run": {} },
-    { "file": "done-주문-장면.txt", "task": "done", "commit": "00ae372", "screen": "콘솔 실행 (이클립스 Run 대신)",
-      "see": "시작 글부터 저장 안 한 취소까지 열여덟 줄이 spec 실행 결과와 같게 찍힌다",
+    { "file": "done-주문-장면.txt", "task": "done", "commit": "433501c", "screen": "콘솔 실행 (이클립스 Run 대신)",
+      "see": "===== 주문 저장소 =====부터 저장소 주문 상태까지 spec 실행 결과와 같게 찍힌다",
       "run": {} }
   ]
 }

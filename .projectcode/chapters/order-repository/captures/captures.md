@@ -2,7 +2,7 @@
 
 | 파일 | 장 | task | 커밋 | 찍은 화면 | 보이는 것 |
 |---|---|---|---|---|---|
-| T1-저장소에-넣고-꺼내기.txt | order-repository | T1 | 60382d4 | 콘솔 실행과 glossary.md | 출력은 앞 장 열여섯 줄과 같고, 이어서 용어집에 주문 저장소 OrderRepository, 저장하기 save, 주문 번호로 찾기 findById 줄이 보인다 |
-| T2-없는-주문-거절.txt | order-repository | T2 | b033e70 | 콘솔 실행 | 마지막에 없는 주문 결제: 주문이 없습니다가 더 찍힌다 |
-| T3-복사본으로-저장.txt | order-repository | T3 | 00ae372 | 콘솔 실행 | 마지막에 저장 안 한 취소: 주문 접수가 더 찍힌다 |
-| done-주문-장면.txt | order-repository | done | 00ae372 | 콘솔 실행 (이클립스 Run 대신) | 시작 글부터 저장 안 한 취소까지 열여덟 줄이 spec 실행 결과와 같게 찍힌다 |
+| T1-저장소에-넣고-꺼내기.txt | order-repository | T1 | 63a6ee9 | 콘솔 실행과 glossary.md | ===== 주문 저장소 ===== 아래에 1번 주문 저장, 1번 꺼내기, 주문 상태: 주문 접수 -> 결제 완료가 찍힌다. 이어서 용어집에 주문 저장소 OrderRepository, 저장하기 save, 주문 번호로 찾기 findById 줄이 보인다 |
+| T2-없는-주문-거절.txt | order-repository | T2 | f41ab42 | 콘솔 실행 | [없는 주문 결제하기]에 없는 주문 결제: 주문이 없습니다가 찍힌다 |
+| T3-복사본으로-저장.txt | order-repository | T3 | 433501c | 콘솔 실행 | [꺼낸 주문만 바꾸기]에 꺼낸 주문 상태: 주문 접수 -> 취소와 저장소 주문 상태: 주문 접수가 찍힌다 |
+| done-주문-장면.txt | order-repository | done | 433501c | 콘솔 실행 (이클립스 Run 대신) | ===== 주문 저장소 =====부터 저장소 주문 상태까지 spec 실행 결과와 같게 찍힌다 |
