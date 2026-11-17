@@ -26,10 +26,10 @@ OrderStatus.java
 Order.java
 - status 칸을 OrderStatus로 바꾼다. 생성자는 OrderStatus.ORDERED로 둔다
 - getStatus()는 OrderStatus를 돌려준다
-- T1: 글자 비교를 enum 비교로 바꾼다. addOrderLine은 status != OrderStatus.ORDERED, ship은 status != OrderStatus.PAID, cancel은 status == OrderStatus.SHIPPING. 말과 동작은 그대로다
+- T1: 글자 비교를 enum 비교로 바꾼다. addItem은 status != OrderStatus.ORDERED, ship은 status != OrderStatus.PAID, cancel은 status == OrderStatus.SHIPPING. 말과 동작은 그대로다
 - T2: pay, ship, cancel의 첫 줄을 status.canChangeTo(다음 상태)로 확인한다. 안 되면 IllegalStateException(status.label() + "인 주문은 결제할 수 없습니다")처럼 지금 상태를 넣어 거절한다. 배송은 배송할, 취소는 취소할이다
 - T3: deliver()를 더한다. 같은 모양으로 DELIVERED로 바꾸고 거절 말은 배송 완료할이다
-- addOrderLine은 상태 전이가 아니라서 status != OrderStatus.ORDERED 비교를 그대로 둔다
+- addItem은 상태 전이가 아니라서 status != OrderStatus.ORDERED 비교를 그대로 둔다
 
 OrderService.java
 - T3에서 deliver(Order order)를 더한다. order.deliver()만 부른다

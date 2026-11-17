@@ -51,14 +51,14 @@ Order.java
 
 OrderApplicationService.java
 - 칸 final MemberRepository memberRepository, final DiscountPolicy discountPolicy를 더한다
-- 생성자는 (OrderRepository, OrderLineFactory, MemberRepository, DiscountPolicy)다
+- 생성자는 (OrderRepository, OrderItemFactory, MemberRepository, DiscountPolicy)다
 - pay(orderId)는 주문을 꺼내고, memberRepository.findById(order.getMemberId()).orElseThrow()로 회원을 찾고, order.pay(discountPolicy.discount(member, order))를 부르고, 저장한다
 - 응용 서비스는 꺼내기, 시키기, 저장하기만 한다. 10%라는 숫자는 여기에 없다
 - 주문하기, 항목 더하기, 배송하기, 배송 완료하기, 취소하기는 그대로다
 
 Main.java
 - T1: 회원을 new Member(1, "김철수", MemberGrade.VIP), new Member(2, "이영희", MemberGrade.BASIC)로 저장한다. 출력은 그대로다
-- T2: new OrderApplicationService(new MemoryOrderRepository(), new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy())
+- T2: new OrderApplicationService(new MemoryOrderRepository(), new OrderItemFactory(productRepository), memberRepository, new DiscountPolicy())
 - T2: 결제 줄 다음에 꺼낸 주문의 할인 금액과 결제 금액을 찍는다. 등급은 member.getGrade()를 그대로 찍는다
 
 glossary.md

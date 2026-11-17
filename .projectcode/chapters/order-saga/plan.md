@@ -22,7 +22,7 @@ Main.java (T1)
 - 상품 번호 5를 쓰는 이유: 4번은 음수 금액 장면에서 쓴 번호다
 
 OrderCanceled.java (T2, 주문 도메인 계층)
-- record OrderCanceled(long orderId, List<OrderLine> orderLines)
+- record OrderCanceled(long orderId, List<OrderItem> items)
 - 주문 접수됨과 같은 모양이다. 받는 쪽이 무엇을 되돌릴지 안다
 
 Product.java (T2)
@@ -34,7 +34,7 @@ IncreaseStockHandler.java (T2, 상품 응용 계층)
 - 따로 두는 이유: 재고 줄이기와 되돌리기는 받는 이벤트가 다르다. 하나씩 구독한다
 
 OrderApplicationService.java
-- T2 cancel(orderId): order.cancel()과 저장 다음에 eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getOrderLines())))
+- T2 cancel(orderId): order.cancel()과 저장 다음에 eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getItems())))
 - T2 주문 취소됨을 응용 서비스가 만드는 이유: 꺼낸 주문의 이벤트 목록에는 앞에서 남긴 주문 접수됨이 함께 들어 있다. 다시 넘기면 재고를 또 줄인다. 취소하기는 이번에 일어난 일 하나만 넘긴다
 - T3 pay(orderId): 결제 결과가 승인이 아니면 cancel(orderId)를 부른 뒤 거절 이유로 throw new IllegalStateException
 - T3 cancel(orderId)를 부르는 이유: 보상은 앞 단계를 되돌리는 또 하나의 일이다. 주문 취소하기는 이미 있고, 취소가 주문 취소됨을 넘기면 재고 되돌리기가 따라온다
@@ -77,7 +77,7 @@ public void cancel(long orderId) {
     Order order = findOrder(orderId);
     order.cancel();
     orderRepository.save(order);
-    eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getOrderLines())));
+    eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getItems())));
 }
 
 PaymentResult result = paymentGateway.pay(order.getPaymentPrice());

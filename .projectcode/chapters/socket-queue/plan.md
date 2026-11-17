@@ -57,7 +57,7 @@ SocketQueueTest.java
 ## 핵심 코드
 EventPublisher eventPublisher = new SocketEventPublisher("localhost", 9090);
 OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository(),
-        new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
+        new OrderItemFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
         new LegacyPaymentAdapter(new LegacyPayGateway()));
 
 @Override

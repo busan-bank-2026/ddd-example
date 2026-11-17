@@ -8,7 +8,7 @@
   - Why: 어디서 나눌지는 코드보다 업무에서 먼저 정한다. 이 가게의 핵심이 무엇인지 알아야 경계를 긋는다
 - [x] T2 공유 커널로 돈 옮기기
   - 근거: S2
-  - 파일: ddd/src/ddd/domain/Money.java, ddd/src/ddd/shared/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/Main.java, ddd/context-map.md
+  - 파일: ddd/src/ddd/domain/Money.java, ddd/src/ddd/shared/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderItem.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/Main.java, ddd/context-map.md
   - 실행하면: 이클립스에서 ddd.shared 패키지를 만들고 Money를 옮기면 출력은 그대로이고 src/ddd에 shared 폴더가 생기고 그 안에 Money.java가 보인다
   - Why: 주문과 상품이 모두 쓰는 돈을 한 곳에 두고 함께 지키기로 약속해야 컨텍스트를 나눠도 돈 규칙이 하나로 남는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
@@ -20,7 +20,7 @@
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
 - [x] T4 상품 컨텍스트 만들기
   - 근거: S4
-  - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/domain/ProductRepository.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java, ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/Main.java
+  - 파일: ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/domain/ProductRepository.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java, ddd/src/ddd/domain/OrderItemFactory.java, ddd/src/ddd/Main.java
   - 실행하면: ddd.catalog.domain, ddd.catalog.application, ddd.catalog.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 그대로이고 src/ddd/catalog에 세 폴더가 보인다
   - Why: 상품과 재고는 주문을 돕는 지원 하위 도메인이다. 재고를 줄이는 처리기도 상품 쪽에 두면 상품 규칙이 한 컨텍스트에 모인다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
@@ -33,3 +33,8 @@
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
+- [ ] T6 공유 커널 빼고 회원과 상품만 옮기기
+  - 근거: 고침 T1, T2, T3, T4, T5
+  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
+  - Why: 돈 값 객체가 없어 공유 커널이 없다. 주문은 이미 ddd.order에 있어서 회원과 상품만 옮긴다

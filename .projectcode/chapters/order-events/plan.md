@@ -33,12 +33,12 @@ Product.java (도메인 계층)
 - T3: decreaseStock(int quantity)는 stock에서 quantity를 뺀다. 모자란 재고 막기는 미룸이라 검사하지 않는다
 
 OrderPlaced.java (T1, 도메인 계층)
-- record OrderPlaced(long orderId, List<OrderLine> orderLines) implements Serializable
+- record OrderPlaced(long orderId, List<OrderItem> items) implements Serializable
 - 따로 두는 이유: 주문에 일어난 일을 이름 붙은 값으로 남겨야 주문이 모르는 곳(재고)이 그 일을 듣고 따로 움직일 수 있다
 - 주문이 복사 저장되므로 Serializable을 붙인다
 
 Order.java (T1)
-- private List<Object> events 칸을 더한다. 생성자 끝에서 new ArrayList<>()로 만들고 new OrderPlaced(id, List.copyOf(orderLines))를 넣는다
+- private List<Object> events 칸을 더한다. 생성자 끝에서 new ArrayList<>()로 만들고 new OrderPlaced(id, List.copyOf(items))를 넣는다
 - getEvents()는 List.copyOf(events)를 돌려준다
 - 주문은 상품 저장소를 받지 않는다. 재고를 줄이지 않고 일어난 일만 남긴다
 - 이벤트 목록 타입을 Object로 두는 이유: 주문이 남기는 이벤트가 하나로 정해져 있지 않다. 발행기도 이벤트 모양을 묻지 않는다
@@ -90,13 +90,13 @@ OrderEventsTest.java
 
 ## 핵심 코드
 this.events = new ArrayList<>();
-events.add(new OrderPlaced(id, List.copyOf(orderLines)));
+events.add(new OrderPlaced(id, List.copyOf(items)));
 
 orderRepository.save(order);
 eventPublisher.publish(order.getEvents());
 
 public void handle(OrderPlaced event) {
-    for (OrderLine orderLine : event.orderLines()) {
+    for (OrderItem orderLine : event.items()) {
         Product product = productRepository.findById(orderLine.productId()).orElseThrow();
         product.decreaseStock(orderLine.quantity());
         productRepository.save(product);

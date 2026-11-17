@@ -36,6 +36,13 @@ java -jar ../test-lib/junit-platform-console-standalone.jar execute -cp "../bin-
 ```
 - 빌드: javac -d bin --source-path src src/ddd/Main.java
 
+## Main
+
+- Main은 지금 장의 장면만 찍는다. 장이 바뀌면 앞 장 장면은 지운다
+- 첫 줄은 ===== 장 이름 =====이다
+- 장면마다 빈 줄과 [장면 이름] 줄로 나눈다
+- 바뀐 값은 전 -> 후로 찍어 무엇이 바뀌었는지 보이게 한다
+
 ## 캡처
 
 | 종류 | 주소나 명령 |

@@ -9,7 +9,7 @@
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
 - [x] T2 주문이 회원과 상품을 번호로 가리키기
   - 근거: S3, S4, S6
-  - 파일: ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 파일: ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderItem.java, ddd/src/ddd/application/OrderRequest.java, ddd/src/ddd/application/OrderItemRequest.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 출력 열여덟 줄은 그대로이고, 주문 줄의 김철수는 주문의 회원 번호 1로 회원 저장소에서 찾은 이름이다
   - Why: 주문이 회원과 상품 객체를 쥐지 않고 번호만 가리켜야 애그리거트마다 따로 꺼내고 따로 저장할 수 있다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
@@ -22,3 +22,8 @@
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
+- [ ] T4 회원과 상품을 주문 도메인 묶음에 두기
+  - 근거: 고침 T1, T2, T3
+  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
+  - Why: 컨텍스트 장 전에는 새 클래스를 ddd.order.domain에 둔다. 출력은 이 장 장면만 보인다

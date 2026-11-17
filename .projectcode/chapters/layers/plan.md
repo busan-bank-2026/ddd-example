@@ -4,14 +4,14 @@
 | 파일 | 새로 또는 고침 | 하는 일 |
 |---|---|---|
 | ddd/src/ddd/domain/Order.java | 옮김 | ddd/src/ddd/Order.java를 도메인 계층으로 옮긴다 |
-| ddd/src/ddd/domain/OrderLine.java | 옮김 | ddd/src/ddd/OrderLine.java를 도메인 계층으로 옮긴다 |
+| ddd/src/ddd/domain/OrderItem.java | 옮김 | ddd/src/ddd/OrderItem.java를 도메인 계층으로 옮긴다 |
 | ddd/src/ddd/domain/Money.java | 옮김 | ddd/src/ddd/Money.java를 도메인 계층으로 옮긴다 |
 | ddd/src/ddd/domain/Address.java | 옮김 | ddd/src/ddd/Address.java를 도메인 계층으로 옮긴다 |
 | ddd/src/ddd/domain/OrderStatus.java | 옮김 | ddd/src/ddd/OrderStatus.java를 도메인 계층으로 옮긴다 |
 | ddd/src/ddd/domain/OrderRepository.java | 옮김 | ddd/src/ddd/OrderRepository.java를 도메인 계층으로 옮긴다. 저장소 인터페이스는 도메인이 갖는다 |
 | ddd/src/ddd/application/OrderApplicationService.java | 옮김 | ddd/src/ddd/OrderApplicationService.java를 응용 계층으로 옮긴다 |
-| ddd/src/ddd/application/PlaceOrderCommand.java | 옮김 | ddd/src/ddd/PlaceOrderCommand.java를 응용 계층으로 옮긴다 |
-| ddd/src/ddd/application/OrderLineCommand.java | 옮김 | ddd/src/ddd/OrderLineCommand.java를 응용 계층으로 옮긴다 |
+| ddd/src/ddd/application/OrderRequest.java | 옮김 | ddd/src/ddd/OrderRequest.java를 응용 계층으로 옮긴다 |
+| ddd/src/ddd/application/OrderItemRequest.java | 옮김 | ddd/src/ddd/OrderItemRequest.java를 응용 계층으로 옮긴다 |
 | ddd/src/ddd/infrastructure/MemoryOrderRepository.java | 옮김 | ddd/src/ddd/MemoryOrderRepository.java를 인프라 계층으로 옮긴다 |
 | ddd/src/ddd/Main.java | 고침 | 옮긴 클래스를 import로 가져다 쓴다 |
 | tests/ddd/AnemicOrderTest.java | 고침 | 옮긴 클래스를 import로 부른다 |
@@ -33,13 +33,13 @@
 - import는 이클립스가 넣는 모양 그대로 하나씩 쓴다. java 묶음 아래에 빈 줄을 두고 ddd 묶음을 적는다
 
 도메인 계층 ddd.domain
-- T1: Order, OrderLine, Money, Address, OrderStatus, OrderRepository 여섯 파일을 옮긴다
+- T1: Order, OrderItem, Money, Address, OrderStatus, OrderRepository 여섯 파일을 옮긴다
 - 첫 줄만 package ddd.domain;으로 바뀐다. 여섯은 서로만 쓰므로 import가 생기지 않는다
 - 쓰는 쪽인 Main, OrderApplicationService, MemoryOrderRepository에 ddd.domain import가 생긴다
 - OrderRepository를 도메인에 두는 이유: 주문을 어떻게 저장하고 꺼낼지는 도메인이 정하는 약속이다. 구현은 바깥이 한다
 
 응용 계층 ddd.application
-- T2: OrderApplicationService, PlaceOrderCommand, OrderLineCommand 세 파일을 함께 옮긴다
+- T2: OrderApplicationService, OrderRequest, OrderItemRequest 세 파일을 함께 옮긴다
 - 세 파일이 같은 묶음에 있으므로 명령 import는 생기지 않는다. OrderApplicationService의 ddd.domain import는 그대로다
 - Main에 ddd.application import 세 줄이 생긴다
 
@@ -79,10 +79,10 @@ package ddd;
 import java.util.List;
 
 import ddd.application.OrderApplicationService;
-import ddd.application.OrderLineCommand;
-import ddd.application.PlaceOrderCommand;
+import ddd.application.OrderItemRequest;
+import ddd.application.OrderRequest;
 import ddd.domain.Order;
-import ddd.domain.OrderLine;
+import ddd.domain.OrderItem;
 import ddd.infrastructure.MemoryOrderRepository;
 
 ## 할 일 연결
@@ -99,15 +99,15 @@ import ddd.infrastructure.MemoryOrderRepository;
 ## 다른 장 파일
 - ddd/src/ddd/Main.java: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
 - ddd/src/ddd/Order.java: anemic-order, rich-entity, value-object, order-aggregate, order-status, order-repository
-- ddd/src/ddd/OrderLine.java: order-aggregate, order-repository
+- ddd/src/ddd/OrderItem.java: order-aggregate, order-repository
 - ddd/src/ddd/Money.java: value-object, order-repository
 - ddd/src/ddd/Address.java: value-object, order-repository
 - ddd/src/ddd/OrderStatus.java: order-status
 - ddd/src/ddd/OrderRepository.java: order-repository
 - ddd/src/ddd/MemoryOrderRepository.java: order-repository
 - ddd/src/ddd/OrderApplicationService.java: anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
-- ddd/src/ddd/PlaceOrderCommand.java: place-order
-- ddd/src/ddd/OrderLineCommand.java: place-order
+- ddd/src/ddd/OrderRequest.java: place-order
+- ddd/src/ddd/OrderItemRequest.java: place-order
 - tests/ddd/AnemicOrderTest.java: anemic-order
 - tests/ddd/UbiquitousLanguageTest.java: ubiquitous-language
 - tests/ddd/RichEntityTest.java: rich-entity

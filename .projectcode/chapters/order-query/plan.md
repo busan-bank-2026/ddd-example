@@ -22,7 +22,7 @@ MemoryOrderRepository.java (T1)
 - 버전 검사나 저장은 하지 않는다
 
 OrderSummary.java (T1, 주문 응용 계층)
-- record OrderSummary(long orderId, String memberName, int orderLineCount, int paymentPrice, String status)
+- record OrderSummary(long orderId, String memberName, int itemCount, int paymentPrice, String status)
 - 칸은 숫자와 글자뿐이다. 돈, 주문 상태, 주문 항목 같은 도메인 타입을 쓰지 않는다
 - 따로 두는 이유: 화면은 주문 한 건을 한 줄로 본다. 규칙을 지키는 주문 모양과 보여주는 모양이 다르다
 - 응용 계층에 두는 이유: 도메인 규칙이 아니라 유스케이스가 돌려주는 결과다
@@ -51,14 +51,14 @@ OrderQueryTest.java
 - 기대 출력 전체를 보는 아홉 개 테스트(BoundedContexts, Discount, FreeShipping, Layers, OptimisticLock, OrderEvents, OrderFactory, PaymentAcl, ShippingContext)에 한 줄을 더한다
 
 ## 핵심 코드
-public record OrderSummary(long orderId, String memberName, int orderLineCount, int paymentPrice, String status) {
+public record OrderSummary(long orderId, String memberName, int itemCount, int paymentPrice, String status) {
 }
 
 public List<OrderSummary> findOrderSummaries(long memberId) {
     List<OrderSummary> summaries = new ArrayList<>();
     for (Order order : orderRepository.findByMemberId(memberId)) {
         Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
-        summaries.add(new OrderSummary(order.getId(), member.getName(), order.getOrderLines().size(),
+        summaries.add(new OrderSummary(order.getId(), member.getName(), order.getItems().size(),
                 order.getPaymentPrice().amount(), order.getStatus().label()));
     }
     return summaries;

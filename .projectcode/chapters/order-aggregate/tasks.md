@@ -3,7 +3,7 @@
 - [x] 테스트 작성
 - [x] T1 주문 항목 여러 개로 주문하기
   - 근거: S1, S2, S8
-  - 파일: ddd/src/ddd/OrderLine.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 파일: ddd/src/ddd/OrderItem.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
   - 실행하면: 주문 줄 아래에 항목 두 줄이 찍히고, 마지막에 항목 더하기: 항목 3개, 주문 금액 31000원이 찍힌다
   - Why: 항목 목록을 그대로 내주면 밖에서 항목을 더해도 주문 금액이 따라오지 않는 것을 먼저 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object
@@ -15,10 +15,15 @@
   - 다른 장: project-setup, anemic-order, rich-entity, value-object, ubiquitous-language
 - [x] T3 빈 주문과 0개 항목 막기
   - 근거: S6, S7
-  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderLine.java, ddd/src/ddd/Main.java
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderItem.java, ddd/src/ddd/Main.java
   - 실행하면: 마지막에 빈 주문: 주문 항목이 하나 이상 있어야 합니다와 0개 항목 주문: 수량은 1개 이상이어야 합니다가 더 찍힌다
   - Why: 항목이 없는 주문은 주문이 아니다. 주문은 만들어지는 순간부터 규칙을 지킨 채로 있어야 한다
   - 다른 장: project-setup, anemic-order, rich-entity, value-object
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
+- [ ] T4 주문 항목을 OrderItem 클래스로 만들기
+  - 근거: 고침 T1, T2, T3
+  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
+  - Why: OrderLine 레코드는 무엇인지 헷갈린다. 주문과 주문 항목이 나란히 보이면 애그리거트가 잘 보인다. 음수 가격도 주문 항목이 막는다

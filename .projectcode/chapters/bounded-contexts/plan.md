@@ -13,10 +13,10 @@
 | ddd/src/ddd/catalog/domain/ProductRepository.java | 옮김 | ddd/src/ddd/domain/ProductRepository.java를 상품 컨텍스트로 옮긴다 |
 | ddd/src/ddd/catalog/application/DecreaseStockHandler.java | 옮김 | ddd/src/ddd/application/DecreaseStockHandler.java를 상품 컨텍스트로 옮긴다. 재고를 바꾸는 일이라 상품 쪽이다 |
 | ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java | 옮김 | ddd/src/ddd/infrastructure/MemoryProductRepository.java를 상품 컨텍스트로 옮긴다 |
-| ddd/src/ddd/order/domain/ 열두 파일 | 옮김 | ddd/src/ddd/domain의 Address, DiscountPolicy, FreeShippingAreaSpecification, FreeShippingPriceSpecification, FreeShippingSpecification, Order, OrderLine, OrderLineFactory, OrderPlaced, OrderRepository, OrderSpecification, OrderStatus를 주문 컨텍스트로 옮긴다 |
-| ddd/src/ddd/order/application/ 네 파일 | 옮김 | ddd/src/ddd/application의 EventPublisher, OrderApplicationService, OrderLineCommand, PlaceOrderCommand를 주문 컨텍스트로 옮긴다 |
+| ddd/src/ddd/order/domain/ 열두 파일 | 옮김 | ddd/src/ddd/domain의 Address, DiscountPolicy, FreeShippingAreaSpecification, FreeShippingPriceSpecification, FreeShippingSpecification, Order, OrderItem, OrderItemFactory, OrderPlaced, OrderRepository, OrderSpecification, OrderStatus를 주문 컨텍스트로 옮긴다 |
+| ddd/src/ddd/order/application/ 네 파일 | 옮김 | ddd/src/ddd/application의 EventPublisher, OrderApplicationService, OrderItemRequest, OrderRequest를 주문 컨텍스트로 옮긴다 |
 | ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java | 옮김 | ddd/src/ddd/infrastructure/MemoryOrderRepository.java를 주문 컨텍스트로 옮긴다 |
-| ddd/src/ddd/domain/ 옮기지 않은 파일 | 고침 | 옮긴 클래스를 쓰는 Order, OrderLine, DiscountPolicy, Product, OrderLineFactory에 import가 생긴다 |
+| ddd/src/ddd/domain/ 옮기지 않은 파일 | 고침 | 옮긴 클래스를 쓰는 Order, OrderItem, DiscountPolicy, Product, OrderItemFactory에 import가 생긴다 |
 | ddd/src/ddd/application/OrderApplicationService.java | 고침 | 회원 컨텍스트로 옮긴 회원과 회원 저장소를 import로 쓴다 |
 | ddd/src/ddd/Main.java | 고침 | 옮긴 클래스를 import로 가져다 쓴다 |
 | tests/ddd/BoundedContextsTest.java | 새로 | S1부터 S6까지 행동 테스트 |
@@ -41,7 +41,7 @@ context-map.md (학생 문서)
 
 공유 커널 ddd.shared
 - T2: ddd.shared 묶음을 만들고 Money를 옮긴다
-- Money를 쓰는 Order, OrderLine, DiscountPolicy, Product에 import ddd.shared.Money가 생긴다. Main의 Money import도 바뀐다
+- Money를 쓰는 Order, OrderItem, DiscountPolicy, Product에 import ddd.shared.Money가 생긴다. Main의 Money import도 바뀐다
 - 공유 커널에 계층 묶음을 두지 않는 이유: 함께 쓰는 모델 조각 하나뿐이고 응용과 인프라가 없다
 
 회원 컨텍스트 ddd.member
@@ -51,7 +51,7 @@ context-map.md (학생 문서)
 상품 컨텍스트 ddd.catalog
 - T4: ddd.catalog.domain에 Product, ProductRepository, ddd.catalog.application에 DecreaseStockHandler, ddd.catalog.infrastructure에 MemoryProductRepository를 옮긴다
 - DecreaseStockHandler를 상품에 두는 이유: 주문 접수됨을 받아 상품 재고를 줄이고 저장하는 상품 쪽 유스케이스다
-- OrderLineFactory와 Main에 ddd.catalog import가 생긴다. 주문 컨텍스트가 상품 컨텍스트를 읽는 것이 import로 드러난다
+- OrderItemFactory와 Main에 ddd.catalog import가 생긴다. 주문 컨텍스트가 상품 컨텍스트를 읽는 것이 import로 드러난다
 
 주문 컨텍스트 ddd.order
 - T5: ddd.domain에 남은 열두 파일을 ddd.order.domain, ddd.application에 남은 네 파일을 ddd.order.application, MemoryOrderRepository를 ddd.order.infrastructure로 옮긴다
@@ -87,13 +87,13 @@ package ddd.order.domain;
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;
 
-public class OrderLineFactory {
+public class OrderItemFactory {
 
 package ddd.catalog.application;
 
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;
-import ddd.order.domain.OrderLine;
+import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderPlaced;
 
 package ddd;
@@ -108,9 +108,9 @@ import ddd.shared.Money;
 | 할 일 | 파일 |
 |---|---|
 | S1 | context-map.md |
-| S2 | shared/Money.java, Order.java, OrderLine.java, DiscountPolicy.java, Product.java, Main.java, context-map.md |
+| S2 | shared/Money.java, Order.java, OrderItem.java, DiscountPolicy.java, Product.java, Main.java, context-map.md |
 | S3 | member의 네 파일, DiscountPolicy.java, OrderApplicationService.java, Main.java |
-| S4 | catalog의 네 파일, OrderLineFactory.java, Main.java |
+| S4 | catalog의 네 파일, OrderItemFactory.java, Main.java |
 | S5 | order의 열일곱 파일, DecreaseStockHandler.java, Main.java |
 | S6 | context-map.md |
 
