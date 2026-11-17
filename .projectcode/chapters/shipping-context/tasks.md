@@ -3,21 +3,21 @@
 - [x] 테스트 작성
 - [x] T1 결제 완료를 정해진 글자로 알리기
   - 근거: S1, S2
-  - 파일: ddd/src/ddd/order/application/OrderOpenHostService.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/context-map.md, ddd/glossary.md
-  - 실행하면: 동시 수정 줄 다음에 결제 완료 메시지: ORDER_PAID|orderId=1|address=서울시 강남구와 4번 주문 메시지가 찍힌다
+  - 파일: ddd/src/ddd/order/application/MessageSender.java, ddd/src/ddd/order/application/OrderPaidNotifier.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/Main.java, ddd/context-map.md, ddd/glossary.md
+  - 실행하면: ===== 배송 컨텍스트 ===== 아래 [결제 완료를 메시지로 알리기]에 보낸 메시지: ORDER_PAID|orderId=1|address=서울시 강남구와 주문 상태: 주문 접수 -> 결제 완료가 찍히고, src/ddd/order/application에 MessageSender와 OrderPaidNotifier가 더 보인다
   - Why: 바깥 컨텍스트에 알릴 것을 한 창구에서 정해진 글자 모양으로 내보내야 받는 쪽이 주문 클래스를 몰라도 읽는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts
 - [x] T2 배송 컨텍스트가 메시지 읽어 배송 만들기
   - 근거: S3, S4, S5
   - 파일: ddd/src/ddd/shipping/domain/Shipment.java, ddd/src/ddd/shipping/domain/ShipmentRepository.java, ddd/src/ddd/shipping/infrastructure/MemoryShipmentRepository.java, ddd/src/ddd/shipping/application/OrderPaidMessageHandler.java, ddd/src/ddd/Main.java, ddd/context-map.md, ddd/glossary.md
-  - 실행하면: 결제 완료 메시지 두 줄 다음에 배송 컨텍스트: 1번 주문, 서울시 강남구가 찍히고 src/ddd에 shipping 폴더가 보인다
+  - 실행하면: [배송 컨텍스트가 메시지 읽어 배송 만들기]에 배송 컨텍스트: 1번 주문, 서울시 강남구가 찍히고 src/ddd에 shipping 폴더가 보인다
   - Why: 배송 컨텍스트가 발행된 언어의 글자만 읽어 자기 모델로 바꾸면 주문 컨텍스트가 안을 바꿔도 메시지 모양만 지키면 된다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T3 결제 완료 메시지를 메시지 보내기로 보내기
+- [x] T3 결제 완료 메시지를 메시지 보내기로 보내기
   - 근거: 고침 T1, T2
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/context-map.md, ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/MessageSender.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderLineCommand.java, ddd/src/ddd/order/application/OrderOpenHostService.java, ddd/src/ddd/order/application/OrderPaidNotifier.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/PlaceOrderCommand.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderLine.java, ddd/src/ddd/order/domain/OrderLineFactory.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/shared/Money.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 글자 메시지를 이벤트 발행기에 섞으면 헷갈린다. 메시지 보내기 인터페이스로 따로 보내고 이름은 하는 일로 짓는다

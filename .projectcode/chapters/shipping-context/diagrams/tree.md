@@ -1,6 +1,6 @@
 # 폴더 구조
 
-비교 기준: done/bounded-contexts. 새로 생긴 파일과 고친 파일을 표시했다.
+비교 기준: done/bounded-contexts에 고침 patch를 붙인 상태(61b08b1). 새로 생긴 파일과 고친 파일을 표시했다.
 
 ```
 ddd/
@@ -26,11 +26,13 @@ ddd/
           MemoryMemberRepository.java
       order/
         application/
+          EventHandler.java
           EventPublisher.java
-          OrderApplicationService.java   고침
-          OrderLineCommand.java
-          OrderOpenHostService.java   새로
-          PlaceOrderCommand.java
+          MessageSender.java   새로
+          OrderItemRequest.java
+          OrderPaidNotifier.java   새로
+          OrderRequest.java
+          OrderService.java   고침
         domain/
           Address.java
           DiscountPolicy.java
@@ -38,16 +40,14 @@ ddd/
           FreeShippingPriceSpecification.java
           FreeShippingSpecification.java
           Order.java
-          OrderLine.java
-          OrderLineFactory.java
+          OrderItem.java
+          OrderItemFactory.java
           OrderPlaced.java
           OrderRepository.java
           OrderSpecification.java
           OrderStatus.java
         infrastructure/
           MemoryOrderRepository.java
-      shared/
-        Money.java
       shipping/
         application/
           OrderPaidMessageHandler.java   새로
@@ -61,7 +61,5 @@ ddd/
   .project
   context-map.md   고침
   glossary.md   고침
-test-lib/
-  junit-platform-console-standalone.jar
 ```
 
