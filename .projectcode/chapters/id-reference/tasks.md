@@ -3,27 +3,27 @@
 - [x] 테스트 작성
 - [x] T1 회원과 상품 저장하기
   - 근거: S1, S2, S6
-  - 파일: ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 출력 열여덟 줄은 그대로이고, src/ddd/domain에 회원과 상품 네 파일, src/ddd/infrastructure에 메모리 저장소 두 파일이 더 보인다
+  - 파일: ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: ===== 회원과 상품 ===== 아래 [회원과 상품 저장하기]에 1번 회원: 김철수와 1번 상품: 자바 책 15000원이 찍히고, src/ddd/order/domain에 회원과 상품 네 파일, src/ddd/order/infrastructure에 메모리 저장소 두 파일이 더 보인다
   - Why: 회원과 상품은 주문과 따로 만들어지고 따로 바뀌는 애그리거트라 각자 저장소를 가져야 한다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
 - [x] T2 주문이 회원과 상품을 번호로 가리키기
   - 근거: S3, S4, S6
-  - 파일: ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderItem.java, ddd/src/ddd/application/OrderRequest.java, ddd/src/ddd/application/OrderItemRequest.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 출력 열여덟 줄은 그대로이고, 주문 줄의 김철수는 주문의 회원 번호 1로 회원 저장소에서 찾은 이름이다
+  - 파일: ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: [회원 번호와 상품 번호로 주문하기]에 주문: 1번 주문, 1번 회원 김철수, 31000원이 찍힌다. 김철수는 주문의 회원 번호 1로 회원 저장소에서 찾은 이름이다
   - Why: 주문이 회원과 상품 객체를 쥐지 않고 번호만 가리켜야 애그리거트마다 따로 꺼내고 따로 저장할 수 있다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
 - [x] T3 상품 가격이 바뀐 뒤 주문 보기
   - 근거: S5
   - 파일: ddd/src/ddd/Main.java
-  - 실행하면: 마지막 줄에 가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원이 찍힌다
+  - 실행하면: [상품 가격이 바뀐 뒤 주문 보기]에 자바 책 상품 가격: 15000원 -> 18000원, 자바 책 주문 항목 가격: 15000원 -> 15000원, 주문 금액: 31000원 -> 31000원이 찍힌다
   - Why: 주문 항목이 주문 때의 이름과 가격을 담아 두었기 때문에 상품이 바뀌어도 이미 한 주문은 바뀌지 않는다는 것을 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T4 회원과 상품을 주문 도메인 묶음에 두기
+- [x] T4 회원과 상품을 주문 도메인 묶음에 두기
   - 근거: 고침 T1, T2, T3
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 컨텍스트 장 전에는 새 클래스를 ddd.order.domain에 둔다. 출력은 이 장 장면만 보인다

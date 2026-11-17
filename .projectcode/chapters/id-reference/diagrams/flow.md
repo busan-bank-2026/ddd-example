@@ -12,7 +12,7 @@ flowchart LR
 ```mermaid
 flowchart LR
   O[Order] -. **memberId** .-> M[Member]
-  L[OrderLine] -. **productId** .-> P[Product]
+  L[OrderItem] -. **productId** .-> P[Product]
   O --> L
 ```
 

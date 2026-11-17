@@ -489,3 +489,959 @@ index c3ab3c4..09587d6 100644
      }
  }
 ```
+
+## T4 회원과 상품을 주문 도메인 묶음에 두기
+커밋: a312669. 이 장 시점 코드에 얹은 patch는 fixes/a312669.patch
+
+| 파일 | 변경 |
+|---|---|
+| ddd/glossary.md | 고침 |
+| ddd/src/ddd/Main.java | 고침 |
+| ddd/src/ddd/application/OrderLineCommand.java | 지움 |
+| ddd/src/ddd/application/PlaceOrderCommand.java | 지움 |
+| ddd/src/ddd/domain/Money.java | 지움 |
+| ddd/src/ddd/domain/OrderLine.java | 지움 |
+| ddd/src/ddd/domain/OrderStatus.java | 지움 |
+| ddd/src/ddd/infrastructure/MemoryOrderRepository.java | 지움 |
+| ddd/src/ddd/order/application/OrderItemRequest.java | 새로 |
+| ddd/src/ddd/order/application/OrderRequest.java | 새로 |
+| ddd/src/ddd/order/application/OrderService.java | 옮김. ddd/src/ddd/application/OrderApplicationService.java에서 옮기고 고침 |
+| ddd/src/ddd/order/domain/Address.java | 옮김. ddd/src/ddd/domain/Address.java에서 옮기고 고침 |
+| ddd/src/ddd/order/domain/Member.java | 옮김. ddd/src/ddd/domain/Member.java에서 옮기고 고침 |
+| ddd/src/ddd/order/domain/MemberRepository.java | 옮김. ddd/src/ddd/domain/MemberRepository.java에서 옮기고 고침 |
+| ddd/src/ddd/order/domain/Order.java | 옮김. ddd/src/ddd/domain/Order.java에서 옮기고 고침 |
+| ddd/src/ddd/order/domain/OrderItem.java | 새로 |
+| ddd/src/ddd/order/domain/OrderRepository.java | 옮김. ddd/src/ddd/domain/OrderRepository.java에서 옮기고 고침 |
+| ddd/src/ddd/order/domain/OrderStatus.java | 새로 |
+| ddd/src/ddd/order/domain/Product.java | 옮김. ddd/src/ddd/domain/Product.java에서 옮기고 고침 |
+| ddd/src/ddd/order/domain/ProductRepository.java | 옮김. ddd/src/ddd/domain/ProductRepository.java에서 옮기고 고침 |
+| ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java | 옮김. ddd/src/ddd/infrastructure/MemoryMemberRepository.java에서 옮기고 고침 |
+| ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java | 새로 |
+| ddd/src/ddd/order/infrastructure/MemoryProductRepository.java | 옮김. ddd/src/ddd/infrastructure/MemoryProductRepository.java에서 옮기고 고침 |
+
+```diff
+diff --git a/ddd/glossary.md b/ddd/glossary.md
+index 2a742f7..e833abb 100644
+--- a/ddd/glossary.md
++++ b/ddd/glossary.md
+@@ -3,16 +3,15 @@
+ | 업무 말 | 코드 이름 | 뜻 |
+ |---|---|---|
+ | 주문 | Order | 고객이 상품을 사겠다고 한 요청 |
+-| 주문 항목 | OrderLine | 주문한 상품 하나의 상품 번호와 주문 때의 상품 이름, 가격, 수량 |
++| 주문 항목 | OrderItem | 주문한 상품 하나의 상품 번호와 주문 때의 상품 이름, 가격, 수량. 가격은 0원 이상, 수량은 1개 이상이다 |
+ | 항목 금액 | amount | 주문 항목의 가격 곱하기 수량 |
+ | 주문 번호 | id | 주문마다 다른 번호. 번호가 같으면 같은 주문이다 |
+ | 회원 번호 | memberId | 주문한 회원의 번호. 주문은 회원을 객체로 갖지 않고 이 번호로 가리킨다 |
+ | 배송 주소 | address | 상품을 받을 곳 |
+ | 주소 | Address | 비어 있지 않은 배송 주소. 글자가 같으면 같은 주소다 |
+ | 주문 금액 | totalPrice | 주문 항목마다 항목 금액을 더한 합 |
+-| 돈 | Money | 0원 이상인 금액. 금액이 같으면 같은 돈이다 |
+ | 주문하기 | placeOrder | 회원 번호, 주문 항목, 배송 주소로 주문을 접수한다 |
+-| 주문 항목 더하기 | addOrderLine | 주문 접수인 주문에 주문 항목을 더하고 주문 금액도 함께 바꾼다 |
++| 주문 항목 더하기 | addItem | 주문 접수인 주문에 주문 항목을 더하고 주문 금액도 함께 바꾼다 |
+ | 결제하기 | pay | 주문 금액을 치러 결제 완료가 된다 |
+ | 배송하기 | ship | 결제 완료인 주문을 보내 배송 중이 된다 |
+ | 배송 완료하기 | deliver | 배송 중인 주문이 고객에게 닿아 배송 완료가 된다 |
+@@ -26,9 +25,9 @@
+ | 주문 저장소 | OrderRepository | 주문을 넣어 두고 주문 번호로 다시 꺼내는 곳 |
+ | 저장하기 | save | 주문을 주문 저장소에 넣는다. 같은 번호가 있으면 새 주문으로 바꾼다 |
+ | 주문 번호로 찾기 | findById | 주문 번호로 주문 저장소에서 주문을 꺼낸다. 없으면 빈 결과다 |
+-| 주문 응용 서비스 | OrderApplicationService | 주문 유스케이스를 하는 곳. 주문을 꺼내고, 주문에게 시키고, 저장한다. 규칙은 갖지 않는다 |
+-| 주문하기 명령 | PlaceOrderCommand | 주문하기에 넣는 회원 번호, 주문 항목 명령 목록, 배송 주소 묶음 |
+-| 주문 항목 명령 | OrderLineCommand | 주문 항목을 만들 상품 번호, 상품 이름, 가격, 수량 묶음 |
++| 주문 응용 서비스 | OrderService | 주문 유스케이스를 하는 곳. 주문을 꺼내고, 주문에게 시키고, 저장한다. 규칙은 갖지 않는다 |
++| 주문 요청 | OrderRequest | 주문하기에 넣는 회원 번호, 주문 항목 요청 목록, 배송 주소 묶음 |
++| 주문 항목 요청 | OrderItemRequest | 주문 항목을 만들 상품 번호, 상품 이름, 가격, 수량 묶음 |
+ | 회원 | Member | 상품을 주문하는 사람. 회원 번호와 이름을 가진다. 회원 번호가 같으면 같은 회원이다 |
+ | 회원 저장소 | MemberRepository | 회원을 넣어 두고 회원 번호로 다시 꺼내는 곳 |
+ | 상품 | Product | 파는 물건. 상품 번호, 이름, 가격을 가진다. 상품 번호가 같으면 같은 상품이다 |
+```
+
+```diff
+diff --git a/ddd/src/ddd/Main.java b/ddd/src/ddd/Main.java
+index 09587d6..adcaf77 100644
+--- a/ddd/src/ddd/Main.java
++++ b/ddd/src/ddd/Main.java
+@@ -2,144 +2,66 @@ package ddd;
+ 
+ import java.util.List;
+ 
+-import ddd.application.OrderApplicationService;
+-import ddd.application.OrderLineCommand;
+-import ddd.application.PlaceOrderCommand;
+-import ddd.domain.Member;
+-import ddd.domain.MemberRepository;
+-import ddd.domain.Money;
+-import ddd.domain.Order;
+-import ddd.domain.OrderLine;
+-import ddd.domain.Product;
+-import ddd.domain.ProductRepository;
+-import ddd.infrastructure.MemoryMemberRepository;
+-import ddd.infrastructure.MemoryOrderRepository;
+-import ddd.infrastructure.MemoryProductRepository;
++import ddd.order.application.OrderItemRequest;
++import ddd.order.application.OrderRequest;
++import ddd.order.application.OrderService;
++import ddd.order.domain.Member;
++import ddd.order.domain.MemberRepository;
++import ddd.order.domain.Order;
++import ddd.order.domain.OrderItem;
++import ddd.order.domain.Product;
++import ddd.order.domain.ProductRepository;
++import ddd.order.infrastructure.MemoryMemberRepository;
++import ddd.order.infrastructure.MemoryOrderRepository;
++import ddd.order.infrastructure.MemoryProductRepository;
+ 
+ public class Main {
+ 
+     public static void main(String[] args) {
+-        System.out.println("온라인 주문 프로그램을 시작합니다");
++        System.out.println("===== 회원과 상품 =====");
+ 
+         MemberRepository memberRepository = new MemoryMemberRepository();
+         memberRepository.save(new Member(1, "김철수"));
+         memberRepository.save(new Member(2, "이영희"));
+ 
+         ProductRepository productRepository = new MemoryProductRepository();
+-        productRepository.save(new Product(1, "자바 책", new Money(15000)));
+-        productRepository.save(new Product(2, "볼펜", new Money(1000)));
+-        productRepository.save(new Product(3, "공책", new Money(2000)));
+-
+-        OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository());
+-
+-        List<OrderLineCommand> orderLines = List.of(
+-                new OrderLineCommand(1, "자바 책", 15000, 2),
+-                new OrderLineCommand(2, "볼펜", 1000, 1));
+-        long orderId = orderService.placeOrder(new PlaceOrderCommand(1, orderLines, "서울시 강남구"));
++        productRepository.save(new Product(1, "자바 책", 15000));
++        productRepository.save(new Product(2, "볼펜", 1000));
++
++        OrderService orderService = new OrderService(new MemoryOrderRepository());
++
++        System.out.println();
++        System.out.println("[회원과 상품 저장하기]");
++        Member member = memberRepository.findById(1).orElseThrow();
++        System.out.println("1번 회원: " + member.getName());
++        Product product = productRepository.findById(1).orElseThrow();
++        System.out.println("1번 상품: " + product.getName() + " " + product.getPrice() + "원");
++
++        System.out.println();
++        System.out.println("[회원 번호와 상품 번호로 주문하기]");
++        long orderId = orderService.placeOrder(new OrderRequest(1, List.of(
++                new OrderItemRequest(1, "자바 책", 15000, 2),
++                new OrderItemRequest(2, "볼펜", 1000, 1)), "서울시 강남구"));
+         Order order = orderService.findOrder(orderId);
+-        Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
+-        System.out.println("주문: " + order.getId() + "번, " + member.getName() + ", "
+-                + order.getTotalPrice().amount() + "원, " + order.getStatus().label());
+-        for (OrderLine orderLine : order.getOrderLines()) {
+-            System.out.println("주문 항목: " + orderLine.productName() + " " + orderLine.quantity() + "개, "
+-                    + orderLine.amount().amount() + "원");
++        Member orderMember = memberRepository.findById(order.getMemberId()).orElseThrow();
++        System.out.println("주문: " + orderId + "번 주문, " + order.getMemberId() + "번 회원 " + orderMember.getName()
++                + ", " + order.getTotalPrice() + "원");
++        for (OrderItem item : order.getItems()) {
++            System.out.println("주문 항목: " + item.getProductId() + "번 상품 " + item.getProductName() + " "
++                    + item.getQuantity() + "개, " + item.getAmount() + "원");
+         }
+ 
+-        orderService.pay(orderId);
+-        System.out.println("결제: " + orderService.findOrder(orderId).getStatus().label());
+-
+-        orderService.ship(orderId);
+-        System.out.println("배송: " + orderService.findOrder(orderId).getStatus().label());
+-
+-        try {
+-            orderService.cancel(orderId);
+-            System.out.println("취소: " + orderService.findOrder(orderId).getStatus().label());
+-        } catch (IllegalStateException e) {
+-            System.out.println("취소: " + e.getMessage());
+-        }
+-
+-        long order2Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                List.of(new OrderLineCommand(1, "자바 책", 15000, 1)), "부산시 해운대구"));
+-        try {
+-            orderService.ship(order2Id);
+-            System.out.println("결제 없이 배송: " + orderService.findOrder(order2Id).getStatus().label());
+-        } catch (IllegalStateException e) {
+-            System.out.println("결제 없이 배송: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order3Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                    List.of(new OrderLineCommand(1, "자바 책", -15000, 2)), "대구시 수성구"));
+-            System.out.println("음수 금액 주문: " + orderService.findOrder(order3Id).getTotalPrice().amount() + "원");
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("음수 금액 주문: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order4Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                    List.of(new OrderLineCommand(1, "자바 책", 15000, 1)), ""));
+-            System.out.println("빈 주소 주문: " + orderService.findOrder(order4Id).getStatus().label());
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("빈 주소 주문: " + e.getMessage());
+-        }
+-
+-        long order5Id = orderService.placeOrder(new PlaceOrderCommand(2, List.of(
+-                new OrderLineCommand(1, "자바 책", 15000, 2),
+-                new OrderLineCommand(2, "볼펜", 1000, 1)), "광주시 북구"));
+-        orderService.addOrderLine(order5Id, new OrderLineCommand(3, "공책", 2000, 5));
+-        Order order5 = orderService.findOrder(order5Id);
+-        System.out.println("항목 더하기: 항목 " + order5.getOrderLines().size() + "개, 주문 금액 "
+-                + order5.getTotalPrice().amount() + "원");
+-
+-        orderService.pay(order5Id);
+-        try {
+-            orderService.addOrderLine(order5Id, new OrderLineCommand(3, "공책", 2000, 1));
+-            System.out.println("결제 뒤 항목 더하기: 항목 " + orderService.findOrder(order5Id).getOrderLines().size() + "개");
+-        } catch (IllegalStateException e) {
+-            System.out.println("결제 뒤 항목 더하기: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order6Id = orderService.placeOrder(new PlaceOrderCommand(2, List.of(), "인천시 연수구"));
+-            System.out.println("빈 주문: " + orderService.findOrder(order6Id).getStatus().label());
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("빈 주문: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order7Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                    List.of(new OrderLineCommand(1, "자바 책", 15000, 0)), "대전시 유성구"));
+-            System.out.println("0개 항목 주문: " + orderService.findOrder(order7Id).getTotalPrice().amount() + "원");
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("0개 항목 주문: " + e.getMessage());
+-        }
+-
+-        try {
+-            orderService.pay(order5Id);
+-            System.out.println("두 번 결제: " + orderService.findOrder(order5Id).getStatus().label());
+-        } catch (IllegalStateException e) {
+-            System.out.println("두 번 결제: " + e.getMessage());
+-        }
+-
+-        orderService.deliver(orderId);
+-        System.out.println("배송 완료: " + orderService.findOrder(orderId).getStatus().label());
+-
+-        try {
+-            orderService.pay(100);
+-            System.out.println("없는 주문 결제: " + orderService.findOrder(100).getStatus().label());
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("없는 주문 결제: " + e.getMessage());
+-        }
+-
+-        Order notSaved = orderService.findOrder(order2Id);
+-        notSaved.cancel();
+-        System.out.println("저장 안 한 취소: " + orderService.findOrder(order2Id).getStatus().label());
+-
+-        productRepository.save(new Product(1, "자바 책", new Money(18000)));
+-        Order firstOrder = orderService.findOrder(orderId);
+-        OrderLine bookLine = firstOrder.getOrderLines().get(0);
+-        Product book = productRepository.findById(bookLine.productId()).orElseThrow();
+-        System.out.println("가격 바뀐 뒤: " + book.getId() + "번 상품 " + book.getPrice().amount() + "원, 주문 항목 "
+-                + bookLine.price().amount() + "원, 주문 금액 " + firstOrder.getTotalPrice().amount() + "원");
++        System.out.println();
++        System.out.println("[상품 가격이 바뀐 뒤 주문 보기]");
++        int productPriceBefore = productRepository.findById(1).orElseThrow().getPrice();
++        int itemPriceBefore = orderService.findOrder(orderId).getItems().get(0).getPrice();
++        int totalPriceBefore = orderService.findOrder(orderId).getTotalPrice();
++        productRepository.save(new Product(1, "자바 책", 18000));
++        Order orderAfter = orderService.findOrder(orderId);
++        System.out.println("자바 책 상품 가격: " + productPriceBefore + "원 -> "
++                + productRepository.findById(1).orElseThrow().getPrice() + "원");
++        System.out.println("자바 책 주문 항목 가격: " + itemPriceBefore + "원 -> "
++                + orderAfter.getItems().get(0).getPrice() + "원");
++        System.out.println("주문 금액: " + totalPriceBefore + "원 -> " + orderAfter.getTotalPrice() + "원");
+     }
+ }
+```
+
+```diff
+diff --git a/ddd/src/ddd/application/OrderLineCommand.java b/ddd/src/ddd/application/OrderLineCommand.java
+deleted file mode 100644
+index 0d16766..0000000
+--- a/ddd/src/ddd/application/OrderLineCommand.java
++++ /dev/null
+@@ -1,4 +0,0 @@
+-package ddd.application;
+-
+-public record OrderLineCommand(long productId, String productName, int price, int quantity) {
+-}
+```
+
+```diff
+diff --git a/ddd/src/ddd/application/PlaceOrderCommand.java b/ddd/src/ddd/application/PlaceOrderCommand.java
+deleted file mode 100644
+index aff512e..0000000
+--- a/ddd/src/ddd/application/PlaceOrderCommand.java
++++ /dev/null
+@@ -1,6 +0,0 @@
+-package ddd.application;
+-
+-import java.util.List;
+-
+-public record PlaceOrderCommand(long memberId, List<OrderLineCommand> orderLines, String address) {
+-}
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/Money.java b/ddd/src/ddd/domain/Money.java
+deleted file mode 100644
+index b17acdb..0000000
+--- a/ddd/src/ddd/domain/Money.java
++++ /dev/null
+@@ -1,20 +0,0 @@
+-package ddd.domain;
+-
+-import java.io.Serializable;
+-
+-public record Money(int amount) implements Serializable {
+-
+-    public Money {
+-        if (amount < 0) {
+-            throw new IllegalArgumentException("금액은 0원 이상이어야 합니다");
+-        }
+-    }
+-
+-    public Money times(int count) {
+-        return new Money(amount * count);
+-    }
+-
+-    public Money plus(Money other) {
+-        return new Money(amount + other.amount);
+-    }
+-}
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/OrderLine.java b/ddd/src/ddd/domain/OrderLine.java
+deleted file mode 100644
+index a2de83e..0000000
+--- a/ddd/src/ddd/domain/OrderLine.java
++++ /dev/null
+@@ -1,16 +0,0 @@
+-package ddd.domain;
+-
+-import java.io.Serializable;
+-
+-public record OrderLine(long productId, String productName, Money price, int quantity) implements Serializable {
+-
+-    public OrderLine {
+-        if (quantity < 1) {
+-            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
+-        }
+-    }
+-
+-    public Money amount() {
+-        return price.times(quantity);
+-    }
+-}
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/OrderStatus.java b/ddd/src/ddd/domain/OrderStatus.java
+deleted file mode 100644
+index 486e63f..0000000
+--- a/ddd/src/ddd/domain/OrderStatus.java
++++ /dev/null
+@@ -1,28 +0,0 @@
+-package ddd.domain;
+-
+-public enum OrderStatus {
+-    ORDERED("주문 접수"),
+-    PAID("결제 완료"),
+-    SHIPPING("배송 중"),
+-    DELIVERED("배송 완료"),
+-    CANCELED("취소");
+-
+-    private final String label;
+-
+-    OrderStatus(String label) {
+-        this.label = label;
+-    }
+-
+-    public String label() {
+-        return label;
+-    }
+-
+-    public boolean canChangeTo(OrderStatus next) {
+-        return switch (this) {
+-            case ORDERED -> next == PAID || next == CANCELED;
+-            case PAID -> next == SHIPPING || next == CANCELED;
+-            case SHIPPING -> next == DELIVERED;
+-            case DELIVERED, CANCELED -> false;
+-        };
+-    }
+-}
+```
+
+```diff
+diff --git a/ddd/src/ddd/infrastructure/MemoryOrderRepository.java b/ddd/src/ddd/infrastructure/MemoryOrderRepository.java
+deleted file mode 100644
+index 94cb6a0..0000000
+--- a/ddd/src/ddd/infrastructure/MemoryOrderRepository.java
++++ /dev/null
+@@ -1,44 +0,0 @@
+-package ddd.infrastructure;
+-
+-import java.io.ByteArrayInputStream;
+-import java.io.ByteArrayOutputStream;
+-import java.io.IOException;
+-import java.io.ObjectInputStream;
+-import java.io.ObjectOutputStream;
+-import java.util.HashMap;
+-import java.util.Map;
+-import java.util.Optional;
+-
+-import ddd.domain.Order;
+-import ddd.domain.OrderRepository;
+-
+-public class MemoryOrderRepository implements OrderRepository {
+-
+-    private final Map<Long, Order> orders = new HashMap<>();
+-
+-    @Override
+-    public void save(Order order) {
+-        orders.put(order.getId(), copy(order));
+-    }
+-
+-    @Override
+-    public Optional<Order> findById(long id) {
+-        Order order = orders.get(id);
+-        if (order == null) {
+-            return Optional.empty();
+-        }
+-        return Optional.of(copy(order));
+-    }
+-
+-    private Order copy(Order order) {
+-        try {
+-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+-            ObjectOutputStream out = new ObjectOutputStream(bytes);
+-            out.writeObject(order);
+-            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+-            return (Order) in.readObject();
+-        } catch (IOException | ClassNotFoundException e) {
+-            throw new IllegalStateException(e);
+-        }
+-    }
+-}
+```
+
+```diff
+diff --git a/ddd/src/ddd/order/application/OrderItemRequest.java b/ddd/src/ddd/order/application/OrderItemRequest.java
+new file mode 100644
+index 0000000..1086c2b
+--- /dev/null
++++ b/ddd/src/ddd/order/application/OrderItemRequest.java
+@@ -0,0 +1,4 @@
++package ddd.order.application;
++
++public record OrderItemRequest(long productId, String productName, int price, int quantity) {
++}
+```
+
+```diff
+diff --git a/ddd/src/ddd/order/application/OrderRequest.java b/ddd/src/ddd/order/application/OrderRequest.java
+new file mode 100644
+index 0000000..adc71a1
+--- /dev/null
++++ b/ddd/src/ddd/order/application/OrderRequest.java
+@@ -0,0 +1,6 @@
++package ddd.order.application;
++
++import java.util.List;
++
++public record OrderRequest(long memberId, List<OrderItemRequest> items, String address) {
++}
+```
+
+```diff
+diff --git a/ddd/src/ddd/application/OrderApplicationService.java b/ddd/src/ddd/order/application/OrderService.java
+similarity index 54%
+rename from ddd/src/ddd/application/OrderApplicationService.java
+rename to ddd/src/ddd/order/application/OrderService.java
+index 7e77fe6..4e54600 100644
+--- a/ddd/src/ddd/application/OrderApplicationService.java
++++ b/ddd/src/ddd/order/application/OrderService.java
+@@ -1,29 +1,29 @@
+-package ddd.application;
++package ddd.order.application;
+ 
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-import ddd.domain.Address;
+-import ddd.domain.Money;
+-import ddd.domain.Order;
+-import ddd.domain.OrderLine;
+-import ddd.domain.OrderRepository;
++import ddd.order.domain.Address;
++import ddd.order.domain.Order;
++import ddd.order.domain.OrderItem;
++import ddd.order.domain.OrderRepository;
+ 
+-public class OrderApplicationService {
++public class OrderService {
+ 
+     private final OrderRepository orderRepository;
+     private long nextId = 1;
+ 
+-    public OrderApplicationService(OrderRepository orderRepository) {
++    public OrderService(OrderRepository orderRepository) {
+         this.orderRepository = orderRepository;
+     }
+ 
+-    public long placeOrder(PlaceOrderCommand command) {
+-        List<OrderLine> orderLines = new ArrayList<>();
+-        for (OrderLineCommand orderLineCommand : command.orderLines()) {
+-            orderLines.add(toOrderLine(orderLineCommand));
++    public long placeOrder(OrderRequest request) {
++        List<OrderItem> items = new ArrayList<>();
++        for (OrderItemRequest itemRequest : request.items()) {
++            items.add(new OrderItem(itemRequest.productId(), itemRequest.productName(), itemRequest.price(),
++                    itemRequest.quantity()));
+         }
+-        Order order = new Order(nextId++, command.memberId(), orderLines, new Address(command.address()));
++        Order order = new Order(nextId++, request.memberId(), items, new Address(request.address()));
+         orderRepository.save(order);
+         return order.getId();
+     }
+@@ -32,9 +32,9 @@ public class OrderApplicationService {
+         return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문이 없습니다"));
+     }
+ 
+-    public void addOrderLine(long orderId, OrderLineCommand command) {
++    public void addItem(long orderId, OrderItemRequest request) {
+         Order order = findOrder(orderId);
+-        order.addOrderLine(toOrderLine(command));
++        order.addItem(new OrderItem(request.productId(), request.productName(), request.price(), request.quantity()));
+         orderRepository.save(order);
+     }
+ 
+@@ -61,8 +61,4 @@ public class OrderApplicationService {
+         order.cancel();
+         orderRepository.save(order);
+     }
+-
+-    private OrderLine toOrderLine(OrderLineCommand command) {
+-        return new OrderLine(command.productId(), command.productName(), new Money(command.price()), command.quantity());
+-    }
+ }
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/Address.java b/ddd/src/ddd/order/domain/Address.java
+similarity index 61%
+rename from ddd/src/ddd/domain/Address.java
+rename to ddd/src/ddd/order/domain/Address.java
+index 5cfd21e..2a69b63 100644
+--- a/ddd/src/ddd/domain/Address.java
++++ b/ddd/src/ddd/order/domain/Address.java
+@@ -1,8 +1,6 @@
+-package ddd.domain;
++package ddd.order.domain;
+ 
+-import java.io.Serializable;
+-
+-public record Address(String value) implements Serializable {
++public record Address(String value) {
+ 
+     public Address {
+         if (value == null || value.isBlank()) {
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/Member.java b/ddd/src/ddd/order/domain/Member.java
+similarity index 95%
+rename from ddd/src/ddd/domain/Member.java
+rename to ddd/src/ddd/order/domain/Member.java
+index 5f0a7f9..497b132 100644
+--- a/ddd/src/ddd/domain/Member.java
++++ b/ddd/src/ddd/order/domain/Member.java
+@@ -1,4 +1,4 @@
+-package ddd.domain;
++package ddd.order.domain;
+ 
+ public class Member {
+ 
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/MemberRepository.java b/ddd/src/ddd/order/domain/MemberRepository.java
+similarity index 84%
+rename from ddd/src/ddd/domain/MemberRepository.java
+rename to ddd/src/ddd/order/domain/MemberRepository.java
+index da4c6c8..2f1a103 100644
+--- a/ddd/src/ddd/domain/MemberRepository.java
++++ b/ddd/src/ddd/order/domain/MemberRepository.java
+@@ -1,4 +1,4 @@
+-package ddd.domain;
++package ddd.order.domain;
+ 
+ import java.util.Optional;
+ 
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/Order.java b/ddd/src/ddd/order/domain/Order.java
+similarity index 63%
+rename from ddd/src/ddd/domain/Order.java
+rename to ddd/src/ddd/order/domain/Order.java
+index b67d386..8b57593 100644
+--- a/ddd/src/ddd/domain/Order.java
++++ b/ddd/src/ddd/order/domain/Order.java
+@@ -1,35 +1,41 @@
+-package ddd.domain;
++package ddd.order.domain;
+ 
+-import java.io.Serializable;
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-public class Order implements Serializable {
+-
+-    private static final long serialVersionUID = 1L;
++public class Order {
+ 
+     private long id;
+     private long memberId;
+-    private List<OrderLine> orderLines;
++    private List<OrderItem> items;
+     private Address address;
+-    private Money totalPrice;
++    private int totalPrice;
+     private OrderStatus status;
+ 
+-    public Order(long id, long memberId, List<OrderLine> orderLines, Address address) {
+-        if (orderLines.isEmpty()) {
++    public Order(long id, long memberId, List<OrderItem> items, Address address) {
++        if (items.isEmpty()) {
+             throw new IllegalArgumentException("주문 항목이 하나 이상 있어야 합니다");
+         }
+         this.id = id;
+         this.memberId = memberId;
+-        this.orderLines = new ArrayList<>(orderLines);
++        this.items = new ArrayList<>(items);
+         this.address = address;
+-        this.totalPrice = new Money(0);
+-        for (OrderLine orderLine : orderLines) {
+-            totalPrice = totalPrice.plus(orderLine.amount());
++        this.totalPrice = 0;
++        for (OrderItem item : items) {
++            totalPrice = totalPrice + item.getAmount();
+         }
+         this.status = OrderStatus.ORDERED;
+     }
+ 
++    public Order(Order other) {
++        this.id = other.id;
++        this.memberId = other.memberId;
++        this.items = new ArrayList<>(other.items);
++        this.address = other.address;
++        this.totalPrice = other.totalPrice;
++        this.status = other.status;
++    }
++
+     public long getId() {
+         return id;
+     }
+@@ -38,15 +44,15 @@ public class Order implements Serializable {
+         return memberId;
+     }
+ 
+-    public List<OrderLine> getOrderLines() {
+-        return List.copyOf(orderLines);
++    public List<OrderItem> getItems() {
++        return List.copyOf(items);
+     }
+ 
+     public Address getAddress() {
+         return address;
+     }
+ 
+-    public Money getTotalPrice() {
++    public int getTotalPrice() {
+         return totalPrice;
+     }
+ 
+@@ -54,37 +60,37 @@ public class Order implements Serializable {
+         return status;
+     }
+ 
+-    public void addOrderLine(OrderLine orderLine) {
++    public void addItem(OrderItem item) {
+         if (status != OrderStatus.ORDERED) {
+             throw new IllegalStateException("주문 접수인 주문에만 항목을 더할 수 있습니다");
+         }
+-        orderLines.add(orderLine);
+-        totalPrice = totalPrice.plus(orderLine.amount());
++        items.add(item);
++        totalPrice = totalPrice + item.getAmount();
+     }
+ 
+     public void pay() {
+-        if (!status.canChangeTo(OrderStatus.PAID)) {
++        if (status != OrderStatus.ORDERED) {
+             throw new IllegalStateException(status.label() + "인 주문은 결제할 수 없습니다");
+         }
+         status = OrderStatus.PAID;
+     }
+ 
+     public void ship() {
+-        if (!status.canChangeTo(OrderStatus.SHIPPING)) {
++        if (status != OrderStatus.PAID) {
+             throw new IllegalStateException(status.label() + "인 주문은 배송할 수 없습니다");
+         }
+         status = OrderStatus.SHIPPING;
+     }
+ 
+     public void deliver() {
+-        if (!status.canChangeTo(OrderStatus.DELIVERED)) {
++        if (status != OrderStatus.SHIPPING) {
+             throw new IllegalStateException(status.label() + "인 주문은 배송 완료할 수 없습니다");
+         }
+         status = OrderStatus.DELIVERED;
+     }
+ 
+     public void cancel() {
+-        if (!status.canChangeTo(OrderStatus.CANCELED)) {
++        if (status != OrderStatus.ORDERED && status != OrderStatus.PAID) {
+             throw new IllegalStateException(status.label() + "인 주문은 취소할 수 없습니다");
+         }
+         status = OrderStatus.CANCELED;
+```
+
+```diff
+diff --git a/ddd/src/ddd/order/domain/OrderItem.java b/ddd/src/ddd/order/domain/OrderItem.java
+new file mode 100644
+index 0000000..8f19677
+--- /dev/null
++++ b/ddd/src/ddd/order/domain/OrderItem.java
+@@ -0,0 +1,42 @@
++package ddd.order.domain;
++
++public class OrderItem {
++
++    private final long productId;
++    private final String productName;
++    private final int price;
++    private final int quantity;
++
++    public OrderItem(long productId, String productName, int price, int quantity) {
++        if (price < 0) {
++            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다");
++        }
++        if (quantity < 1) {
++            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
++        }
++        this.productId = productId;
++        this.productName = productName;
++        this.price = price;
++        this.quantity = quantity;
++    }
++
++    public long getProductId() {
++        return productId;
++    }
++
++    public String getProductName() {
++        return productName;
++    }
++
++    public int getPrice() {
++        return price;
++    }
++
++    public int getQuantity() {
++        return quantity;
++    }
++
++    public int getAmount() {
++        return price * quantity;
++    }
++}
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/OrderRepository.java b/ddd/src/ddd/order/domain/OrderRepository.java
+similarity index 83%
+rename from ddd/src/ddd/domain/OrderRepository.java
+rename to ddd/src/ddd/order/domain/OrderRepository.java
+index f013c21..8aa47c5 100644
+--- a/ddd/src/ddd/domain/OrderRepository.java
++++ b/ddd/src/ddd/order/domain/OrderRepository.java
+@@ -1,4 +1,4 @@
+-package ddd.domain;
++package ddd.order.domain;
+ 
+ import java.util.Optional;
+ 
+```
+
+```diff
+diff --git a/ddd/src/ddd/order/domain/OrderStatus.java b/ddd/src/ddd/order/domain/OrderStatus.java
+new file mode 100644
+index 0000000..d8965da
+--- /dev/null
++++ b/ddd/src/ddd/order/domain/OrderStatus.java
+@@ -0,0 +1,19 @@
++package ddd.order.domain;
++
++public enum OrderStatus {
++    ORDERED("주문 접수"),
++    PAID("결제 완료"),
++    SHIPPING("배송 중"),
++    DELIVERED("배송 완료"),
++    CANCELED("취소");
++
++    private final String label;
++
++    OrderStatus(String label) {
++        this.label = label;
++    }
++
++    public String label() {
++        return label;
++    }
++}
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/Product.java b/ddd/src/ddd/order/domain/Product.java
+similarity index 80%
+rename from ddd/src/ddd/domain/Product.java
+rename to ddd/src/ddd/order/domain/Product.java
+index 4e47b21..b06240d 100644
+--- a/ddd/src/ddd/domain/Product.java
++++ b/ddd/src/ddd/order/domain/Product.java
+@@ -1,12 +1,12 @@
+-package ddd.domain;
++package ddd.order.domain;
+ 
+ public class Product {
+ 
+     private final long id;
+     private final String name;
+-    private final Money price;
++    private final int price;
+ 
+-    public Product(long id, String name, Money price) {
++    public Product(long id, String name, int price) {
+         this.id = id;
+         this.name = name;
+         this.price = price;
+@@ -20,7 +20,7 @@ public class Product {
+         return name;
+     }
+ 
+-    public Money getPrice() {
++    public int getPrice() {
+         return price;
+     }
+ 
+```
+
+```diff
+diff --git a/ddd/src/ddd/domain/ProductRepository.java b/ddd/src/ddd/order/domain/ProductRepository.java
+similarity index 84%
+rename from ddd/src/ddd/domain/ProductRepository.java
+rename to ddd/src/ddd/order/domain/ProductRepository.java
+index 9221d84..0d1caa6 100644
+--- a/ddd/src/ddd/domain/ProductRepository.java
++++ b/ddd/src/ddd/order/domain/ProductRepository.java
+@@ -1,4 +1,4 @@
+-package ddd.domain;
++package ddd.order.domain;
+ 
+ import java.util.Optional;
+ 
+```
+
+```diff
+diff --git a/ddd/src/ddd/infrastructure/MemoryMemberRepository.java b/ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java
+similarity index 80%
+rename from ddd/src/ddd/infrastructure/MemoryMemberRepository.java
+rename to ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java
+index 60f1c50..cf7d00e 100644
+--- a/ddd/src/ddd/infrastructure/MemoryMemberRepository.java
++++ b/ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java
+@@ -1,11 +1,11 @@
+-package ddd.infrastructure;
++package ddd.order.infrastructure;
+ 
+ import java.util.HashMap;
+ import java.util.Map;
+ import java.util.Optional;
+ 
+-import ddd.domain.Member;
+-import ddd.domain.MemberRepository;
++import ddd.order.domain.Member;
++import ddd.order.domain.MemberRepository;
+ 
+ public class MemoryMemberRepository implements MemberRepository {
+ 
+```
+
+```diff
+diff --git a/ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java b/ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
+new file mode 100644
+index 0000000..cffbd2b
+--- /dev/null
++++ b/ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
+@@ -0,0 +1,27 @@
++package ddd.order.infrastructure;
++
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Optional;
++
++import ddd.order.domain.Order;
++import ddd.order.domain.OrderRepository;
++
++public class MemoryOrderRepository implements OrderRepository {
++
++    private final Map<Long, Order> orders = new HashMap<>();
++
++    @Override
++    public void save(Order order) {
++        orders.put(order.getId(), new Order(order));
++    }
++
++    @Override
++    public Optional<Order> findById(long id) {
++        Order order = orders.get(id);
++        if (order == null) {
++            return Optional.empty();
++        }
++        return Optional.of(new Order(order));
++    }
++}
+```
+
+```diff
+diff --git a/ddd/src/ddd/infrastructure/MemoryProductRepository.java b/ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
+similarity index 80%
+rename from ddd/src/ddd/infrastructure/MemoryProductRepository.java
+rename to ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
+index f13b139..9f16401 100644
+--- a/ddd/src/ddd/infrastructure/MemoryProductRepository.java
++++ b/ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
+@@ -1,11 +1,11 @@
+-package ddd.infrastructure;
++package ddd.order.infrastructure;
+ 
+ import java.util.HashMap;
+ import java.util.Map;
+ import java.util.Optional;
+ 
+-import ddd.domain.Product;
+-import ddd.domain.ProductRepository;
++import ddd.order.domain.Product;
++import ddd.order.domain.ProductRepository;
+ 
+ public class MemoryProductRepository implements ProductRepository {
+ 
+```
