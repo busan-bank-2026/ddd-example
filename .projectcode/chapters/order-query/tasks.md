@@ -4,20 +4,20 @@
 - [x] T1 주문 요약으로 주문 목록 읽기
   - 근거: S1, S2, S3
   - 파일: ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/application/OrderSummary.java, ddd/src/ddd/order/application/OrderQueryService.java, ddd/src/ddd/Main.java
-  - 실행하면: 한도 넘은 결제 줄 다음에 주문 목록: 1번, 김철수, 항목 2개, 27900원, 배송 완료가 찍히고, order/application에 OrderQueryService.java와 OrderSummary.java가 보인다
+  - 실행하면: ===== 주문 목록 조회 ===== 아래 [김철수의 주문 목록]에 1번 주문: 김철수, 항목 2개, 31000원, 결제 완료와 2번 주문: 김철수, 항목 1개, 3000원, 주문 접수가 찍히고, order/application에 OrderQueryService.java와 OrderSummary.java가 보인다
   - Why: 바꾸는 쪽은 규칙을 지키는 주문 모양이 맞고, 읽는 쪽은 화면 한 줄 모양이 맞다. 조회를 따로 두면 화면이 바뀌어도 주문 규칙은 그대로다
   - 다른 장: order-repository, layers, optimistic-lock, bounded-contexts, project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, place-order, id-reference, order-factory, discount, free-shipping, order-events, shipping-context, payment-acl
 - [x] T2 용어집에 명령과 조회 나누기 적기
   - 근거: S4
   - 파일: ddd/glossary.md
-  - 실행하면: 출력 서른두 줄이 그대로 나오고, 용어집 끝에 주문 요약, 주문 조회 서비스, 명령과 조회 나누기 줄이 보인다
+  - 실행하면: 출력은 T1과 같고, 용어집 끝에 주문 요약, 주문 조회 서비스, 명령과 조회 나누기 줄이 보인다
   - Why: 어느 쪽이 바꾸고 어느 쪽이 읽기만 하는지 말로 정해 두어야 조회 서비스에 규칙을 넣지 않는다
   - 다른 장: ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, shipping-context, payment-acl
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T3 주문 요약의 항목 수 이름 바꾸기
+- [x] T3 주문 요약의 항목 수 이름 바꾸기
   - 근거: 고침 T1, T2
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/context-map.md, ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/MessageSender.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderLineCommand.java, ddd/src/ddd/order/application/OrderOpenHostService.java, ddd/src/ddd/order/application/OrderPaidNotifier.java, ddd/src/ddd/order/application/OrderQueryService.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/OrderSummary.java, ddd/src/ddd/order/application/PlaceOrderCommand.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderLineFactory.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderLine.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/PaymentGateway.java, ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/shared/Money.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 주문 항목 이름이 바뀌었다. 출력은 이 장 장면만 보인다

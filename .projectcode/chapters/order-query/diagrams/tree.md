@@ -1,6 +1,6 @@
 # 폴더 구조
 
-비교 기준: done/payment-acl. 새로 생긴 파일과 고친 파일을 표시했다.
+비교 기준: done/payment-acl에 고침 patch를 붙인 상태(d194ff1). 새로 생긴 파일과 고친 파일을 표시했다.
 
 ```
 ddd/
@@ -26,13 +26,15 @@ ddd/
           MemoryMemberRepository.java
       order/
         application/
+          EventHandler.java
           EventPublisher.java
-          OrderApplicationService.java
-          OrderLineCommand.java
-          OrderOpenHostService.java
+          MessageSender.java
+          OrderItemRequest.java
+          OrderPaidNotifier.java
           OrderQueryService.java   새로
+          OrderRequest.java
+          OrderService.java
           OrderSummary.java   새로
-          PlaceOrderCommand.java
         domain/
           Address.java
           DiscountPolicy.java
@@ -40,8 +42,8 @@ ddd/
           FreeShippingPriceSpecification.java
           FreeShippingSpecification.java
           Order.java
-          OrderLine.java
-          OrderLineFactory.java
+          OrderItem.java
+          OrderItemFactory.java
           OrderPlaced.java
           OrderRepository.java   고침
           OrderSpecification.java
@@ -51,8 +53,6 @@ ddd/
         infrastructure/
           LegacyPaymentAdapter.java
           MemoryOrderRepository.java   고침
-      shared/
-        Money.java
       shipping/
         application/
           OrderPaidMessageHandler.java
@@ -68,7 +68,5 @@ ddd/
   .project
   context-map.md
   glossary.md   고침
-test-lib/
-  junit-platform-console-standalone.jar
 ```
 
