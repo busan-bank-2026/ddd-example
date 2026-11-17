@@ -26,11 +26,11 @@
 
 - 실행: cd ddd, javac -d bin --source-path src src/ddd/Main.java, java -cp bin ddd.Main
 - 22장 소켓 실행: cd ddd, javac -d bin --source-path src src/ddd/*.java, 한 창에서 java -cp bin ddd.ShippingApp을 먼저 띄우고, 다른 창에서 java -cp bin ddd.OrderApp
-- 테스트: 저장소 루트에서 아래 네 줄을 실행한다. 테스트 명령이 ddd 폴더에서 돈다. 메인 소스는 Main에서 닿지 않는 22장의 main도 컴파일되게 src/ddd 묶음의 main을 모두 넘긴다. 이클립스가 쓰는 ddd/bin과 겹치지 않게 결과는 bin-test에 쓴다. 맥과 리눅스는 ; 대신 :를 쓴다
+- 테스트: 저장소 루트에서 아래 네 줄을 실행한다. 테스트 명령이 ddd 폴더에서 돈다. Main은 지금 장 장면만 쓰므로 Main에서 닿지 않는 클래스도 컴파일되게 src 아래 자바 파일을 모두 넘긴다. bash에서 실행한다. 이클립스가 쓰는 ddd/bin과 겹치지 않게 결과는 bin-test에 쓴다. 맥과 리눅스는 ; 대신 :를 쓴다
 
 ```
 cd ddd
-javac -d ../bin-test/main --source-path src src/ddd/*.java
+javac -d ../bin-test/main $(find src -name "*.java")
 javac -d ../bin-test/test -cp "../bin-test/main;../test-lib/junit-platform-console-standalone.jar" ../tests/ddd/*.java
 java -jar ../test-lib/junit-platform-console-standalone.jar execute -cp "../bin-test/main;../bin-test/test" --scan-classpath
 ```
