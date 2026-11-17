@@ -5,18 +5,18 @@ sequenceDiagram
   participant M as Main
   participant S as OrderService
   participant O as Order
-  participant L as OrderLine
-  M->>L: new OrderLine 항목
-  L->>L: 수량 1개 이상 검사
+  participant I as OrderItem
+  M->>I: new OrderItem 항목
+  I->>I: 가격과 수량 검사
   M->>S: placeOrder 항목 목록
   S->>O: new Order 항목 목록
   O->>O: 항목 하나 이상 검사
-  O->>L: amount 항목 금액
-  L-->>O: 더해서 주문 금액
-  M->>O: addOrderLine 공책
+  O->>I: getAmount 항목 금액
+  I-->>O: 더해서 주문 금액
+  M->>O: addItem 공책
   O->>O: 주문 접수인지 검사
   O->>O: 항목과 금액 함께 바꿈
-  M->>O: getOrderLines
+  M->>O: getItems
   O-->>M: 바꿀 수 없는 복사본
 ```
 
