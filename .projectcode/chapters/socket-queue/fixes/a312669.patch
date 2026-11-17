@@ -1,0 +1,1408 @@
+diff --git a/ddd/context-map.md b/ddd/context-map.md
+index 082a1ab..14a156a 100644
+--- a/ddd/context-map.md
++++ b/ddd/context-map.md
+@@ -16,34 +16,27 @@
+ - 결제는 우리가 만들지 않는다. 외부 결제 모듈이 맡는다
+ - 컨텍스트 안에는 domain, application, infrastructure 계층을 둔다
+ 
+-## 공유 커널
+-
+-- 돈 Money는 공유 커널(shared kernel) 묶음 ddd.shared에 둔다
+-- 주문과 상품 컨텍스트가 함께 쓴다
+-- 바꾸려면 쓰는 컨텍스트가 모두 합의해야 한다. 그래서 작게 둔다
+-
+ ## 컨텍스트 사이
+ 
+ | 쓰는 쪽 | 쓰이는 쪽 | 무엇 |
+ |---|---|---|
+ | 주문 | 상품 | 주문 항목 팩토리가 상품 저장소에서 상품 이름과 가격을 읽는다 |
+ | 주문 | 회원 | 할인 정책과 주문 응용 서비스가 회원과 회원 등급을 읽고, 주문 조회 서비스가 회원 이름을 읽는다 |
+-| 상품 | 주문 | 재고 줄이기 처리기가 주문 접수됨 이벤트를 받아 재고를 줄이고, 재고 되돌리기 처리기가 주문 취소됨 이벤트를 받아 재고를 되돌린다 |
++| 상품 | 주문 | 주문의 이벤트 처리기 EventHandler를 구현한 재고 줄이기 처리기가 주문 접수됨 이벤트를 받아 재고를 줄이고, 재고 되돌리기 처리기가 주문 취소됨 이벤트를 받아 재고를 되돌린다 |
+ | 배송 | 주문 | 결제 완료 메시지 처리기가 결제 완료 메시지 글자를 읽어 배송을 만든다 |
+ | 주문 | 외부 결제 | 결제 어댑터가 결제 금액을 외부 결제 모듈에 맡기고 받은 코드 글자를 결제 결과로 번역한다 |
+-| 주문, 상품 | 공유 커널 | 돈 |
+ 
+ - 같은 상품이라도 상품 컨텍스트의 상품은 지금 가격과 재고를 갖는다
+ - 주문 컨텍스트의 주문 항목은 주문 때의 상품 이름과 가격을 갖는다
+ - 주문과 상품은 다른 컨텍스트의 클래스를 import로 바로 쓴다
+-- 배송은 주문 컨텍스트의 클래스를 import하지 않는다. 주문의 공개 호스트 서비스가 보낸 메시지 글자만 읽는다
++- 배송은 주문 컨텍스트의 클래스를 import하지 않는다. 주문의 결제 완료 알리미가 보낸 메시지 글자만 읽는다
+ - 배송 컨텍스트의 배송은 주문 번호와 배송 주소를 자기 모양(숫자와 글자)으로 갖는다
+ - 주문 도메인과 응용 계층은 legacypay를 import하지 않는다. 외부 결제는 결제 어댑터로만 쓴다
+ 
+ ## 공개 호스트 서비스와 발행된 언어
+ 
+ - 공개 호스트 서비스(open host service)는 한 컨텍스트가 바깥에 열어 둔 정해진 창구다
+-- 주문 컨텍스트의 창구는 OrderOpenHostService다. 결제하기가 끝나면 결제 완료 메시지를 이벤트 발행기에 넘긴다
++- 주문 컨텍스트의 창구는 결제 완료 알리미 OrderPaidNotifier다. 결제하기가 끝나면 결제 완료 메시지를 메시지 보내기 MessageSender에 넘긴다
+ - 발행된 언어(published language)는 그 창구가 쓰는 정해진 메시지 모양이다
+ - 메시지는 한 줄 글자다. 맨 앞은 종류, 그 뒤는 키=값이고 |로 나눈다
+ - 예: ORDER_PAID|orderId=1|address=서울시 강남구
+@@ -60,7 +53,7 @@
+ ## 부패 방지 계층
+ 
+ - 외부 결제 모듈 legacypay는 우리가 만들지 않았고 고칠 수 없다
+-- 외부 모듈은 우리와 다른 말을 쓴다. 영어 이름, 원 단위 int, 코드 글자
++- 외부 모듈은 우리와 다른 말을 쓴다. 영어 이름, 코드 글자
+ - 부패 방지 계층(anticorruption layer)은 바깥 모델의 말이 우리 모델로 새어 들지 않게 경계에서 번역하는 층이다
+ - 주문 컨텍스트의 부패 방지 계층은 결제 어댑터 LegacyPaymentAdapter다
+ - 주문 도메인과 응용 계층은 결제 창구 PaymentGateway와 결제 결과 PaymentResult만 안다
+@@ -68,9 +61,9 @@
+ 
+ | 외부 결제 모듈의 말 | 주문 컨텍스트의 말 |
+ |---|---|
+-| approve(merchantKey, amountWon) | 결제 창구의 pay(돈) |
++| approve(merchantKey, amountWon) | 결제 창구의 pay(결제 금액) |
+ | merchantKey 가게 키 | 결제 어댑터만 안다 |
+-| amountWon 원 단위 int | 돈 Money |
++| amountWon | 결제 금액 paymentPrice |
+ | 0000 | 승인 |
+ | E101 | 거절. 결제 한도를 넘었습니다 |
+ | 그 밖의 코드 | 거절. 결제에 실패했습니다 |
+diff --git a/ddd/glossary.md b/ddd/glossary.md
+index a1c8e18..7149283 100644
+--- a/ddd/glossary.md
++++ b/ddd/glossary.md
+@@ -3,16 +3,15 @@
+ | 업무 말 | 코드 이름 | 뜻 |
+ |---|---|---|
+ | 주문 | Order | 고객이 상품을 사겠다고 한 요청 |
+-| 주문 항목 | OrderLine | 주문한 상품 하나의 상품 번호와 주문 때의 상품 이름, 가격, 수량 |
++| 주문 항목 | OrderItem | 주문한 상품 하나의 상품 번호와 주문 때의 상품 이름, 가격, 수량. 가격은 0원 이상, 수량은 1개 이상이다 |
+ | 항목 금액 | amount | 주문 항목의 가격 곱하기 수량 |
+ | 주문 번호 | id | 주문마다 다른 번호. 번호가 같으면 같은 주문이다 |
+ | 회원 번호 | memberId | 주문한 회원의 번호. 주문은 회원을 객체로 갖지 않고 이 번호로 가리킨다 |
+ | 배송 주소 | address | 상품을 받을 곳 |
+ | 주소 | Address | 비어 있지 않은 배송 주소. 글자가 같으면 같은 주소다 |
+ | 주문 금액 | totalPrice | 주문 항목마다 항목 금액을 더한 합 |
+-| 돈 | Money | 0원 이상인 금액. 금액이 같으면 같은 돈이다 |
+ | 주문하기 | placeOrder | 회원 번호, 주문 항목, 배송 주소로 주문을 접수한다 |
+-| 주문 항목 더하기 | addOrderLine | 주문 접수인 주문에 주문 항목을 더하고 주문 금액도 함께 바꾼다 |
++| 주문 항목 더하기 | addItem | 주문 접수인 주문에 주문 항목을 더하고 주문 금액도 함께 바꾼다 |
+ | 결제하기 | pay | 주문 금액을 치러 결제 완료가 된다 |
+ | 배송하기 | ship | 결제 완료인 주문을 보내 배송 중이 된다 |
+ | 배송 완료하기 | deliver | 배송 중인 주문이 고객에게 닿아 배송 완료가 된다 |
+@@ -27,15 +26,15 @@
+ | 저장하기 | save | 주문을 주문 저장소에 넣는다. 같은 번호가 있으면 새 주문으로 바꾼다. 저장된 주문과 버전이 다르면 다른 곳에서 먼저 바꾼 주문이라 거절한다 |
+ | 주문 번호로 찾기 | findById | 주문 번호로 주문 저장소에서 주문을 꺼낸다. 없으면 빈 결과다 |
+ | 버전 | version | 주문이 주문 저장소에 몇 번 저장됐는지. 새 주문은 0이고 저장할 때마다 1씩 오른다. 꺼낸 주문은 저장된 버전을 가진다 |
+-| 주문 응용 서비스 | OrderApplicationService | 주문 유스케이스를 하는 곳. 주문을 꺼내고, 주문에게 시키고, 저장한다. 규칙은 갖지 않는다 |
+-| 주문하기 명령 | PlaceOrderCommand | 주문하기에 넣는 회원 번호, 주문 항목 명령 목록, 배송 주소 묶음 |
+-| 주문 항목 명령 | OrderLineCommand | 주문 항목을 만들 상품 번호, 수량 묶음 |
++| 주문 응용 서비스 | OrderService | 주문 유스케이스를 하는 곳. 주문을 꺼내고, 주문에게 시키고, 저장한다. 규칙은 갖지 않는다 |
++| 주문 요청 | OrderRequest | 주문하기에 넣는 회원 번호, 주문 항목 요청 목록, 배송 주소 묶음 |
++| 주문 항목 요청 | OrderItemRequest | 주문 항목을 만들 상품 번호, 수량 묶음 |
+ | 회원 | Member | 상품을 주문하는 사람. 회원 번호, 이름, 회원 등급을 가진다. 회원 번호가 같으면 같은 회원이다 |
+ | 회원 저장소 | MemberRepository | 회원을 넣어 두고 회원 번호로 다시 꺼내는 곳 |
+ | 상품 | Product | 파는 물건. 상품 번호, 이름, 가격, 재고를 가진다. 상품 번호가 같으면 같은 상품이다 |
+ | 상품 저장소 | ProductRepository | 상품을 넣어 두고 상품 번호로 다시 꺼내는 곳 |
+ | 상품 번호 | productId | 주문 항목이 가리키는 상품의 번호. 주문 항목은 상품을 객체로 갖지 않고 이 번호로 가리킨다 |
+-| 주문 항목 팩토리 | OrderLineFactory | 상품 번호와 수량을 받아 상품 저장소에서 상품을 찾고, 그 상품의 이름과 지금 가격으로 주문 항목을 만드는 곳 |
++| 주문 항목 팩토리 | OrderItemFactory | 상품 번호와 수량을 받아 상품 저장소에서 상품을 찾고, 그 상품의 이름과 지금 가격으로 주문 항목을 만드는 곳 |
+ | 회원 등급 | MemberGrade | 회원이 어떤 회원인지 나눈 것. 일반과 VIP 중 하나다 |
+ | 일반 | BASIC | 할인이 없는 회원 등급 |
+ | VIP | VIP | 할인을 받는 회원 등급 |
+@@ -49,17 +48,19 @@
+ | 무료 배송 지역 명세 | FreeShippingAreaSpecification | 배송 주소가 제주가 아닌지 답하는 명세 |
+ | 재고 | stock | 상품이 지금 몇 개 남았는지. 주문하면 나중에 주문 수량만큼 줄어들고, 주문을 취소하면 나중에 되돌아온다 |
+ | 주문 접수됨 | OrderPlaced | 주문이 만들어질 때 주문이 남기는 도메인 이벤트. 주문 번호와 주문 항목을 담는다. 이미 일어난 일이라 바뀌지 않는다 |
+-| 이벤트 발행기 | EventPublisher | 도메인 이벤트를 받아 쌓아 두었다가, 이벤트를 처리할 때 그 이벤트를 구독한 곳에 보내는 곳. 주문 응용 서비스는 주문을 저장한 뒤 이벤트를 여기에 넘긴다 |
++| 이벤트 발행기 | EventPublisher | 도메인 이벤트를 받아 쌓아 두었다가, 이벤트를 처리할 때 구독한 처리기마다 보내는 곳. 주문 응용 서비스는 주문을 저장한 뒤 이벤트를 여기에 넘긴다 |
+ | 재고 줄이기 | decreaseStock | 상품 재고를 주문 수량만큼 뺀다 |
++| 이벤트 처리기 | EventHandler | 이벤트 발행기에 구독하는 곳. 받은 이벤트 중 자기 것만 골라 처리한다 |
+ | 재고 줄이기 처리기 | DecreaseStockHandler | 주문 접수됨 이벤트를 구독해 주문 항목마다 상품 재고를 줄이고 저장하는 곳. 주문 저장과 따로 일해서 재고는 이벤트를 처리한 뒤에 맞춰진다 |
+-| 공개 호스트 서비스 | OrderOpenHostService | 주문 컨텍스트가 바깥 컨텍스트에 알리는 정해진 창구. 결제하기가 끝나면 결제 완료 메시지를 이벤트 발행기에 넘긴다 |
++| 결제 완료 알리미 | OrderPaidNotifier | 주문 컨텍스트가 바깥에 결제 완료를 알리는 정해진 창구. 공개 호스트 서비스다. 결제하기가 끝나면 결제 완료 메시지를 메시지 보내기에 넘긴다 |
++| 메시지 보내기 | MessageSender | 메시지 글자를 바깥으로 보내는 곳. 어디로 보낼지는 구현이 정한다 |
+ | 결제 완료 메시지 | ORDER_PAID | 결제한 주문을 바깥에 알리는 한 줄 글자. 종류 ORDER_PAID 뒤에 주문 번호 orderId와 배송 주소 address를 붙인다 |
+ | 배송 | Shipment | 배송 컨텍스트가 결제한 주문을 보내려고 만드는 것. 주문 번호와 배송 주소를 가진다. 주문 번호가 같으면 같은 배송이다 |
+ | 배송 저장소 | ShipmentRepository | 배송을 넣어 두고 주문 번호로 다시 꺼내는 곳 |
+ | 결제 완료 메시지 처리기 | OrderPaidMessageHandler | 결제 완료 메시지 글자를 받아 주문 번호와 배송 주소를 읽고 배송을 만들어 저장하는 곳. 결제 완료가 아닌 메시지는 넘긴다 |
+-| 결제 창구 | PaymentGateway | 주문 컨텍스트가 결제를 맡기는 곳. 돈을 받아 결제 결과를 돌려준다. 우리 말로 정하고 바깥 결제는 어댑터가 이어 준다 |
++| 결제 창구 | PaymentGateway | 주문 컨텍스트가 결제를 맡기는 곳. 결제 금액을 받아 결제 결과를 돌려준다. 우리 말로 정하고 바깥 결제는 어댑터가 이어 준다 |
+ | 결제 결과 | PaymentResult | 결제 창구가 돌려주는 답. 승인인지와 거절 이유를 가진다 |
+-| 결제 어댑터 | LegacyPaymentAdapter | 결제 창구를 외부 결제 모듈로 구현한 곳. 돈을 외부 모듈의 금액으로 바꿔 맡기고, 받은 답을 결제 결과로 번역한다 |
++| 결제 어댑터 | LegacyPaymentAdapter | 결제 창구를 외부 결제 모듈로 구현한 곳. 결제 금액을 외부 모듈에 맡기고, 받은 답을 결제 결과로 번역한다 |
+ | 부패 방지 계층 | LegacyPaymentAdapter | 바깥 모델의 말이 우리 모델로 새어 들지 않게 경계에서 번역하는 층. 주문 컨텍스트에서는 결제 어댑터가 맡는다 |
+ | 주문 요약 | OrderSummary | 주문 목록 화면 한 줄에 맞춘 읽기 모델. 주문 번호, 회원 이름, 항목 수, 결제 금액, 상태 글자를 숫자와 글자로만 가진다. 바꾸는 동작이 없다 |
+ | 주문 조회 서비스 | OrderQueryService | 회원 번호로 주문 요약 목록을 돌려주는 곳. 주문을 바꾸거나 저장하지 않고 읽기만 한다 |
+diff --git a/ddd/src/ddd/Main.java b/ddd/src/ddd/Main.java
+index 67ac49e..b73cacc 100644
+--- a/ddd/src/ddd/Main.java
++++ b/ddd/src/ddd/Main.java
+@@ -12,234 +12,55 @@ import ddd.member.domain.MemberGrade;
+ import ddd.member.domain.MemberRepository;
+ import ddd.member.infrastructure.MemoryMemberRepository;
+ import ddd.order.application.EventPublisher;
+-import ddd.order.application.OrderApplicationService;
+-import ddd.order.application.OrderLineCommand;
+-import ddd.order.application.OrderQueryService;
+-import ddd.order.application.OrderSummary;
+-import ddd.order.application.PlaceOrderCommand;
++import ddd.order.application.OrderService;
++import ddd.order.application.OrderItemRequest;
++import ddd.order.application.OrderRequest;
+ import ddd.order.domain.DiscountPolicy;
+-import ddd.order.domain.Order;
+-import ddd.order.domain.OrderCanceled;
+-import ddd.order.domain.OrderLine;
+-import ddd.order.domain.OrderLineFactory;
+-import ddd.order.domain.OrderPlaced;
+-import ddd.order.domain.OrderRepository;
++import ddd.order.domain.OrderItemFactory;
+ import ddd.order.infrastructure.LegacyPaymentAdapter;
+ import ddd.order.infrastructure.MemoryOrderRepository;
+-import ddd.shared.Money;
+-import ddd.shipping.application.OrderPaidMessageHandler;
+-import ddd.shipping.domain.Shipment;
+-import ddd.shipping.domain.ShipmentRepository;
+-import ddd.shipping.infrastructure.MemoryShipmentRepository;
+ import legacypay.LegacyPayGateway;
+ 
+ public class Main {
+ 
+     public static void main(String[] args) {
+-        System.out.println("온라인 주문 프로그램을 시작합니다");
++        System.out.println("===== 결제 실패 되돌리기 =====");
+ 
+         MemberRepository memberRepository = new MemoryMemberRepository();
+-        memberRepository.save(new Member(1, "김철수", MemberGrade.VIP));
+-        memberRepository.save(new Member(2, "이영희", MemberGrade.BASIC));
++        memberRepository.save(new Member(1, "김철수", MemberGrade.BASIC));
+ 
+         ProductRepository productRepository = new MemoryProductRepository();
+-        productRepository.save(new Product(1, "자바 책", new Money(15000), 10));
+-        productRepository.save(new Product(2, "볼펜", new Money(1000), 10));
+-        productRepository.save(new Product(3, "공책", new Money(2000), 10));
++        productRepository.save(new Product(1, "노트북", 120000, 10));
+ 
+         EventPublisher eventPublisher = new EventPublisher();
+-        DecreaseStockHandler decreaseStockHandler = new DecreaseStockHandler(productRepository);
+-        eventPublisher.subscribe(OrderPlaced.class, decreaseStockHandler::handle);
+-        IncreaseStockHandler increaseStockHandler = new IncreaseStockHandler(productRepository);
+-        eventPublisher.subscribe(OrderCanceled.class, increaseStockHandler::handle);
+-        OrderRepository orderRepository = new MemoryOrderRepository();
+-        OrderApplicationService orderService = new OrderApplicationService(orderRepository,
+-                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
+-                new LegacyPaymentAdapter(new LegacyPayGateway()));
+-
+-        List<OrderLineCommand> orderLines = List.of(
+-                new OrderLineCommand(1, 2),
+-                new OrderLineCommand(2, 1));
+-        long orderId = orderService.placeOrder(new PlaceOrderCommand(1, orderLines, "서울시 강남구"));
+-        Order order = orderService.findOrder(orderId);
+-        Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
+-        System.out.println("주문: " + order.getId() + "번, " + member.getName() + ", "
+-                + order.getTotalPrice().amount() + "원, " + order.getStatus().label());
+-        for (OrderLine orderLine : order.getOrderLines()) {
+-            System.out.println("주문 항목: " + orderLine.productName() + " " + orderLine.quantity() + "개, "
+-                    + orderLine.amount().amount() + "원");
+-        }
+-        System.out.println("주문 뒤: 이벤트 " + order.getEvents().size() + "개, 자바 책 재고 "
+-                + productRepository.findById(1).orElseThrow().getStock() + "개");
++        eventPublisher.subscribe(new DecreaseStockHandler(productRepository));
++        eventPublisher.subscribe(new IncreaseStockHandler(productRepository));
++        OrderService orderService = new OrderService(new MemoryOrderRepository(),
++                new OrderItemFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
++                new LegacyPaymentAdapter(new LegacyPayGateway()), message -> System.out.println("보낸 메시지: " + message));
++
++        System.out.println();
++        System.out.println("[주문하기]");
++        int stockBefore = productRepository.findById(1).orElseThrow().getStock();
++        long orderId = orderService.placeOrder(new OrderRequest(1,
++                List.of(new OrderItemRequest(1, 1)), "서울시 서초구"));
+         eventPublisher.processEvents();
+-        System.out.println("이벤트 처리 뒤: 자바 책 재고 " + productRepository.findById(1).orElseThrow().getStock() + "개");
+-
+-        orderService.pay(orderId);
+-        System.out.println("결제: " + orderService.findOrder(orderId).getStatus().label());
+-        Order paidOrder = orderService.findOrder(orderId);
+-        System.out.println("할인: " + member.getGrade() + " " + paidOrder.getDiscountPrice().amount() + "원, 결제 금액 "
+-                + paidOrder.getPaymentPrice().amount() + "원");
+-        System.out.println("배송비: " + paidOrder.getShippingFee().amount() + "원");
+-
+-        orderService.ship(orderId);
+-        System.out.println("배송: " + orderService.findOrder(orderId).getStatus().label());
+-
+-        try {
+-            orderService.cancel(orderId);
+-            System.out.println("취소: " + orderService.findOrder(orderId).getStatus().label());
+-        } catch (IllegalStateException e) {
+-            System.out.println("취소: " + e.getMessage());
+-        }
+-
+-        long order2Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                List.of(new OrderLineCommand(1, 1)), "부산시 해운대구"));
+-        try {
+-            orderService.ship(order2Id);
+-            System.out.println("결제 없이 배송: " + orderService.findOrder(order2Id).getStatus().label());
+-        } catch (IllegalStateException e) {
+-            System.out.println("결제 없이 배송: " + e.getMessage());
+-        }
+-
+-        try {
+-            productRepository.save(new Product(4, "할인 책", new Money(-15000), 10));
+-            long order3Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                    List.of(new OrderLineCommand(4, 2)), "대구시 수성구"));
+-            System.out.println("음수 금액 주문: " + orderService.findOrder(order3Id).getTotalPrice().amount() + "원");
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("음수 금액 주문: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order4Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                    List.of(new OrderLineCommand(1, 1)), ""));
+-            System.out.println("빈 주소 주문: " + orderService.findOrder(order4Id).getStatus().label());
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("빈 주소 주문: " + e.getMessage());
+-        }
+-
+-        long order5Id = orderService.placeOrder(new PlaceOrderCommand(2, List.of(
+-                new OrderLineCommand(1, 2),
+-                new OrderLineCommand(2, 1)), "광주시 북구"));
+-        orderService.addOrderLine(order5Id, new OrderLineCommand(3, 5));
+-        Order order5 = orderService.findOrder(order5Id);
+-        System.out.println("항목 더하기: 항목 " + order5.getOrderLines().size() + "개, 주문 금액 "
+-                + order5.getTotalPrice().amount() + "원");
+-
+-        orderService.pay(order5Id);
+-        try {
+-            orderService.addOrderLine(order5Id, new OrderLineCommand(3, 1));
+-            System.out.println("결제 뒤 항목 더하기: 항목 " + orderService.findOrder(order5Id).getOrderLines().size() + "개");
+-        } catch (IllegalStateException e) {
+-            System.out.println("결제 뒤 항목 더하기: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order6Id = orderService.placeOrder(new PlaceOrderCommand(2, List.of(), "인천시 연수구"));
+-            System.out.println("빈 주문: " + orderService.findOrder(order6Id).getStatus().label());
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("빈 주문: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order7Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                    List.of(new OrderLineCommand(1, 0)), "대전시 유성구"));
+-            System.out.println("0개 항목 주문: " + orderService.findOrder(order7Id).getTotalPrice().amount() + "원");
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("0개 항목 주문: " + e.getMessage());
+-        }
+-
+-        try {
+-            orderService.pay(order5Id);
+-            System.out.println("두 번 결제: " + orderService.findOrder(order5Id).getStatus().label());
+-        } catch (IllegalStateException e) {
+-            System.out.println("두 번 결제: " + e.getMessage());
+-        }
+-
+-        orderService.deliver(orderId);
+-        System.out.println("배송 완료: " + orderService.findOrder(orderId).getStatus().label());
+-
+-        try {
+-            orderService.pay(100);
+-            System.out.println("없는 주문 결제: " + orderService.findOrder(100).getStatus().label());
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("없는 주문 결제: " + e.getMessage());
+-        }
+-
+-        try {
+-            long order8Id = orderService.placeOrder(new PlaceOrderCommand(2,
+-                    List.of(new OrderLineCommand(100, 1)), "울산시 남구"));
+-            System.out.println("없는 상품 주문: " + orderService.findOrder(order8Id).getStatus().label());
+-        } catch (IllegalArgumentException e) {
+-            System.out.println("없는 상품 주문: " + e.getMessage());
+-        }
+-
+-        Order notSaved = orderService.findOrder(order2Id);
+-        notSaved.cancel();
+-        System.out.println("저장 안 한 취소: " + orderService.findOrder(order2Id).getStatus().label());
+-
+-        long seoulOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+-                List.of(new OrderLineCommand(1, 4)), "서울시 마포구"));
+-        long jejuOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+-                List.of(new OrderLineCommand(1, 4)), "제주시 연동"));
+-        System.out.println("6만원 주문 배송비: 서울 " + orderService.findOrder(seoulOrderId).getShippingFee().amount()
+-                + "원, 제주 " + orderService.findOrder(jejuOrderId).getShippingFee().amount() + "원");
+-
+-        productRepository.save(new Product(1, "자바 책", new Money(18000), 10));
+-        Order firstOrder = orderService.findOrder(orderId);
+-        OrderLine bookLine = firstOrder.getOrderLines().get(0);
+-        Product book = productRepository.findById(bookLine.productId()).orElseThrow();
+-        System.out.println("가격 바뀐 뒤: " + book.getId() + "번 상품 " + book.getPrice().amount() + "원, 주문 항목 "
+-                + bookLine.price().amount() + "원, 주문 금액 " + firstOrder.getTotalPrice().amount() + "원");
+-
+-        Order orderA = orderService.findOrder(order5Id);
+-        Order orderB = orderService.findOrder(order5Id);
+-        orderA.ship();
+-        orderRepository.save(orderA);
++        int stockAfterOrder = productRepository.findById(1).orElseThrow().getStock();
++        System.out.println("노트북 1개 주문: " + orderId + "번 주문, "
++                + orderService.findOrder(orderId).getStatus().label());
++        System.out.println("노트북 재고: " + stockBefore + "개 -> " + stockAfterOrder + "개");
++
++        System.out.println();
++        System.out.println("[결제하기]");
++        String statusBefore = orderService.findOrder(orderId).getStatus().label();
+         try {
+-            orderB.cancel();
+-            orderRepository.save(orderB);
+-            System.out.println("동시 수정: " + orderService.findOrder(order5Id).getStatus().label());
++            orderService.pay(orderId);
+         } catch (IllegalStateException e) {
+-            System.out.println("동시 수정: " + e.getMessage());
++            System.out.println("결제 거절: " + e.getMessage());
+         }
+-
+-        ShipmentRepository shipmentRepository = new MemoryShipmentRepository();
+-        OrderPaidMessageHandler orderPaidMessageHandler = new OrderPaidMessageHandler(shipmentRepository);
+-        eventPublisher.subscribe(String.class, message -> System.out.println("결제 완료 메시지: " + message));
+-        eventPublisher.subscribe(String.class, orderPaidMessageHandler::handle);
+         eventPublisher.processEvents();
+-        Shipment shipment = shipmentRepository.findByOrderId(orderId).orElseThrow();
+-        System.out.println("배송 컨텍스트: " + shipment.getOrderId() + "번 주문, " + shipment.getAddress());
+-
+-        LegacyPayGateway legacyPayGateway = new LegacyPayGateway();
+-        System.out.println("외부 결제 응답: 27900원 " + legacyPayGateway.approve("DDD-SHOP", 27900) + ", 108000원 "
+-                + legacyPayGateway.approve("DDD-SHOP", 108000));
+-
+-        long bigOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+-                List.of(new OrderLineCommand(1, 6)), "서울시 송파구"));
+-        try {
+-            orderService.pay(bigOrderId);
+-            System.out.println("한도 넘은 결제: " + orderService.findOrder(bigOrderId).getStatus().label());
+-        } catch (IllegalStateException e) {
+-            System.out.println("한도 넘은 결제: " + e.getMessage() + ", "
+-                    + orderService.findOrder(bigOrderId).getStatus().label());
+-        }
+-
+-        OrderQueryService orderQueryService = new OrderQueryService(orderRepository, memberRepository);
+-        for (OrderSummary summary : orderQueryService.findOrderSummaries(1)) {
+-            System.out.println("주문 목록: " + summary.orderId() + "번, " + summary.memberName() + ", 항목 "
+-                    + summary.orderLineCount() + "개, " + summary.paymentPrice() + "원, " + summary.status());
+-        }
+-
+-        productRepository.save(new Product(5, "노트북", new Money(120000), 10));
+-        long laptopOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
+-                List.of(new OrderLineCommand(5, 1)), "서울시 서초구"));
+-        try {
+-            orderService.pay(laptopOrderId);
+-        } catch (IllegalStateException e) {
+-            eventPublisher.processEvents();
+-            System.out.println("결제 실패 뒤: 노트북 재고 " + productRepository.findById(5).orElseThrow().getStock() + "개, "
+-                    + orderService.findOrder(laptopOrderId).getStatus().label());
+-        }
++        int stockAfterPay = productRepository.findById(1).orElseThrow().getStock();
++        System.out.println("주문 상태: " + statusBefore + " -> " + orderService.findOrder(orderId).getStatus().label());
++        System.out.println("노트북 재고: " + stockAfterOrder + "개 -> " + stockAfterPay + "개");
+     }
+ }
+diff --git a/ddd/src/ddd/OrderApp.java b/ddd/src/ddd/OrderApp.java
+index 447b6b2..bb447c6 100644
+--- a/ddd/src/ddd/OrderApp.java
++++ b/ddd/src/ddd/OrderApp.java
+@@ -10,38 +10,37 @@ import ddd.member.domain.MemberGrade;
+ import ddd.member.domain.MemberRepository;
+ import ddd.member.infrastructure.MemoryMemberRepository;
+ import ddd.order.application.EventPublisher;
+-import ddd.order.application.OrderApplicationService;
+-import ddd.order.application.OrderLineCommand;
+-import ddd.order.application.PlaceOrderCommand;
+-import ddd.order.application.SocketEventPublisher;
++import ddd.order.application.OrderService;
++import ddd.order.application.OrderItemRequest;
++import ddd.order.application.OrderRequest;
+ import ddd.order.domain.DiscountPolicy;
+-import ddd.order.domain.OrderLineFactory;
++import ddd.order.domain.OrderItemFactory;
+ import ddd.order.infrastructure.LegacyPaymentAdapter;
+ import ddd.order.infrastructure.MemoryOrderRepository;
+-import ddd.shared.Money;
++import ddd.order.infrastructure.SocketMessageSender;
+ import legacypay.LegacyPayGateway;
+ 
+ public class OrderApp {
+ 
+     public static void main(String[] args) {
+-        System.out.println("주문 앱을 시작합니다");
++        System.out.println("===== 주문 앱 =====");
+ 
+         MemberRepository memberRepository = new MemoryMemberRepository();
+         memberRepository.save(new Member(1, "김철수", MemberGrade.VIP));
+ 
+         ProductRepository productRepository = new MemoryProductRepository();
+-        productRepository.save(new Product(1, "자바 책", new Money(15000), 10));
+-        productRepository.save(new Product(2, "볼펜", new Money(1000), 10));
+-
+-        EventPublisher eventPublisher = new SocketEventPublisher("localhost", 9090);
+-        OrderApplicationService orderService = new OrderApplicationService(new MemoryOrderRepository(),
+-                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
+-                new LegacyPaymentAdapter(new LegacyPayGateway()));
+-
+-        List<OrderLineCommand> orderLines = List.of(
+-                new OrderLineCommand(1, 2),
+-                new OrderLineCommand(2, 1));
+-        long orderId = orderService.placeOrder(new PlaceOrderCommand(1, orderLines, "서울시 강남구"));
++        productRepository.save(new Product(1, "자바 책", 15000, 10));
++        productRepository.save(new Product(2, "볼펜", 1000, 10));
++
++        EventPublisher eventPublisher = new EventPublisher();
++        OrderService orderService = new OrderService(new MemoryOrderRepository(),
++                new OrderItemFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
++                new LegacyPaymentAdapter(new LegacyPayGateway()), new SocketMessageSender("localhost", 9090));
++
++        List<OrderItemRequest> items = List.of(
++                new OrderItemRequest(1, 2),
++                new OrderItemRequest(2, 1));
++        long orderId = orderService.placeOrder(new OrderRequest(1, items, "서울시 강남구"));
+         orderService.pay(orderId);
+         System.out.println("결제: " + orderId + "번 주문, " + orderService.findOrder(orderId).getStatus().label());
+         System.out.println("결제 완료 메시지를 배송 앱으로 보냈습니다");
+diff --git a/ddd/src/ddd/ShippingApp.java b/ddd/src/ddd/ShippingApp.java
+index 0021341..a44cf2f 100644
+--- a/ddd/src/ddd/ShippingApp.java
++++ b/ddd/src/ddd/ShippingApp.java
+@@ -9,6 +9,7 @@ import ddd.shipping.infrastructure.SocketMessageReceiver;
+ public class ShippingApp {
+ 
+     public static void main(String[] args) {
++        System.out.println("===== 배송 앱 =====");
+         ShipmentRepository shipmentRepository = new MemoryShipmentRepository();
+         OrderPaidMessageHandler orderPaidMessageHandler = new OrderPaidMessageHandler(shipmentRepository);
+ 
+diff --git a/ddd/src/ddd/catalog/application/DecreaseStockHandler.java b/ddd/src/ddd/catalog/application/DecreaseStockHandler.java
+index 94676f5..23ee84a 100644
+--- a/ddd/src/ddd/catalog/application/DecreaseStockHandler.java
++++ b/ddd/src/ddd/catalog/application/DecreaseStockHandler.java
+@@ -2,10 +2,11 @@ package ddd.catalog.application;
+ 
+ import ddd.catalog.domain.Product;
+ import ddd.catalog.domain.ProductRepository;
+-import ddd.order.domain.OrderLine;
++import ddd.order.application.EventHandler;
++import ddd.order.domain.OrderItem;
+ import ddd.order.domain.OrderPlaced;
+ 
+-public class DecreaseStockHandler {
++public class DecreaseStockHandler implements EventHandler {
+ 
+     private final ProductRepository productRepository;
+ 
+@@ -13,10 +14,14 @@ public class DecreaseStockHandler {
+         this.productRepository = productRepository;
+     }
+ 
+-    public void handle(OrderPlaced event) {
+-        for (OrderLine orderLine : event.orderLines()) {
+-            Product product = productRepository.findById(orderLine.productId()).orElseThrow();
+-            product.decreaseStock(orderLine.quantity());
++    @Override
++    public void handle(Object event) {
++        if (!(event instanceof OrderPlaced placed)) {
++            return;
++        }
++        for (OrderItem item : placed.items()) {
++            Product product = productRepository.findById(item.getProductId()).orElseThrow();
++            product.decreaseStock(item.getQuantity());
+             productRepository.save(product);
+         }
+     }
+diff --git a/ddd/src/ddd/catalog/application/IncreaseStockHandler.java b/ddd/src/ddd/catalog/application/IncreaseStockHandler.java
+index 93f482c..6caf746 100644
+--- a/ddd/src/ddd/catalog/application/IncreaseStockHandler.java
++++ b/ddd/src/ddd/catalog/application/IncreaseStockHandler.java
+@@ -2,10 +2,11 @@ package ddd.catalog.application;
+ 
+ import ddd.catalog.domain.Product;
+ import ddd.catalog.domain.ProductRepository;
++import ddd.order.application.EventHandler;
+ import ddd.order.domain.OrderCanceled;
+-import ddd.order.domain.OrderLine;
++import ddd.order.domain.OrderItem;
+ 
+-public class IncreaseStockHandler {
++public class IncreaseStockHandler implements EventHandler {
+ 
+     private final ProductRepository productRepository;
+ 
+@@ -13,10 +14,14 @@ public class IncreaseStockHandler {
+         this.productRepository = productRepository;
+     }
+ 
+-    public void handle(OrderCanceled event) {
+-        for (OrderLine orderLine : event.orderLines()) {
+-            Product product = productRepository.findById(orderLine.productId()).orElseThrow();
+-            product.increaseStock(orderLine.quantity());
++    @Override
++    public void handle(Object event) {
++        if (!(event instanceof OrderCanceled canceled)) {
++            return;
++        }
++        for (OrderItem item : canceled.items()) {
++            Product product = productRepository.findById(item.getProductId()).orElseThrow();
++            product.increaseStock(item.getQuantity());
+             productRepository.save(product);
+         }
+     }
+diff --git a/ddd/src/ddd/catalog/domain/Product.java b/ddd/src/ddd/catalog/domain/Product.java
+index 8c2623f..cae06dd 100644
+--- a/ddd/src/ddd/catalog/domain/Product.java
++++ b/ddd/src/ddd/catalog/domain/Product.java
+@@ -1,15 +1,13 @@
+ package ddd.catalog.domain;
+ 
+-import ddd.shared.Money;
+-
+ public class Product {
+ 
+     private final long id;
+     private final String name;
+-    private final Money price;
++    private final int price;
+     private int stock;
+ 
+-    public Product(long id, String name, Money price, int stock) {
++    public Product(long id, String name, int price, int stock) {
+         this.id = id;
+         this.name = name;
+         this.price = price;
+@@ -24,7 +22,7 @@ public class Product {
+         return name;
+     }
+ 
+-    public Money getPrice() {
++    public int getPrice() {
+         return price;
+     }
+ 
+diff --git a/ddd/src/ddd/order/application/EventHandler.java b/ddd/src/ddd/order/application/EventHandler.java
+new file mode 100644
+index 0000000..b47b16b
+--- /dev/null
++++ b/ddd/src/ddd/order/application/EventHandler.java
+@@ -0,0 +1,6 @@
++package ddd.order.application;
++
++public interface EventHandler {
++
++    void handle(Object event);
++}
+diff --git a/ddd/src/ddd/order/application/EventPublisher.java b/ddd/src/ddd/order/application/EventPublisher.java
+index 8f0141c..cc45d9e 100644
+--- a/ddd/src/ddd/order/application/EventPublisher.java
++++ b/ddd/src/ddd/order/application/EventPublisher.java
+@@ -1,22 +1,18 @@
+ package ddd.order.application;
+ 
+ import java.util.ArrayList;
+-import java.util.HashMap;
+ import java.util.List;
+-import java.util.Map;
+-import java.util.function.Consumer;
+ 
+ public class EventPublisher {
+ 
+-    private final Map<Class<?>, List<Consumer<Object>>> subscribers = new HashMap<>();
++    private final List<EventHandler> handlers = new ArrayList<>();
+     private final List<Object> waitingEvents = new ArrayList<>();
+ 
+-    public <T> void subscribe(Class<T> eventType, Consumer<T> subscriber) {
+-        subscribers.computeIfAbsent(eventType, type -> new ArrayList<>())
+-                .add(event -> subscriber.accept(eventType.cast(event)));
++    public void subscribe(EventHandler handler) {
++        handlers.add(handler);
+     }
+ 
+-    public void publish(List<?> events) {
++    public void publish(List<Object> events) {
+         waitingEvents.addAll(events);
+     }
+ 
+@@ -24,8 +20,8 @@ public class EventPublisher {
+         List<Object> events = new ArrayList<>(waitingEvents);
+         waitingEvents.clear();
+         for (Object event : events) {
+-            for (Consumer<Object> subscriber : subscribers.getOrDefault(event.getClass(), List.of())) {
+-                subscriber.accept(event);
++            for (EventHandler handler : handlers) {
++                handler.handle(event);
+             }
+         }
+     }
+diff --git a/ddd/src/ddd/order/application/MessageSender.java b/ddd/src/ddd/order/application/MessageSender.java
+new file mode 100644
+index 0000000..83f6f8a
+--- /dev/null
++++ b/ddd/src/ddd/order/application/MessageSender.java
+@@ -0,0 +1,6 @@
++package ddd.order.application;
++
++public interface MessageSender {
++
++    void send(String message);
++}
+diff --git a/ddd/src/ddd/order/application/OrderItemRequest.java b/ddd/src/ddd/order/application/OrderItemRequest.java
+new file mode 100644
+index 0000000..4fd18a5
+--- /dev/null
++++ b/ddd/src/ddd/order/application/OrderItemRequest.java
+@@ -0,0 +1,4 @@
++package ddd.order.application;
++
++public record OrderItemRequest(long productId, int quantity) {
++}
+diff --git a/ddd/src/ddd/order/application/OrderLineCommand.java b/ddd/src/ddd/order/application/OrderLineCommand.java
+deleted file mode 100644
+index 984a822..0000000
+--- a/ddd/src/ddd/order/application/OrderLineCommand.java
++++ /dev/null
+@@ -1,4 +0,0 @@
+-package ddd.order.application;
+-
+-public record OrderLineCommand(long productId, int quantity) {
+-}
+diff --git a/ddd/src/ddd/order/application/OrderOpenHostService.java b/ddd/src/ddd/order/application/OrderOpenHostService.java
+deleted file mode 100644
+index 0efb232..0000000
+--- a/ddd/src/ddd/order/application/OrderOpenHostService.java
++++ /dev/null
+@@ -1,19 +0,0 @@
+-package ddd.order.application;
+-
+-import java.util.List;
+-
+-import ddd.order.domain.Order;
+-
+-public class OrderOpenHostService {
+-
+-    private final EventPublisher eventPublisher;
+-
+-    public OrderOpenHostService(EventPublisher eventPublisher) {
+-        this.eventPublisher = eventPublisher;
+-    }
+-
+-    public void publishOrderPaid(Order order) {
+-        String message = "ORDER_PAID|orderId=" + order.getId() + "|address=" + order.getAddress().value();
+-        eventPublisher.publish(List.of(message));
+-    }
+-}
+diff --git a/ddd/src/ddd/order/application/OrderPaidNotifier.java b/ddd/src/ddd/order/application/OrderPaidNotifier.java
+new file mode 100644
+index 0000000..934f022
+--- /dev/null
++++ b/ddd/src/ddd/order/application/OrderPaidNotifier.java
+@@ -0,0 +1,17 @@
++package ddd.order.application;
++
++import ddd.order.domain.Order;
++
++public class OrderPaidNotifier {
++
++    private final MessageSender messageSender;
++
++    public OrderPaidNotifier(MessageSender messageSender) {
++        this.messageSender = messageSender;
++    }
++
++    public void notifyPaid(Order order) {
++        String message = "ORDER_PAID|orderId=" + order.getId() + "|address=" + order.getAddress().value();
++        messageSender.send(message);
++    }
++}
+diff --git a/ddd/src/ddd/order/application/OrderQueryService.java b/ddd/src/ddd/order/application/OrderQueryService.java
+index ca83876..78e9dce 100644
+--- a/ddd/src/ddd/order/application/OrderQueryService.java
++++ b/ddd/src/ddd/order/application/OrderQueryService.java
+@@ -22,8 +22,8 @@ public class OrderQueryService {
+         List<OrderSummary> summaries = new ArrayList<>();
+         for (Order order : orderRepository.findByMemberId(memberId)) {
+             Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
+-            summaries.add(new OrderSummary(order.getId(), member.getName(), order.getOrderLines().size(),
+-                    order.getPaymentPrice().amount(), order.getStatus().label()));
++            summaries.add(new OrderSummary(order.getId(), member.getName(), order.getItems().size(),
++                    order.getPaymentPrice(), order.getStatus().label()));
+         }
+         return summaries;
+     }
+diff --git a/ddd/src/ddd/order/application/OrderRequest.java b/ddd/src/ddd/order/application/OrderRequest.java
+new file mode 100644
+index 0000000..adc71a1
+--- /dev/null
++++ b/ddd/src/ddd/order/application/OrderRequest.java
+@@ -0,0 +1,6 @@
++package ddd.order.application;
++
++import java.util.List;
++
++public record OrderRequest(long memberId, List<OrderItemRequest> items, String address) {
++}
+diff --git a/ddd/src/ddd/order/application/OrderApplicationService.java b/ddd/src/ddd/order/application/OrderService.java
+similarity index 67%
+rename from ddd/src/ddd/order/application/OrderApplicationService.java
+rename to ddd/src/ddd/order/application/OrderService.java
+index ade60e2..9fd53db 100644
+--- a/ddd/src/ddd/order/application/OrderApplicationService.java
++++ b/ddd/src/ddd/order/application/OrderService.java
+@@ -9,41 +9,41 @@ import ddd.order.domain.Address;
+ import ddd.order.domain.DiscountPolicy;
+ import ddd.order.domain.Order;
+ import ddd.order.domain.OrderCanceled;
+-import ddd.order.domain.OrderLine;
+-import ddd.order.domain.OrderLineFactory;
++import ddd.order.domain.OrderItem;
++import ddd.order.domain.OrderItemFactory;
+ import ddd.order.domain.OrderRepository;
+ import ddd.order.domain.PaymentGateway;
+ import ddd.order.domain.PaymentResult;
+ 
+-public class OrderApplicationService {
++public class OrderService {
+ 
+     private final OrderRepository orderRepository;
+-    private final OrderLineFactory orderLineFactory;
++    private final OrderItemFactory orderItemFactory;
+     private final MemberRepository memberRepository;
+     private final DiscountPolicy discountPolicy;
+     private final EventPublisher eventPublisher;
+-    private final OrderOpenHostService orderOpenHostService;
+     private final PaymentGateway paymentGateway;
++    private final OrderPaidNotifier orderPaidNotifier;
+     private long nextId = 1;
+ 
+-    public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory,
++    public OrderService(OrderRepository orderRepository, OrderItemFactory orderItemFactory,
+             MemberRepository memberRepository, DiscountPolicy discountPolicy, EventPublisher eventPublisher,
+-            PaymentGateway paymentGateway) {
++            PaymentGateway paymentGateway, MessageSender messageSender) {
+         this.orderRepository = orderRepository;
+-        this.orderLineFactory = orderLineFactory;
++        this.orderItemFactory = orderItemFactory;
+         this.memberRepository = memberRepository;
+         this.discountPolicy = discountPolicy;
+         this.eventPublisher = eventPublisher;
+-        this.orderOpenHostService = new OrderOpenHostService(eventPublisher);
+         this.paymentGateway = paymentGateway;
++        this.orderPaidNotifier = new OrderPaidNotifier(messageSender);
+     }
+ 
+-    public long placeOrder(PlaceOrderCommand command) {
+-        List<OrderLine> orderLines = new ArrayList<>();
+-        for (OrderLineCommand orderLineCommand : command.orderLines()) {
+-            orderLines.add(orderLineFactory.create(orderLineCommand.productId(), orderLineCommand.quantity()));
++    public long placeOrder(OrderRequest request) {
++        List<OrderItem> items = new ArrayList<>();
++        for (OrderItemRequest itemRequest : request.items()) {
++            items.add(orderItemFactory.create(itemRequest.productId(), itemRequest.quantity()));
+         }
+-        Order order = new Order(nextId++, command.memberId(), orderLines, new Address(command.address()));
++        Order order = new Order(nextId++, request.memberId(), items, new Address(request.address()));
+         orderRepository.save(order);
+         eventPublisher.publish(order.getEvents());
+         return order.getId();
+@@ -53,9 +53,9 @@ public class OrderApplicationService {
+         return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문이 없습니다"));
+     }
+ 
+-    public void addOrderLine(long orderId, OrderLineCommand command) {
++    public void addItem(long orderId, OrderItemRequest request) {
+         Order order = findOrder(orderId);
+-        order.addOrderLine(orderLineFactory.create(command.productId(), command.quantity()));
++        order.addItem(orderItemFactory.create(request.productId(), request.quantity()));
+         orderRepository.save(order);
+     }
+ 
+@@ -69,7 +69,7 @@ public class OrderApplicationService {
+             throw new IllegalStateException(result.reason());
+         }
+         orderRepository.save(order);
+-        orderOpenHostService.publishOrderPaid(order);
++        orderPaidNotifier.notifyPaid(order);
+     }
+ 
+     public void ship(long orderId) {
+@@ -88,6 +88,6 @@ public class OrderApplicationService {
+         Order order = findOrder(orderId);
+         order.cancel();
+         orderRepository.save(order);
+-        eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getOrderLines())));
++        eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getItems())));
+     }
+ }
+diff --git a/ddd/src/ddd/order/application/OrderSummary.java b/ddd/src/ddd/order/application/OrderSummary.java
+index 9b7c007..6e89506 100644
+--- a/ddd/src/ddd/order/application/OrderSummary.java
++++ b/ddd/src/ddd/order/application/OrderSummary.java
+@@ -1,4 +1,4 @@
+ package ddd.order.application;
+ 
+-public record OrderSummary(long orderId, String memberName, int orderLineCount, int paymentPrice, String status) {
++public record OrderSummary(long orderId, String memberName, int itemCount, int paymentPrice, String status) {
+ }
+diff --git a/ddd/src/ddd/order/application/PlaceOrderCommand.java b/ddd/src/ddd/order/application/PlaceOrderCommand.java
+deleted file mode 100644
+index 20ab470..0000000
+--- a/ddd/src/ddd/order/application/PlaceOrderCommand.java
++++ /dev/null
+@@ -1,6 +0,0 @@
+-package ddd.order.application;
+-
+-import java.util.List;
+-
+-public record PlaceOrderCommand(long memberId, List<OrderLineCommand> orderLines, String address) {
+-}
+diff --git a/ddd/src/ddd/order/domain/Address.java b/ddd/src/ddd/order/domain/Address.java
+index 9438d6f..2a69b63 100644
+--- a/ddd/src/ddd/order/domain/Address.java
++++ b/ddd/src/ddd/order/domain/Address.java
+@@ -1,8 +1,6 @@
+ package ddd.order.domain;
+ 
+-import java.io.Serializable;
+-
+-public record Address(String value) implements Serializable {
++public record Address(String value) {
+ 
+     public Address {
+         if (value == null || value.isBlank()) {
+diff --git a/ddd/src/ddd/order/domain/DiscountPolicy.java b/ddd/src/ddd/order/domain/DiscountPolicy.java
+index 4a09e7e..a718d33 100644
+--- a/ddd/src/ddd/order/domain/DiscountPolicy.java
++++ b/ddd/src/ddd/order/domain/DiscountPolicy.java
+@@ -2,14 +2,13 @@ package ddd.order.domain;
+ 
+ import ddd.member.domain.Member;
+ import ddd.member.domain.MemberGrade;
+-import ddd.shared.Money;
+ 
+ public class DiscountPolicy {
+ 
+-    public Money discount(Member member, Order order) {
++    public int discount(Member member, Order order) {
+         if (member.getGrade() == MemberGrade.VIP) {
+-            return new Money(order.getTotalPrice().amount() * 10 / 100);
++            return order.getTotalPrice() * 10 / 100;
+         }
+-        return new Money(0);
++        return 0;
+     }
+ }
+diff --git a/ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java b/ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java
+index 478bba7..c019b08 100644
+--- a/ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java
++++ b/ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java
+@@ -4,6 +4,6 @@ public class FreeShippingPriceSpecification implements OrderSpecification {
+ 
+     @Override
+     public boolean isSatisfiedBy(Order order) {
+-        return order.getPaymentPrice().amount() >= 50000;
++        return order.getPaymentPrice() >= 50000;
+     }
+ }
+diff --git a/ddd/src/ddd/order/domain/Order.java b/ddd/src/ddd/order/domain/Order.java
+index ccb18c4..2cf2f08 100644
+--- a/ddd/src/ddd/order/domain/Order.java
++++ b/ddd/src/ddd/order/domain/Order.java
+@@ -1,41 +1,48 @@
+ package ddd.order.domain;
+ 
+-import java.io.Serializable;
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-import ddd.shared.Money;
+-
+-public class Order implements Serializable {
+-
+-    private static final long serialVersionUID = 1L;
++public class Order {
+ 
+     private long id;
+     private long memberId;
+-    private List<OrderLine> orderLines;
++    private List<OrderItem> items;
+     private Address address;
+-    private Money totalPrice;
+-    private Money discountPrice;
++    private int totalPrice;
++    private int discountPrice;
+     private OrderStatus status;
+     private List<Object> events;
+     private long version;
+ 
+-    public Order(long id, long memberId, List<OrderLine> orderLines, Address address) {
+-        if (orderLines.isEmpty()) {
++    public Order(long id, long memberId, List<OrderItem> items, Address address) {
++        if (items.isEmpty()) {
+             throw new IllegalArgumentException("주문 항목이 하나 이상 있어야 합니다");
+         }
+         this.id = id;
+         this.memberId = memberId;
+-        this.orderLines = new ArrayList<>(orderLines);
++        this.items = new ArrayList<>(items);
+         this.address = address;
+-        this.totalPrice = new Money(0);
+-        for (OrderLine orderLine : orderLines) {
+-            totalPrice = totalPrice.plus(orderLine.amount());
++        this.totalPrice = 0;
++        for (OrderItem item : items) {
++            totalPrice = totalPrice + item.getAmount();
+         }
+-        this.discountPrice = new Money(0);
++        this.discountPrice = 0;
+         this.status = OrderStatus.ORDERED;
+         this.events = new ArrayList<>();
+-        events.add(new OrderPlaced(id, List.copyOf(orderLines)));
++        events.add(new OrderPlaced(id, List.copyOf(items)));
++    }
++
++    public Order(Order other) {
++        this.id = other.id;
++        this.memberId = other.memberId;
++        this.items = new ArrayList<>(other.items);
++        this.address = other.address;
++        this.totalPrice = other.totalPrice;
++        this.discountPrice = other.discountPrice;
++        this.status = other.status;
++        this.events = new ArrayList<>(other.events);
++        this.version = other.version;
+     }
+ 
+     public long getId() {
+@@ -46,31 +53,31 @@ public class Order implements Serializable {
+         return memberId;
+     }
+ 
+-    public List<OrderLine> getOrderLines() {
+-        return List.copyOf(orderLines);
++    public List<OrderItem> getItems() {
++        return List.copyOf(items);
+     }
+ 
+     public Address getAddress() {
+         return address;
+     }
+ 
+-    public Money getTotalPrice() {
++    public int getTotalPrice() {
+         return totalPrice;
+     }
+ 
+-    public Money getDiscountPrice() {
++    public int getDiscountPrice() {
+         return discountPrice;
+     }
+ 
+-    public Money getPaymentPrice() {
+-        return totalPrice.minus(discountPrice);
++    public int getPaymentPrice() {
++        return totalPrice - discountPrice;
+     }
+ 
+-    public Money getShippingFee() {
++    public int getShippingFee() {
+         if (new FreeShippingSpecification().isSatisfiedBy(this)) {
+-            return new Money(0);
++            return 0;
+         }
+-        return new Money(3000);
++        return 3000;
+     }
+ 
+     public OrderStatus getStatus() {
+@@ -89,16 +96,16 @@ public class Order implements Serializable {
+         version++;
+     }
+ 
+-    public void addOrderLine(OrderLine orderLine) {
++    public void addItem(OrderItem item) {
+         if (status != OrderStatus.ORDERED) {
+             throw new IllegalStateException("주문 접수인 주문에만 항목을 더할 수 있습니다");
+         }
+-        orderLines.add(orderLine);
+-        totalPrice = totalPrice.plus(orderLine.amount());
++        items.add(item);
++        totalPrice = totalPrice + item.getAmount();
+     }
+ 
+-    public void pay(Money discountPrice) {
+-        if (!status.canChangeTo(OrderStatus.PAID)) {
++    public void pay(int discountPrice) {
++        if (status != OrderStatus.ORDERED) {
+             throw new IllegalStateException(status.label() + "인 주문은 결제할 수 없습니다");
+         }
+         this.discountPrice = discountPrice;
+@@ -106,21 +113,21 @@ public class Order implements Serializable {
+     }
+ 
+     public void ship() {
+-        if (!status.canChangeTo(OrderStatus.SHIPPING)) {
++        if (status != OrderStatus.PAID) {
+             throw new IllegalStateException(status.label() + "인 주문은 배송할 수 없습니다");
+         }
+         status = OrderStatus.SHIPPING;
+     }
+ 
+     public void deliver() {
+-        if (!status.canChangeTo(OrderStatus.DELIVERED)) {
++        if (status != OrderStatus.SHIPPING) {
+             throw new IllegalStateException(status.label() + "인 주문은 배송 완료할 수 없습니다");
+         }
+         status = OrderStatus.DELIVERED;
+     }
+ 
+     public void cancel() {
+-        if (!status.canChangeTo(OrderStatus.CANCELED)) {
++        if (status != OrderStatus.ORDERED && status != OrderStatus.PAID) {
+             throw new IllegalStateException(status.label() + "인 주문은 취소할 수 없습니다");
+         }
+         status = OrderStatus.CANCELED;
+diff --git a/ddd/src/ddd/order/domain/OrderCanceled.java b/ddd/src/ddd/order/domain/OrderCanceled.java
+index d20711f..5d6f2b7 100644
+--- a/ddd/src/ddd/order/domain/OrderCanceled.java
++++ b/ddd/src/ddd/order/domain/OrderCanceled.java
+@@ -2,5 +2,5 @@ package ddd.order.domain;
+ 
+ import java.util.List;
+ 
+-public record OrderCanceled(long orderId, List<OrderLine> orderLines) {
++public record OrderCanceled(long orderId, List<OrderItem> items) {
+ }
+diff --git a/ddd/src/ddd/order/domain/OrderItem.java b/ddd/src/ddd/order/domain/OrderItem.java
+new file mode 100644
+index 0000000..8f19677
+--- /dev/null
++++ b/ddd/src/ddd/order/domain/OrderItem.java
+@@ -0,0 +1,42 @@
++package ddd.order.domain;
++
++public class OrderItem {
++
++    private final long productId;
++    private final String productName;
++    private final int price;
++    private final int quantity;
++
++    public OrderItem(long productId, String productName, int price, int quantity) {
++        if (price < 0) {
++            throw new IllegalArgumentException("가격은 0원 이상이어야 합니다");
++        }
++        if (quantity < 1) {
++            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
++        }
++        this.productId = productId;
++        this.productName = productName;
++        this.price = price;
++        this.quantity = quantity;
++    }
++
++    public long getProductId() {
++        return productId;
++    }
++
++    public String getProductName() {
++        return productName;
++    }
++
++    public int getPrice() {
++        return price;
++    }
++
++    public int getQuantity() {
++        return quantity;
++    }
++
++    public int getAmount() {
++        return price * quantity;
++    }
++}
+diff --git a/ddd/src/ddd/order/domain/OrderLineFactory.java b/ddd/src/ddd/order/domain/OrderItemFactory.java
+similarity index 65%
+rename from ddd/src/ddd/order/domain/OrderLineFactory.java
+rename to ddd/src/ddd/order/domain/OrderItemFactory.java
+index bb94bfe..4763836 100644
+--- a/ddd/src/ddd/order/domain/OrderLineFactory.java
++++ b/ddd/src/ddd/order/domain/OrderItemFactory.java
+@@ -3,17 +3,17 @@ package ddd.order.domain;
+ import ddd.catalog.domain.Product;
+ import ddd.catalog.domain.ProductRepository;
+ 
+-public class OrderLineFactory {
++public class OrderItemFactory {
+ 
+     private final ProductRepository productRepository;
+ 
+-    public OrderLineFactory(ProductRepository productRepository) {
++    public OrderItemFactory(ProductRepository productRepository) {
+         this.productRepository = productRepository;
+     }
+ 
+-    public OrderLine create(long productId, int quantity) {
++    public OrderItem create(long productId, int quantity) {
+         Product product = productRepository.findById(productId)
+                 .orElseThrow(() -> new IllegalArgumentException("상품이 없습니다"));
+-        return new OrderLine(product.getId(), product.getName(), product.getPrice(), quantity);
++        return new OrderItem(product.getId(), product.getName(), product.getPrice(), quantity);
+     }
+ }
+diff --git a/ddd/src/ddd/order/domain/OrderLine.java b/ddd/src/ddd/order/domain/OrderLine.java
+deleted file mode 100644
+index 3cce35f..0000000
+--- a/ddd/src/ddd/order/domain/OrderLine.java
++++ /dev/null
+@@ -1,18 +0,0 @@
+-package ddd.order.domain;
+-
+-import java.io.Serializable;
+-
+-import ddd.shared.Money;
+-
+-public record OrderLine(long productId, String productName, Money price, int quantity) implements Serializable {
+-
+-    public OrderLine {
+-        if (quantity < 1) {
+-            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
+-        }
+-    }
+-
+-    public Money amount() {
+-        return price.times(quantity);
+-    }
+-}
+diff --git a/ddd/src/ddd/order/domain/OrderPlaced.java b/ddd/src/ddd/order/domain/OrderPlaced.java
+index 2b0c251..4318e5c 100644
+--- a/ddd/src/ddd/order/domain/OrderPlaced.java
++++ b/ddd/src/ddd/order/domain/OrderPlaced.java
+@@ -1,7 +1,6 @@
+ package ddd.order.domain;
+ 
+-import java.io.Serializable;
+ import java.util.List;
+ 
+-public record OrderPlaced(long orderId, List<OrderLine> orderLines) implements Serializable {
++public record OrderPlaced(long orderId, List<OrderItem> items) {
+ }
+diff --git a/ddd/src/ddd/order/domain/OrderStatus.java b/ddd/src/ddd/order/domain/OrderStatus.java
+index 173344c..d8965da 100644
+--- a/ddd/src/ddd/order/domain/OrderStatus.java
++++ b/ddd/src/ddd/order/domain/OrderStatus.java
+@@ -16,13 +16,4 @@ public enum OrderStatus {
+     public String label() {
+         return label;
+     }
+-
+-    public boolean canChangeTo(OrderStatus next) {
+-        return switch (this) {
+-            case ORDERED -> next == PAID || next == CANCELED;
+-            case PAID -> next == SHIPPING || next == CANCELED;
+-            case SHIPPING -> next == DELIVERED;
+-            case DELIVERED, CANCELED -> false;
+-        };
+-    }
+ }
+diff --git a/ddd/src/ddd/order/domain/PaymentGateway.java b/ddd/src/ddd/order/domain/PaymentGateway.java
+index 574a1a5..a777b58 100644
+--- a/ddd/src/ddd/order/domain/PaymentGateway.java
++++ b/ddd/src/ddd/order/domain/PaymentGateway.java
+@@ -1,8 +1,6 @@
+ package ddd.order.domain;
+ 
+-import ddd.shared.Money;
+-
+ public interface PaymentGateway {
+ 
+-    PaymentResult pay(Money amount);
++    PaymentResult pay(int amount);
+ }
+diff --git a/ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java b/ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java
+index f5b6634..c6c68eb 100644
+--- a/ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java
++++ b/ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java
+@@ -2,7 +2,6 @@ package ddd.order.infrastructure;
+ 
+ import ddd.order.domain.PaymentGateway;
+ import ddd.order.domain.PaymentResult;
+-import ddd.shared.Money;
+ import legacypay.LegacyPayGateway;
+ 
+ public class LegacyPaymentAdapter implements PaymentGateway {
+@@ -16,8 +15,8 @@ public class LegacyPaymentAdapter implements PaymentGateway {
+     }
+ 
+     @Override
+-    public PaymentResult pay(Money amount) {
+-        String code = legacyPayGateway.approve(MERCHANT_KEY, amount.amount());
++    public PaymentResult pay(int amount) {
++        String code = legacyPayGateway.approve(MERCHANT_KEY, amount);
+         if (code.equals("0000")) {
+             return new PaymentResult(true, "");
+         }
+diff --git a/ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java b/ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
+index 6f92f2b..386ef25 100644
+--- a/ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
++++ b/ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
+@@ -1,10 +1,5 @@
+ package ddd.order.infrastructure;
+ 
+-import java.io.ByteArrayInputStream;
+-import java.io.ByteArrayOutputStream;
+-import java.io.IOException;
+-import java.io.ObjectInputStream;
+-import java.io.ObjectOutputStream;
+ import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.List;
+@@ -25,7 +20,7 @@ public class MemoryOrderRepository implements OrderRepository {
+             throw new IllegalStateException("다른 곳에서 먼저 바꾼 주문입니다");
+         }
+         order.increaseVersion();
+-        orders.put(order.getId(), copy(order));
++        orders.put(order.getId(), new Order(order));
+     }
+ 
+     @Override
+@@ -34,7 +29,7 @@ public class MemoryOrderRepository implements OrderRepository {
+         if (order == null) {
+             return Optional.empty();
+         }
+-        return Optional.of(copy(order));
++        return Optional.of(new Order(order));
+     }
+ 
+     @Override
+@@ -42,21 +37,9 @@ public class MemoryOrderRepository implements OrderRepository {
+         List<Order> found = new ArrayList<>();
+         for (Order order : orders.values()) {
+             if (order.getMemberId() == memberId) {
+-                found.add(copy(order));
++                found.add(new Order(order));
+             }
+         }
+         return found;
+     }
+-
+-    private Order copy(Order order) {
+-        try {
+-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+-            ObjectOutputStream out = new ObjectOutputStream(bytes);
+-            out.writeObject(order);
+-            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+-            return (Order) in.readObject();
+-        } catch (IOException | ClassNotFoundException e) {
+-            throw new IllegalStateException(e);
+-        }
+-    }
+ }
+diff --git a/ddd/src/ddd/order/application/SocketEventPublisher.java b/ddd/src/ddd/order/infrastructure/SocketMessageSender.java
+similarity index 59%
+rename from ddd/src/ddd/order/application/SocketEventPublisher.java
+rename to ddd/src/ddd/order/infrastructure/SocketMessageSender.java
+index 61ecc50..b0aaff0 100644
+--- a/ddd/src/ddd/order/application/SocketEventPublisher.java
++++ b/ddd/src/ddd/order/infrastructure/SocketMessageSender.java
+@@ -1,4 +1,4 @@
+-package ddd.order.application;
++package ddd.order.infrastructure;
+ 
+ import java.io.IOException;
+ import java.io.OutputStreamWriter;
+@@ -6,30 +6,21 @@ import java.io.PrintWriter;
+ import java.io.UncheckedIOException;
+ import java.net.Socket;
+ import java.nio.charset.StandardCharsets;
+-import java.util.List;
+ 
+-public class SocketEventPublisher extends EventPublisher {
++import ddd.order.application.MessageSender;
++
++public class SocketMessageSender implements MessageSender {
+ 
+     private final String host;
+     private final int port;
+ 
+-    public SocketEventPublisher(String host, int port) {
++    public SocketMessageSender(String host, int port) {
+         this.host = host;
+         this.port = port;
+     }
+ 
+     @Override
+-    public void publish(List<?> events) {
+-        for (Object event : events) {
+-            if (event instanceof String message) {
+-                send(message);
+-            } else {
+-                super.publish(List.of(event));
+-            }
+-        }
+-    }
+-
+-    private void send(String message) {
++    public void send(String message) {
+         try (Socket socket = new Socket(host, port);
+                 PrintWriter writer = new PrintWriter(
+                         new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true)) {
+diff --git a/ddd/src/ddd/shared/Money.java b/ddd/src/ddd/shared/Money.java
+deleted file mode 100644
+index f5843ee..0000000
+--- a/ddd/src/ddd/shared/Money.java
++++ /dev/null
+@@ -1,24 +0,0 @@
+-package ddd.shared;
+-
+-import java.io.Serializable;
+-
+-public record Money(int amount) implements Serializable {
+-
+-    public Money {
+-        if (amount < 0) {
+-            throw new IllegalArgumentException("금액은 0원 이상이어야 합니다");
+-        }
+-    }
+-
+-    public Money times(int count) {
+-        return new Money(amount * count);
+-    }
+-
+-    public Money plus(Money other) {
+-        return new Money(amount + other.amount);
+-    }
+-
+-    public Money minus(Money other) {
+-        return new Money(amount - other.amount);
+-    }
+-}
+diff --git a/ddd/where-rules-live.md b/ddd/where-rules-live.md
+index 55e2162..d96b116 100644
+--- a/ddd/where-rules-live.md
++++ b/ddd/where-rules-live.md
+@@ -6,13 +6,13 @@
+ 
+ | 두는 곳 | 두는 규칙 | 이 프로그램의 예 |
+ |---|---|---|
+-| 값 객체 | 값 하나가 늘 지켜야 하는 것 | Money는 0원 이상이다. Address는 비어 있지 않다 |
+-| 애그리거트 | 한 애그리거트 안에서 늘 함께 맞아야 하는 것 | Order는 항목이 하나 이상이고 주문 금액이 항목 합과 같다. OrderStatus가 상태가 바뀌는 길을 정한다 |
++| 값 객체 | 값 하나가 늘 지켜야 하는 것 | Address는 비어 있지 않다 |
++| 애그리거트 | 한 애그리거트 안에서 늘 함께 맞아야 하는 것 | Order는 항목이 하나 이상이고 주문 금액이 항목 합과 같다. 결제, 배송, 취소는 Order가 지금 상태를 보고 정한다 |
+ | 도메인 서비스 | 두 애그리거트 이상을 읽고 계산만 하는 것 | DiscountPolicy는 회원 등급과 주문 금액으로 할인 금액을 낸다 |
+ | 명세 | 참 거짓으로 답하는 조건 | FreeShippingSpecification은 50000원 이상이고 제주가 아니면 무료 배송이다 |
+ | 이벤트 | 다른 애그리거트가 나중에 따로 맞추는 것 | OrderPlaced를 받아 재고를 줄이고 OrderCanceled를 받아 되돌린다 |
+-| 사가 | 따로 저장한 단계가 실패하면 앞 단계를 되돌리는 것 | OrderApplicationService의 결제하기가 거절되면 주문 취소하기로 보상한다 |
+-| 응용 서비스 | 꺼내고 시키고 저장하는 순서 | OrderApplicationService는 주문을 꺼내 주문에게 시키고 저장한다. 규칙은 갖지 않는다 |
++| 사가 | 따로 저장한 단계가 실패하면 앞 단계를 되돌리는 것 | OrderService의 결제하기가 거절되면 주문 취소하기로 보상한다 |
++| 응용 서비스 | 꺼내고 시키고 저장하는 순서 | OrderService는 주문을 꺼내 주문에게 시키고 저장한다. 규칙은 갖지 않는다 |
+ 
+ ## 고르는 순서
+ 
+@@ -31,9 +31,9 @@
+ 
+ | 단계 | 맡는 곳 | 보상 | 보상을 맡는 곳 |
+ |---|---|---|---|
+-| 주문 접수 | OrderApplicationService의 주문하기 | 주문 취소 | OrderApplicationService의 주문 취소하기 |
++| 주문 접수 | OrderService의 주문하기 | 주문 취소 | OrderService의 주문 취소하기 |
+ | 재고 줄이기 | DecreaseStockHandler | 재고 되돌리기 | IncreaseStockHandler |
+-| 결제 | PaymentGateway | 실패하면 위 두 보상을 한다 | OrderApplicationService의 결제하기 |
++| 결제 | PaymentGateway | 실패하면 위 두 보상을 한다 | OrderService의 결제하기 |
+ 
+ - 보상은 끝난 일을 지우지 않고 반대 일을 한 번 더 한다
+ - 결제가 거절된 주문은 취소로 남는다

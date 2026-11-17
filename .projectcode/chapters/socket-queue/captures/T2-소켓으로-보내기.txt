@@ -1,10 +1,11 @@
 $ bash -c "javac -d bin --source-path src src/ddd/*.java || exit 1; java -cp bin ddd.ShippingApp > bin/shipping.txt & sleep 2; echo '== OrderApp =='; java -cp bin ddd.OrderApp; wait; echo; echo '== ShippingApp =='; cat bin/shipping.txt"
 == OrderApp ==
-주문 앱을 시작합니다
+===== 주문 앱 =====
 결제: 1번 주문, 결제 완료
 결제 완료 메시지를 배송 앱으로 보냈습니다
 
 == ShippingApp ==
+===== 배송 앱 =====
 배송 앱이 9090번 포트에서 메시지를 기다립니다
 받은 메시지: ORDER_PAID|orderId=1|address=서울시 강남구
 배송 컨텍스트: 1번 주문, 서울시 강남구

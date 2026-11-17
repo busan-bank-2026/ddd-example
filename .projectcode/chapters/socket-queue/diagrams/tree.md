@@ -1,6 +1,6 @@
 # 폴더 구조
 
-비교 기준: done/order-saga. 새로 생긴 파일과 고친 파일을 표시했다.
+비교 기준: done/order-saga에 고침 patch를 붙인 상태(a9d5010). 새로 생긴 파일과 고친 파일을 표시했다.
 
 ```
 ddd/
@@ -27,14 +27,15 @@ ddd/
           MemoryMemberRepository.java
       order/
         application/
+          EventHandler.java
           EventPublisher.java
-          OrderApplicationService.java
-          OrderLineCommand.java
-          OrderOpenHostService.java
+          MessageSender.java
+          OrderItemRequest.java
+          OrderPaidNotifier.java
           OrderQueryService.java
+          OrderRequest.java
+          OrderService.java
           OrderSummary.java
-          PlaceOrderCommand.java
-          SocketEventPublisher.java   새로
         domain/
           Address.java
           DiscountPolicy.java
@@ -43,8 +44,8 @@ ddd/
           FreeShippingSpecification.java
           Order.java
           OrderCanceled.java
-          OrderLine.java
-          OrderLineFactory.java
+          OrderItem.java
+          OrderItemFactory.java
           OrderPlaced.java
           OrderRepository.java
           OrderSpecification.java
@@ -54,8 +55,7 @@ ddd/
         infrastructure/
           LegacyPaymentAdapter.java
           MemoryOrderRepository.java
-      shared/
-        Money.java
+          SocketMessageSender.java   새로
       shipping/
         application/
           OrderPaidMessageHandler.java
@@ -75,7 +75,5 @@ ddd/
   context-map.md
   glossary.md
   where-rules-live.md
-test-lib/
-  junit-platform-console-standalone.jar
 ```
 
