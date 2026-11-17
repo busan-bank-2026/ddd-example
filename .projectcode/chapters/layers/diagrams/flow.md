@@ -5,13 +5,13 @@ flowchart LR
   subgraph main [ddd]
     M[Main]
   end
-  subgraph application [응용 계층]
-    S[OrderApplicationService]
+  subgraph application [응용 계층 ddd.order.application]
+    S[OrderService]
   end
-  subgraph infrastructure [인프라 계층]
+  subgraph infrastructure [인프라 계층 ddd.order.infrastructure]
     R[MemoryOrderRepository]
   end
-  subgraph domain [도메인 계층]
+  subgraph domain [도메인 계층 ddd.order.domain]
     O[Order]
     I[OrderRepository]
   end

@@ -3,27 +3,27 @@
 - [x] 테스트 작성
 - [x] T1 도메인 계층 만들기
   - 근거: S1
-  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderItem.java, ddd/src/ddd/Money.java, ddd/src/ddd/Address.java, ddd/src/ddd/OrderStatus.java, ddd/src/ddd/OrderRepository.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderItem.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/OrderApplicationService.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Main.java
-  - 실행하면: 이클립스에서 ddd.domain 패키지를 만들고 여섯 클래스를 끌어 놓으면 출력 열여덟 줄이 그대로 나오고 src/ddd/domain에 여섯 파일이 보인다
+  - 파일: ddd/src/ddd/Order.java, ddd/src/ddd/OrderItem.java, ddd/src/ddd/Address.java, ddd/src/ddd/OrderStatus.java, ddd/src/ddd/OrderRepository.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/Main.java
+  - 실행하면: 이클립스에서 ddd.order.domain 패키지를 만들고 다섯 클래스를 끌어 놓으면 ===== 계층 나누기 ===== 아래에 주문 줄과 주문 상태: 주문 접수 -> 결제 완료가 찍히고 src/ddd/order/domain에 다섯 파일이 보인다
   - Why: 업무 규칙을 가진 클래스를 한 묶음에 모아야 무엇이 도메인이고 무엇이 그 밖인지 한눈에 보인다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
 - [x] T2 응용 계층 만들기
   - 근거: S2
-  - 파일: ddd/src/ddd/OrderApplicationService.java, ddd/src/ddd/OrderRequest.java, ddd/src/ddd/OrderItemRequest.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/application/OrderRequest.java, ddd/src/ddd/application/OrderItemRequest.java, ddd/src/ddd/Main.java
-  - 실행하면: ddd.application 패키지를 만들고 세 클래스를 끌어 놓으면 출력은 그대로이고 src/ddd/application에 세 파일이 보인다
+  - 파일: ddd/src/ddd/OrderService.java, ddd/src/ddd/OrderRequest.java, ddd/src/ddd/OrderItemRequest.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/Main.java
+  - 실행하면: ddd.order.application 패키지를 만들고 세 클래스를 끌어 놓으면 출력은 그대로이고 src/ddd/order/application에 세 파일이 보인다
   - Why: 유스케이스를 하는 곳을 도메인과 나눠야 규칙은 도메인에, 꺼내고 시키고 저장하는 일은 응용 계층에 있다는 것이 자리로 드러난다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
 - [x] T3 인프라 계층 만들기
   - 근거: S3, S4
-  - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java
-  - 실행하면: ddd.infrastructure 패키지를 만들고 메모리 주문 저장소를 끌어 놓으면 출력은 그대로이고 src/ddd에는 Main과 세 묶음만 남는다
+  - 파일: ddd/src/ddd/MemoryOrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java
+  - 실행하면: ddd.order.infrastructure 패키지를 만들고 메모리 주문 저장소를 끌어 놓으면 출력은 그대로이고 src/ddd에는 Main과 order만, src/ddd/order에는 세 묶음만 남는다
   - Why: 저장하는 방법은 도메인의 주문 저장소 약속을 바깥에서 구현하는 일이라, 저장소를 바꿔도 도메인과 응용 계층은 바뀌지 않는다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T4 주문 컨텍스트 모양으로 계층 나누기
+- [x] T4 주문 컨텍스트 모양으로 계층 나누기
   - 근거: 고침 T1, T2, T3
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 패키지를 두 번 옮기면 따라 치기 힘들다. 처음부터 ddd.order 아래에 계층을 두면 컨텍스트 장에서는 회원과 상품만 옮긴다
