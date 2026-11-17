@@ -11,13 +11,10 @@ ddd/
     ddd/
       Address.java   새로
       Main.java   고침
-      Money.java   새로
       Order.java   고침
       OrderService.java   고침
   .classpath
   .project
   glossary.md   고침
-test-lib/
-  junit-platform-console-standalone.jar
 ```
 

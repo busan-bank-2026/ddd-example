@@ -1,29 +1,28 @@
 # value-object 작업
 
 - [x] 테스트 작성
-- [x] T1 음수 금액으로 주문해 보기
+- [x] T1 빈 주소로 주문해 보기
   - 근거: S1
   - 파일: ddd/src/ddd/Main.java
-  - 실행하면: 앞 장 여섯 줄 뒤에 음수 금액 주문: -30000원이 찍힌다
-  - Why: 금액이 그냥 숫자면 말이 안 되는 금액도 주문에 들어가는 것을 먼저 눈으로 본다
+  - 실행하면: ===== 주소 ===== 아래 [빈 주소로 주문하기]에 빈 주소 주문: 2번 주문, 주문 접수가 찍힌다
+  - Why: 주소가 그냥 글자면 받을 곳 없는 주문도 만들어지는 것을 먼저 눈으로 본다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity
 - [x] T2 금액을 돈 값 객체로 바꾸기
-  - 근거: S2, S3, S4, S6
-  - 파일: ddd/src/ddd/Money.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 마지막 줄이 음수 금액 주문: 금액은 0원 이상이어야 합니다로 바뀐다
-  - Why: 돈이 스스로 0원 이상을 지키면 돈을 쓰는 어디에서도 음수 금액이 생기지 않는다
-  - 다른 장: anemic-order, ubiquitous-language, rich-entity, project-setup
+  - 근거: 없음
+  - 파일: 없음
+  - 실행하면: 고친 뒤 이 단계는 없어졌다
+  - 없어진 이유: 돈은 int로도 계산된다. 값 객체는 주소 하나로 보여 준다
 - [x] T3 주소를 주소 값 객체로 바꾸기
-  - 근거: S5, S6
+  - 근거: S2, S3, S4, S5
   - 파일: ddd/src/ddd/Address.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 마지막에 빈 주소 주문: 배송 주소를 입력해야 합니다가 더 찍힌다
+  - 실행하면: 빈 주소 주문 줄이 빈 주소 주문: 배송 주소를 입력해야 합니다로 바뀐다
   - Why: 주소도 글자가 아니라 업무의 값이다. 빈 주소는 주소가 될 수 없게 주소가 스스로 막는다
   - 다른 장: anemic-order, ubiquitous-language, rich-entity, project-setup
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T4 돈 값 객체 빼고 주소 하나로 보여 주기
+- [x] T4 돈 값 객체 빼고 주소 하나로 보여 주기
   - 근거: 고침 T1, T2, T3
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/src/ddd/Main.java, ddd/src/ddd/Order.java, ddd/src/ddd/OrderService.java, ddd/src/ddd/Money.java, ddd/glossary.md
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 돈은 int로도 계산된다. 값 객체는 주소 하나로 보이고 따라 칠 코드가 줄어든다. 출력은 이 장 장면만 보인다

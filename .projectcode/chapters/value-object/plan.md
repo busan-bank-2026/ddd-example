@@ -3,7 +3,7 @@
 ## 파일
 | 파일 | 새로 또는 고침 | 하는 일 |
 |---|---|---|
-| ddd/src/ddd/Main.java | 고침 | 앞 장 장면을 지우고 빈 주소 주문 장면을 찍는다. 고친 뒤에는 거절 메시지를 보여준다 |
+| ddd/src/ddd/Main.java | 고침 | 앞 장 장면을 지우고 ===== 주소 ===== 아래에 주소로 주문하기와 빈 주소로 주문하기 장면을 찍는다. 고친 뒤에는 거절 메시지를 보여준다 |
 | ddd/src/ddd/Address.java | 새로 | 비어 있지 않은 배송 주소 |
 | ddd/src/ddd/Order.java | 고침 | 배송 주소를 Address로 갖는다 |
 | ddd/src/ddd/OrderService.java | 고침 | 받은 주소로 Address를 만들어 주문에 넘긴다 |
@@ -25,13 +25,14 @@ Order.java
 
 OrderService.java
 - placeOrder가 받는 값은 그대로 int price, String address다
-- T2에서 new Address(address)를 만들어 new Order에 넘긴다
+- T3에서 new Address(address)를 만들어 new Order에 넘긴다
 
 Main.java
-- 시작 줄을 찍고 앞 장 장면을 지운다
-- 주문 하나를 만들어 주문 줄을 찍는다
-- 문제 장면: 빈 주소 ""로 주문하고 "빈 주소 주문: " 뒤에 상태를 찍는다
-- 주소로 바꾼 뒤: 빈 주소 주문을 try catch로 감싸 IllegalArgumentException의 메시지를 찍는다
+- 첫 줄에 ===== 주소 =====를 찍고 앞 장 장면을 지운다
+- 장면마다 빈 줄과 [장면 이름] 줄로 나눈다
+- [주소로 주문하기]: 김철수, 자바 책 15000원 2개, 서울시 강남구로 주문하고 "주문: " 번호 "번 주문, 배송 주소 " 주소를 찍는다
+- [빈 주소로 주문하기] T1: 최지우, 자바 책 15000원 1개, 빈 주소 ""로 주문하고 "빈 주소 주문: " 번호 "번 주문, " 상태를 찍는다
+- T3: 주문 줄은 getAddress().value()로 주소 글자를 꺼낸다. 빈 주소 주문을 try catch로 감싸 IllegalArgumentException의 메시지를 찍는다
 
 glossary.md
 - 배송 주소 줄 아래에 주소 Address 줄을 더한다
@@ -58,6 +59,13 @@ public record Address(String value) {
 }
 
 return new Order(nextId++, customerName, productName, price, quantity, new Address(address));
+
+try {
+    Order emptyAddressOrder = orderService.placeOrder("최지우", "자바 책", 15000, 1, "");
+    System.out.println("빈 주소 주문: " + emptyAddressOrder.getId() + "번 주문, " + emptyAddressOrder.getStatus());
+} catch (IllegalArgumentException e) {
+    System.out.println("빈 주소 주문: " + e.getMessage());
+}
 
 ## 할 일 연결
 | 할 일 | 파일 |
