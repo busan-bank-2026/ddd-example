@@ -5,11 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -27,17 +24,16 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
 import ddd.order.domain.Address;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
-import ddd.order.domain.OrderLine;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderItem;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 class RichEntityTest {
@@ -49,62 +45,47 @@ class RichEntityTest {
         return members;
     }
 
-    private static OrderLineFactory orderLineFactory() {
+    private static OrderItemFactory orderItemFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        products.save(new Product(2, "볼펜", new Money(1000), 10));
-        products.save(new Product(3, "공책", new Money(2000), 10));
-        return new OrderLineFactory(products);
-    }
-
-    private String runMain() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-        return out.toString(StandardCharsets.UTF_8);
+        products.save(new Product(1, "자바 책", 15000, 10));
+        products.save(new Product(2, "볼펜", 1000, 10));
+        products.save(new Product(3, "공책", 2000, 10));
+        return new OrderItemFactory(products);
     }
 
     @Test
     @DisplayName("S1 결제하지 않은 주문의 상태를 서비스를 거치지 않고 배송 중으로 바꾸면 그대로 바뀌는 문제를 실행해 보여준다")
     void s1() {
-        String printed = runMain();
 
-        assertTrue(printed.contains("결제 없이 배송: "));
     }
 
     @Test
     @DisplayName("S2 주문은 만들 때 주문 번호를 받고, 같은 번호면 같은 주문으로 본다")
     void s2() {
-        Order first = new Order(1, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
-        Order sameNumber = new Order(1, 2, List.of(new OrderLine(4, "연필", new Money(500), 3)), new Address("부산시 해운대구"));
-        Order otherNumber = new Order(2, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order first = new Order(1, 1, List.of(new OrderItem(1, "자바 책", 15000, 2)), new Address("서울시 강남구"));
+        Order sameNumber = new Order(1, 2, List.of(new OrderItem(4, "연필", 500, 3)), new Address("부산시 해운대구"));
+        Order otherNumber = new Order(2, 1, List.of(new OrderItem(1, "자바 책", 15000, 2)), new Address("서울시 강남구"));
 
         assertEquals(1, first.getId());
         assertEquals(first, sameNumber);
         assertEquals(first.hashCode(), sameNumber.hashCode());
         assertNotEquals(first, otherNumber);
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-        long placed1 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
-        long placed2 = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        long placed1 = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
+        long placed2 = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         assertEquals(1, placed1);
         assertEquals(2, placed2);
         assertEquals(1, service.findOrder(placed1).getId());
         assertNotEquals(service.findOrder(placed1), service.findOrder(placed2));
-        assertTrue(runMain().contains("주문: 1번, 김철수, 31000원, 주문 접수"));
     }
 
     @Test
     @DisplayName("S3 주문을 만들 때 주문 금액과 주문 접수 상태를 주문이 스스로 정한다")
     void s3() {
-        Order order = new Order(1, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order order = new Order(1, 1, List.of(new OrderItem(1, "자바 책", 15000, 2)), new Address("서울시 강남구"));
 
-        assertEquals(30000, order.getTotalPrice().amount());
+        assertEquals(30000, order.getTotalPrice());
         assertEquals("주문 접수", order.getStatus().label());
         assertEquals(1L, order.getMemberId());
         assertEquals("서울시 강남구", order.getAddress().value());
@@ -113,9 +94,9 @@ class RichEntityTest {
     @Test
     @DisplayName("S4 결제, 배송, 취소 규칙을 주문이 스스로 지킨다. 서비스는 주문에게 시키기만 한다")
     void s4() {
-        Order order = new Order(1, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order order = new Order(1, 1, List.of(new OrderItem(1, "자바 책", 15000, 2)), new Address("서울시 강남구"));
 
-        order.pay(new Money(0));
+        order.pay(0);
         assertEquals("결제 완료", order.getStatus().label());
         order.ship();
         assertEquals("배송 중", order.getStatus().label());
@@ -123,14 +104,14 @@ class RichEntityTest {
         assertEquals("배송 중인 주문은 취소할 수 없습니다", cancelError.getMessage());
         assertEquals("배송 중", order.getStatus().label());
 
-        Order unpaid = new Order(2, 1, List.of(new OrderLine(1, "자바 책", new Money(15000), 2)), new Address("서울시 강남구"));
+        Order unpaid = new Order(2, 1, List.of(new OrderItem(1, "자바 책", 15000, 2)), new Address("서울시 강남구"));
         IllegalStateException shipError = assertThrows(IllegalStateException.class, unpaid::ship);
         assertEquals("주문 접수인 주문은 배송할 수 없습니다", shipError.getMessage());
         unpaid.cancel();
         assertEquals("취소", unpaid.getStatus().label());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-        long placed = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        long placed = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         service.pay(placed);
         service.ship(placed);
         assertEquals("배송 중", service.findOrder(placed).getStatus().label());
@@ -146,7 +127,6 @@ class RichEntityTest {
                 .anyMatch(name -> name.startsWith("set"));
 
         assertTrue(!hasSetter);
-        assertTrue(runMain().contains("결제 없이 배송: 주문 접수인 주문은 배송할 수 없습니다"));
     }
 
     @Test

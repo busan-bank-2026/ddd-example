@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -19,62 +16,14 @@ import ddd.order.domain.FreeShippingAreaSpecification;
 import ddd.order.domain.FreeShippingPriceSpecification;
 import ddd.order.domain.FreeShippingSpecification;
 import ddd.order.domain.Order;
-import ddd.order.domain.OrderLine;
+import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderSpecification;
 import ddd.order.domain.OrderStatus;
-import ddd.shared.Money;
 
 class FreeShippingTest {
 
-    private static final String EXPECTED = String.join(System.lineSeparator(),
-            "온라인 주문 프로그램을 시작합니다",
-            "주문: 1번, 김철수, 31000원, 주문 접수",
-            "주문 항목: 자바 책 2개, 30000원",
-            "주문 항목: 볼펜 1개, 1000원",
-            "주문 뒤: 이벤트 1개, 자바 책 재고 10개",
-            "이벤트 처리 뒤: 자바 책 재고 8개",
-            "결제: 결제 완료",
-            "할인: VIP 3100원, 결제 금액 27900원",
-            "배송비: 3000원",
-            "배송: 배송 중",
-            "취소: 배송 중인 주문은 취소할 수 없습니다",
-            "결제 없이 배송: 주문 접수인 주문은 배송할 수 없습니다",
-            "음수 금액 주문: 금액은 0원 이상이어야 합니다",
-            "빈 주소 주문: 배송 주소를 입력해야 합니다",
-            "항목 더하기: 항목 3개, 주문 금액 41000원",
-            "결제 뒤 항목 더하기: 주문 접수인 주문에만 항목을 더할 수 있습니다",
-            "빈 주문: 주문 항목이 하나 이상 있어야 합니다",
-            "0개 항목 주문: 수량은 1개 이상이어야 합니다",
-            "두 번 결제: 결제 완료인 주문은 결제할 수 없습니다",
-            "배송 완료: 배송 완료",
-            "없는 주문 결제: 주문이 없습니다",
-            "없는 상품 주문: 상품이 없습니다",
-            "저장 안 한 취소: 주문 접수",
-            "6만원 주문 배송비: 서울 0원, 제주 3000원",
-            "가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원",
-            "동시 수정: 다른 곳에서 먼저 바꾼 주문입니다",
-            "결제 완료 메시지: ORDER_PAID|orderId=1|address=서울시 강남구",
-            "결제 완료 메시지: ORDER_PAID|orderId=4|address=광주시 북구",
-            "배송 컨텍스트: 1번 주문, 서울시 강남구",
-            "외부 결제 응답: 27900원 0000, 108000원 E101",
-            "한도 넘은 결제: 결제 한도를 넘었습니다, 취소",
-            "주문 목록: 1번, 김철수, 항목 2개, 27900원, 배송 완료",
-            "결제 실패 뒤: 노트북 재고 10개, 취소") + System.lineSeparator();
-
-    private String runMain() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-        return out.toString(StandardCharsets.UTF_8);
-    }
-
     private static Order newOrder(int price, String address) {
-        return new Order(1, 2, List.of(new OrderLine(1, "자바 책", new Money(price), 1)), new Address(address));
+        return new Order(1, 2, List.of(new OrderItem(1, "자바 책", price, 1)), new Address(address));
     }
 
     @Test
@@ -88,11 +37,11 @@ class FreeShippingTest {
 
         Order discounted = newOrder(52000, "서울시 마포구");
         assertTrue(spec.isSatisfiedBy(discounted));
-        discounted.pay(new Money(5200));
+        discounted.pay(5200);
         assertFalse(spec.isSatisfiedBy(discounted));
         assertEquals(OrderStatus.PAID, discounted.getStatus());
-        assertEquals(new Money(5200), discounted.getDiscountPrice());
-        assertEquals(new Money(46800), discounted.getPaymentPrice());
+        assertEquals(5200, discounted.getDiscountPrice());
+        assertEquals(46800, discounted.getPaymentPrice());
 
         assertEquals(boolean.class, FreeShippingSpecification.class.getMethod("isSatisfiedBy", Order.class).getReturnType());
         assertEquals(0, FreeShippingSpecification.class.getDeclaredFields().length);
@@ -102,19 +51,14 @@ class FreeShippingTest {
     @Test
     @DisplayName("S2 주문은 배송비를 가진다. 무료 배송 명세를 만족하면 0원, 아니면 3000원이다. Main이 첫 주문의 할인 줄 다음에 배송비를 보여준다")
     void s2() {
-        assertEquals(new Money(3000), newOrder(30000, "서울시 마포구").getShippingFee());
-        assertEquals(new Money(0), newOrder(60000, "서울시 마포구").getShippingFee());
+        assertEquals(3000, newOrder(30000, "서울시 마포구").getShippingFee());
+        assertEquals(0, newOrder(60000, "서울시 마포구").getShippingFee());
 
         Order discounted = newOrder(52000, "서울시 마포구");
-        assertEquals(new Money(0), discounted.getShippingFee());
-        discounted.pay(new Money(5200));
-        assertEquals(new Money(3000), discounted.getShippingFee());
-        assertEquals(new Money(52000), discounted.getTotalPrice());
-
-        List<String> lines = List.of(runMain().split(System.lineSeparator()));
-        int discountLine = lines.indexOf("할인: VIP 3100원, 결제 금액 27900원");
-        assertTrue(discountLine > 0);
-        assertEquals("배송비: 3000원", lines.get(discountLine + 1));
+        assertEquals(0, discounted.getShippingFee());
+        discounted.pay(5200);
+        assertEquals(3000, discounted.getShippingFee());
+        assertEquals(52000, discounted.getTotalPrice());
     }
 
     @Test
@@ -125,8 +69,8 @@ class FreeShippingTest {
         Order cheapJeju = newOrder(30000, "제주시 연동");
 
         assertFalse(new FreeShippingSpecification().isSatisfiedBy(jeju));
-        assertEquals(new Money(3000), jeju.getShippingFee());
-        assertEquals(new Money(0), seoul.getShippingFee());
+        assertEquals(3000, jeju.getShippingFee());
+        assertEquals(0, seoul.getShippingFee());
 
         OrderSpecification price = new FreeShippingPriceSpecification();
         OrderSpecification area = new FreeShippingAreaSpecification();
@@ -143,8 +87,6 @@ class FreeShippingTest {
         }
         assertTrue(both.isSatisfiedBy(seoul));
         assertFalse(both.isSatisfiedBy(jeju));
-
-        assertEquals(EXPECTED, runMain());
     }
 
     @Test

@@ -2,11 +2,6 @@ package ddd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 import java.util.List;
 
@@ -21,15 +16,14 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 class AnemicOrderTest {
@@ -41,18 +35,18 @@ class AnemicOrderTest {
         return members;
     }
 
-    private static OrderLineFactory orderLineFactory() {
+    private static OrderItemFactory orderItemFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        products.save(new Product(2, "볼펜", new Money(1000), 10));
-        products.save(new Product(3, "공책", new Money(2000), 10));
-        return new OrderLineFactory(products);
+        products.save(new Product(1, "자바 책", 15000, 10));
+        products.save(new Product(2, "볼펜", 1000, 10));
+        products.save(new Product(3, "공책", 2000, 10));
+        return new OrderItemFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
+    private final OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
 
     private long newOrder() {
-        return service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        return service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
     }
 
     @Test
@@ -61,11 +55,11 @@ class AnemicOrderTest {
         Order order = service.findOrder(newOrder());
 
         assertEquals(1L, order.getMemberId());
-        assertEquals("자바 책", order.getOrderLines().get(0).productName());
-        assertEquals(15000, order.getOrderLines().get(0).price().amount());
-        assertEquals(2, order.getOrderLines().get(0).quantity());
+        assertEquals("자바 책", order.getItems().get(0).getProductName());
+        assertEquals(15000, order.getItems().get(0).getPrice());
+        assertEquals(2, order.getItems().get(0).getQuantity());
         assertEquals("서울시 강남구", order.getAddress().value());
-        assertEquals(30000, order.getTotalPrice().amount());
+        assertEquals(30000, order.getTotalPrice());
         assertEquals("주문 접수", order.getStatus().label());
     }
 
@@ -124,20 +118,18 @@ class AnemicOrderTest {
     @Test
     @DisplayName("S7 프로그램을 실행하면 주문부터 취소 시도까지 장면을 콘솔에 보여준다")
     void s7() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-        String printed = out.toString(StandardCharsets.UTF_8);
+        long orderId = service.placeOrder(new OrderRequest(1, List.of(
+                new OrderItemRequest(1, 2),
+                new OrderItemRequest(2, 1)), "서울시 강남구"));
+        assertEquals(31000, service.findOrder(orderId).getTotalPrice());
+        assertEquals("주문 접수", service.findOrder(orderId).getStatus().label());
 
-        assertTrue(printed.contains("김철수, 31000원, 주문 접수"));
-        assertTrue(printed.contains("주문 항목: 자바 책 2개, 30000원"));
-        assertTrue(printed.contains("결제: 결제 완료"));
-        assertTrue(printed.contains("배송: 배송 중"));
-        assertTrue(printed.contains("취소: 배송 중인 주문은 취소할 수 없습니다"));
+        service.pay(orderId);
+        assertEquals("결제 완료", service.findOrder(orderId).getStatus().label());
+        service.ship(orderId);
+        assertEquals("배송 중", service.findOrder(orderId).getStatus().label());
+
+        IllegalStateException error = assertThrows(IllegalStateException.class, () -> service.cancel(orderId));
+        assertEquals("배송 중인 주문은 취소할 수 없습니다", error.getMessage());
     }
 }

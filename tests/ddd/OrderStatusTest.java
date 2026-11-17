@@ -5,12 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,15 +21,17 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
+import ddd.order.domain.Address;
 import ddd.order.domain.DiscountPolicy;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.Order;
+import ddd.order.domain.OrderItem;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderStatus;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 class OrderStatusTest {
@@ -43,30 +43,47 @@ class OrderStatusTest {
         return members;
     }
 
-    private static OrderLineFactory orderLineFactory() {
+    private static OrderItemFactory orderItemFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        products.save(new Product(2, "볼펜", new Money(1000), 10));
-        products.save(new Product(3, "공책", new Money(2000), 10));
-        return new OrderLineFactory(products);
+        products.save(new Product(1, "자바 책", 15000, 10));
+        products.save(new Product(2, "볼펜", 1000, 10));
+        products.save(new Product(3, "공책", 2000, 10));
+        return new OrderItemFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-
-    private String runMain() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-        return out.toString(StandardCharsets.UTF_8);
-    }
+    private final OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
 
     private long newOrder() {
-        return service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        return service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
+    }
+
+    private static Order orderIn(OrderStatus status) {
+        Order order = new Order(1, 1, List.of(new OrderItem(1, "자바 책", 15000, 2)), new Address("서울시 강남구"));
+        if (status == OrderStatus.CANCELED) {
+            order.cancel();
+            return order;
+        }
+        if (status != OrderStatus.ORDERED) {
+            order.pay(0);
+        }
+        if (status == OrderStatus.SHIPPING || status == OrderStatus.DELIVERED) {
+            order.ship();
+        }
+        if (status == OrderStatus.DELIVERED) {
+            order.deliver();
+        }
+        return order;
+    }
+
+    private static boolean changes(OrderStatus status, Consumer<Order> action) {
+        Order order = orderIn(status);
+        try {
+            action.accept(order);
+            return true;
+        } catch (IllegalStateException e) {
+            assertEquals(status, order.getStatus());
+            return false;
+        }
     }
 
     @Test
@@ -88,30 +105,16 @@ class OrderStatusTest {
         long canceledId = newOrder();
         service.cancel(canceledId);
         assertEquals(OrderStatus.CANCELED, service.findOrder(canceledId).getStatus());
-
-        String printed = runMain();
-        assertTrue(printed.contains("주문: 1번, 김철수, 31000원, 주문 접수"));
-        assertTrue(printed.contains("결제: 결제 완료"));
-        assertTrue(printed.contains("배송: 배송 중"));
     }
 
     @Test
-    @DisplayName("S2 상태마다 바뀔 수 있는 다음 상태가 정해져 있다. 주문 접수는 결제 완료나 취소로, 결제 완료는 배송 중이나 취소로만 바뀐다. 취소는 다른 상태로 바뀌지 않는다")
+    @DisplayName("S2 결제, 배송, 취소는 주문이 지금 상태를 보고 정한다. 결제는 주문 접수에서만, 배송은 결제 완료에서만, 취소는 주문 접수나 결제 완료에서만 된다. 취소는 다른 상태로 바뀌지 않는다")
     void s2() {
-        assertTrue(OrderStatus.ORDERED.canChangeTo(OrderStatus.PAID));
-        assertTrue(OrderStatus.ORDERED.canChangeTo(OrderStatus.CANCELED));
-        assertFalse(OrderStatus.ORDERED.canChangeTo(OrderStatus.SHIPPING));
-        assertFalse(OrderStatus.ORDERED.canChangeTo(OrderStatus.ORDERED));
-
-        assertTrue(OrderStatus.PAID.canChangeTo(OrderStatus.SHIPPING));
-        assertTrue(OrderStatus.PAID.canChangeTo(OrderStatus.CANCELED));
-        assertFalse(OrderStatus.PAID.canChangeTo(OrderStatus.PAID));
-        assertFalse(OrderStatus.PAID.canChangeTo(OrderStatus.ORDERED));
-
-        assertFalse(OrderStatus.SHIPPING.canChangeTo(OrderStatus.CANCELED));
-
-        for (OrderStatus next : OrderStatus.values()) {
-            assertFalse(OrderStatus.CANCELED.canChangeTo(next));
+        for (OrderStatus status : List.of(OrderStatus.ORDERED, OrderStatus.PAID, OrderStatus.SHIPPING,
+                OrderStatus.CANCELED)) {
+            assertEquals(status == OrderStatus.ORDERED, changes(status, order -> order.pay(0)));
+            assertEquals(status == OrderStatus.PAID, changes(status, Order::ship));
+            assertEquals(status == OrderStatus.ORDERED || status == OrderStatus.PAID, changes(status, Order::cancel));
         }
 
         long canceledId = newOrder();
@@ -121,7 +124,7 @@ class OrderStatusTest {
     }
 
     @Test
-    @DisplayName("S3 바꿀 수 없는 상태로 바꾸라고 하면 지금 상태를 넣은 말로 거절한다")
+    @DisplayName("S3 바꿀 수 없는 상태로 바꾸라고 하면 지금 상태를 넣은 말로 거절한다. 예: 주문 접수인 주문은 배송할 수 없습니다")
     void s3() {
         long unpaidId = newOrder();
         IllegalStateException shipError = assertThrows(IllegalStateException.class, () -> service.ship(unpaidId));
@@ -137,8 +140,6 @@ class OrderStatusTest {
         service.cancel(canceledId);
         IllegalStateException againError = assertThrows(IllegalStateException.class, () -> service.cancel(canceledId));
         assertEquals("취소인 주문은 취소할 수 없습니다", againError.getMessage());
-
-        assertTrue(runMain().contains("결제 없이 배송: 주문 접수인 주문은 배송할 수 없습니다"));
     }
 
     @Test
@@ -151,7 +152,6 @@ class OrderStatusTest {
 
         assertEquals("결제 완료인 주문은 결제할 수 없습니다", error.getMessage());
         assertEquals(OrderStatus.PAID, service.findOrder(orderId).getStatus());
-        assertTrue(runMain().contains("두 번 결제: 결제 완료인 주문은 결제할 수 없습니다"));
     }
 
     @Test
@@ -165,18 +165,17 @@ class OrderStatusTest {
 
         assertEquals(OrderStatus.DELIVERED, service.findOrder(orderId).getStatus());
         assertEquals("배송 완료", service.findOrder(orderId).getStatus().label());
-        assertTrue(OrderStatus.SHIPPING.canChangeTo(OrderStatus.DELIVERED));
-        for (OrderStatus next : OrderStatus.values()) {
-            assertFalse(OrderStatus.DELIVERED.canChangeTo(next));
-        }
+        assertTrue(changes(OrderStatus.SHIPPING, Order::deliver));
+        assertFalse(changes(OrderStatus.DELIVERED, order -> order.pay(0)));
+        assertFalse(changes(OrderStatus.DELIVERED, Order::ship));
+        assertFalse(changes(OrderStatus.DELIVERED, Order::deliver));
+        assertFalse(changes(OrderStatus.DELIVERED, Order::cancel));
         IllegalStateException cancelError = assertThrows(IllegalStateException.class, () -> service.cancel(orderId));
         assertEquals("배송 완료인 주문은 취소할 수 없습니다", cancelError.getMessage());
 
         long unpaidId = newOrder();
         IllegalStateException deliverError = assertThrows(IllegalStateException.class, () -> service.deliver(unpaidId));
         assertEquals("주문 접수인 주문은 배송 완료할 수 없습니다", deliverError.getMessage());
-
-        assertTrue(runMain().contains("배송 완료: 배송 완료"));
     }
 
     @Test

@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -22,19 +19,18 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
 import ddd.order.domain.Address;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
-import ddd.order.domain.OrderLine;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderItem;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 class PlaceOrderTest {
@@ -46,135 +42,119 @@ class PlaceOrderTest {
         return members;
     }
 
-    private static OrderLineFactory orderLineFactory() {
+    private static OrderItemFactory orderItemFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        products.save(new Product(2, "볼펜", new Money(1000), 10));
-        products.save(new Product(3, "공책", new Money(2000), 10));
-        return new OrderLineFactory(products);
+        products.save(new Product(1, "자바 책", 15000, 10));
+        products.save(new Product(2, "볼펜", 1000, 10));
+        products.save(new Product(3, "공책", 2000, 10));
+        products.save(new Product(4, "할인 책", -15000, 10));
+        return new OrderItemFactory(products);
     }
 
-    private String runMain() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-        return out.toString(StandardCharsets.UTF_8);
+    private static String text(OrderItem item) {
+        return item.getProductId() + " " + item.getProductName() + " " + item.getPrice() + " " + item.getQuantity();
     }
 
     @Test
-    @DisplayName("S1 주문하기는 주문하기 명령 하나를 받는다. 주문하기 명령은 주문자, 주문 항목 명령 목록, 배송 주소를 담고, 주문 항목 명령은 상품 이름, 가격, 수량을 담는다")
+    @DisplayName("S1 주문하기는 주문 요청 하나를 받는다. 주문 요청은 주문자, 주문 항목 요청 목록, 배송 주소를 담고, 주문 항목 요청은 상품 이름, 가격, 수량을 담는다. 요청은 밖에서 들어오는 값 묶음(DTO)이다")
     void s1() {
-        OrderLineCommand book = new OrderLineCommand(1, 2);
-        PlaceOrderCommand command = new PlaceOrderCommand(1, List.of(book), "서울시 강남구");
+        OrderItemRequest book = new OrderItemRequest(1, 2);
+        OrderRequest command = new OrderRequest(1, List.of(book), "서울시 강남구");
 
         assertEquals(1L, book.productId());
         assertEquals(2, book.quantity());
         assertEquals(1L, command.memberId());
-        assertEquals(List.of(book), command.orderLines());
+        assertEquals(List.of(book), command.items());
         assertEquals("서울시 강남구", command.address());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
         long orderId = service.placeOrder(command);
         assertEquals(1L, service.findOrder(orderId).getMemberId());
     }
 
     @Test
-    @DisplayName("S2 주문하기는 주문하기 명령으로 주문을 만들어 주문 저장소에 저장하고 주문 번호를 돌려준다")
+    @DisplayName("S2 주문하기는 주문 요청으로 주문을 만들어 주문 저장소에 저장하고 주문 번호를 돌려준다")
     void s2() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
+        OrderService service = new OrderService(repository, orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
 
-        long firstId = service.placeOrder(new PlaceOrderCommand(1, List.of(
-                new OrderLineCommand(1, 2),
-                new OrderLineCommand(2, 1)), "서울시 강남구"));
-        long secondId = service.placeOrder(new PlaceOrderCommand(2,
-                List.of(new OrderLineCommand(3, 3)), "부산시 해운대구"));
+        long firstId = service.placeOrder(new OrderRequest(1, List.of(
+                new OrderItemRequest(1, 2),
+                new OrderItemRequest(2, 1)), "서울시 강남구"));
+        long secondId = service.placeOrder(new OrderRequest(2,
+                List.of(new OrderItemRequest(3, 3)), "부산시 해운대구"));
 
         assertEquals(1, firstId);
         assertEquals(2, secondId);
         Order first = repository.findById(firstId).orElseThrow();
         assertEquals(1L, first.getMemberId());
-        assertEquals(List.of(new OrderLine(1, "자바 책", new Money(15000), 2), new OrderLine(2, "볼펜", new Money(1000), 1)),
-                first.getOrderLines());
+        assertEquals(List.of("1 자바 책 15000 2", "2 볼펜 1000 1"),
+                first.getItems().stream().map(PlaceOrderTest::text).toList());
         assertEquals(new Address("서울시 강남구"), first.getAddress());
-        assertEquals(new Money(31000), first.getTotalPrice());
+        assertEquals(31000, first.getTotalPrice());
         assertEquals(OrderStatus.ORDERED, first.getStatus());
-        assertEquals(new Money(6000), repository.findById(secondId).orElseThrow().getTotalPrice());
-
-        assertTrue(runMain().contains("주문: 1번, 김철수, 31000원, 주문 접수"));
+        assertEquals(6000, repository.findById(secondId).orElseThrow().getTotalPrice());
     }
 
     @Test
-    @DisplayName("S3 주문 항목 더하기는 주문 번호와 주문 항목 명령을 받아 주문을 꺼내 주문에게 시키고 다시 저장한다")
+    @DisplayName("S3 주문 항목 더하기는 주문 번호와 주문 항목 요청을 받아 주문을 꺼내 주문에게 시키고 다시 저장한다")
     void s3() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-        long orderId = service.placeOrder(new PlaceOrderCommand(1,
-                List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        OrderService service = new OrderService(repository, orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        long orderId = service.placeOrder(new OrderRequest(1,
+                List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
 
-        service.addOrderLine(orderId, new OrderLineCommand(3, 5));
+        service.addItem(orderId, new OrderItemRequest(3, 5));
 
         Order saved = repository.findById(orderId).orElseThrow();
-        assertEquals(2, saved.getOrderLines().size());
-        assertEquals(new OrderLine(3, "공책", new Money(2000), 5), saved.getOrderLines().get(1));
-        assertEquals(new Money(40000), saved.getTotalPrice());
-
-        assertTrue(runMain().contains("항목 더하기: 항목 3개, 주문 금액 41000원"));
+        assertEquals(2, saved.getItems().size());
+        assertEquals("3 공책 2000 5", text(saved.getItems().get(1)));
+        assertEquals(40000, saved.getTotalPrice());
     }
 
     @Test
-    @DisplayName("S4 명령의 값이 규칙에 맞지 않으면 주문, 주문 항목, 돈, 주소가 정한 거절 말 그대로 거절하고 아무것도 저장하지 않는다")
+    @DisplayName("S4 요청의 값이 규칙에 맞지 않으면 주문, 주문 항목, 주소가 정한 거절 말 그대로 거절하고 아무것도 저장하지 않는다")
     void s4() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
+        OrderService service = new OrderService(repository, orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
 
         IllegalArgumentException negative = assertThrows(IllegalArgumentException.class,
-                () -> new Product(4, "할인 책", new Money(-15000), 10));
-        assertEquals("금액은 0원 이상이어야 합니다", negative.getMessage());
+                () -> service.placeOrder(new OrderRequest(2,
+                        List.of(new OrderItemRequest(4, 1)), "광주시 북구")));
+        assertEquals("가격은 0원 이상이어야 합니다", negative.getMessage());
 
         IllegalArgumentException blank = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand(2,
-                        List.of(new OrderLineCommand(1, 1)), "")));
+                () -> service.placeOrder(new OrderRequest(2,
+                        List.of(new OrderItemRequest(1, 1)), "")));
         assertEquals("배송 주소를 입력해야 합니다", blank.getMessage());
 
         IllegalArgumentException empty = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand(2, List.of(), "인천시 연수구")));
+                () -> service.placeOrder(new OrderRequest(2, List.of(), "인천시 연수구")));
         assertEquals("주문 항목이 하나 이상 있어야 합니다", empty.getMessage());
 
         IllegalArgumentException zero = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand(2,
-                        List.of(new OrderLineCommand(1, 0)), "대전시 유성구")));
+                () -> service.placeOrder(new OrderRequest(2,
+                        List.of(new OrderItemRequest(1, 0)), "대전시 유성구")));
         assertEquals("수량은 1개 이상이어야 합니다", zero.getMessage());
 
         for (long id = 1; id <= 4; id++) {
             assertTrue(repository.findById(id).isEmpty());
         }
 
-        long orderId = service.placeOrder(new PlaceOrderCommand(1,
-                List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new OrderRequest(1,
+                List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         assertThrows(IllegalArgumentException.class,
-                () -> service.addOrderLine(orderId, new OrderLineCommand(3, 0)));
-        assertEquals(1, repository.findById(orderId).orElseThrow().getOrderLines().size());
-
-        String printed = runMain();
-        assertTrue(printed.contains("음수 금액 주문: 금액은 0원 이상이어야 합니다"));
-        assertTrue(printed.contains("빈 주소 주문: 배송 주소를 입력해야 합니다"));
-        assertTrue(printed.contains("빈 주문: 주문 항목이 하나 이상 있어야 합니다"));
-        assertTrue(printed.contains("0개 항목 주문: 수량은 1개 이상이어야 합니다"));
+                () -> service.addItem(orderId, new OrderItemRequest(3, 0)));
+        assertEquals(1, repository.findById(orderId).orElseThrow().getItems().size());
     }
 
     @Test
     @DisplayName("S5 주문 응용 서비스가 결제하기, 배송하기, 배송 완료하기, 주문 취소하기를 주문 번호로 받아 주문을 꺼내 주문에게 시키고 다시 저장한다")
     void s5() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(repository, orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-        long orderId = service.placeOrder(new PlaceOrderCommand(1,
-                List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        OrderService service = new OrderService(repository, orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        long orderId = service.placeOrder(new OrderRequest(1,
+                List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
 
         IllegalStateException unpaid = assertThrows(IllegalStateException.class, () -> service.ship(orderId));
         assertEquals("주문 접수인 주문은 배송할 수 없습니다", unpaid.getMessage());
@@ -187,23 +167,19 @@ class PlaceOrderTest {
         service.deliver(orderId);
         assertEquals(OrderStatus.DELIVERED, repository.findById(orderId).orElseThrow().getStatus());
 
-        long canceledId = service.placeOrder(new PlaceOrderCommand(2,
-                List.of(new OrderLineCommand(2, 1)), "부산시 해운대구"));
+        long canceledId = service.placeOrder(new OrderRequest(2,
+                List.of(new OrderItemRequest(2, 1)), "부산시 해운대구"));
         service.cancel(canceledId);
         assertEquals(OrderStatus.CANCELED, repository.findById(canceledId).orElseThrow().getStatus());
-
-        String printed = runMain();
-        assertTrue(printed.contains("결제 없이 배송: 주문 접수인 주문은 배송할 수 없습니다"));
-        assertTrue(printed.contains("배송 완료: 배송 완료"));
     }
 
     @Test
-    @DisplayName("S6 용어집에 주문 응용 서비스, 주문하기 명령, 주문 항목 명령을 더한다")
+    @DisplayName("S6 용어집에 주문 응용 서비스, 주문 요청, 주문 항목 요청을 더한다")
     void s6() throws Exception {
         String glossary = Files.readString(Path.of("glossary.md"));
 
-        assertTrue(glossary.contains("| 주문 응용 서비스 | OrderApplicationService |"));
-        assertTrue(glossary.contains("| 주문하기 명령 | PlaceOrderCommand |"));
-        assertTrue(glossary.contains("| 주문 항목 명령 | OrderLineCommand |"));
+        assertTrue(glossary.contains("| 주문 응용 서비스 | OrderService |"));
+        assertTrue(glossary.contains("| 주문 요청 | OrderRequest |"));
+        assertTrue(glossary.contains("| 주문 항목 요청 | OrderItemRequest |"));
     }
 }

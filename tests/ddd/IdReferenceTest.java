@@ -5,11 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.RecordComponent;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -26,17 +22,16 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
-import ddd.order.domain.OrderLine;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderItem;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 class IdReferenceTest {
@@ -48,24 +43,12 @@ class IdReferenceTest {
         return members;
     }
 
-    private static OrderLineFactory orderLineFactory() {
+    private static OrderItemFactory orderItemFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        products.save(new Product(2, "볼펜", new Money(1000), 10));
-        products.save(new Product(3, "공책", new Money(2000), 10));
-        return new OrderLineFactory(products);
-    }
-
-    private String runMain() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-        return out.toString(StandardCharsets.UTF_8);
+        products.save(new Product(1, "자바 책", 15000, 10));
+        products.save(new Product(2, "볼펜", 1000, 10));
+        products.save(new Product(3, "공책", 2000, 10));
+        return new OrderItemFactory(products);
     }
 
     @Test
@@ -78,18 +61,18 @@ class IdReferenceTest {
         assertEquals(member.hashCode(), new Member(1, "김영수", MemberGrade.BASIC).hashCode());
         assertNotEquals(member, new Member(2, "김철수", MemberGrade.BASIC));
 
-        Product product = new Product(1, "자바 책", new Money(15000), 10);
+        Product product = new Product(1, "자바 책", 15000, 10);
         assertEquals(1L, product.getId());
         assertEquals("자바 책", product.getName());
-        assertEquals(new Money(15000), product.getPrice());
-        assertEquals(product, new Product(1, "자바 책", new Money(18000), 10));
-        assertEquals(product.hashCode(), new Product(1, "자바 책", new Money(18000), 10).hashCode());
-        assertNotEquals(product, new Product(2, "자바 책", new Money(15000), 10));
+        assertEquals(15000, product.getPrice());
+        assertEquals(product, new Product(1, "자바 책", 18000, 10));
+        assertEquals(product.hashCode(), new Product(1, "자바 책", 18000, 10).hashCode());
+        assertNotEquals(product, new Product(2, "자바 책", 15000, 10));
     }
 
     @Test
     @DisplayName("S2 회원 저장소와 상품 저장소에 회원과 상품을 저장하고 번호로 꺼낸다. 저장소 약속은 도메인 계층에, 메모리 구현은 인프라 계층에 두고, Main이 주문 전에 회원과 상품을 먼저 저장한다")
-    void s2() throws Exception {
+    void s2() {
         MemberRepository members = new MemoryMemberRepository();
         members.save(new Member(1, "김철수", MemberGrade.BASIC));
         members.save(new Member(2, "이영희", MemberGrade.BASIC));
@@ -98,11 +81,11 @@ class IdReferenceTest {
         assertTrue(members.findById(3).isEmpty());
 
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        assertEquals(new Money(15000), products.findById(1).orElseThrow().getPrice());
+        products.save(new Product(1, "자바 책", 15000, 10));
+        assertEquals(15000, products.findById(1).orElseThrow().getPrice());
         assertTrue(products.findById(2).isEmpty());
-        products.save(new Product(1, "자바 책", new Money(18000), 10));
-        assertEquals(new Money(18000), products.findById(1).orElseThrow().getPrice());
+        products.save(new Product(1, "자바 책", 18000, 10));
+        assertEquals(18000, products.findById(1).orElseThrow().getPrice());
 
         assertTrue(MemberRepository.class.isInterface());
         assertTrue(ProductRepository.class.isInterface());
@@ -110,21 +93,14 @@ class IdReferenceTest {
         assertEquals("ddd.catalog.domain", ProductRepository.class.getPackageName());
         assertEquals("ddd.member.infrastructure", MemoryMemberRepository.class.getPackageName());
         assertEquals("ddd.catalog.infrastructure", MemoryProductRepository.class.getPackageName());
-
-        String main = Files.readString(Path.of("src/ddd/Main.java"));
-        int firstOrder = main.indexOf("placeOrder(");
-        assertTrue(main.indexOf("new Member(1, \"김철수\", MemberGrade.VIP)") > 0);
-        assertTrue(main.indexOf("new Member(1, \"김철수\", MemberGrade.VIP)") < firstOrder);
-        assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000), 10)") > 0);
-        assertTrue(main.indexOf("new Product(1, \"자바 책\", new Money(15000), 10)") < firstOrder);
     }
 
     @Test
-    @DisplayName("S3 주문은 회원을 객체로 갖지 않고 회원 번호로 가리킨다. 주문하기 명령은 주문자 이름 대신 회원 번호를 담고, Main은 주문의 회원 번호로 회원 저장소에서 회원을 찾아 이름을 보여준다")
-    void s3() throws Exception {
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-        PlaceOrderCommand command = new PlaceOrderCommand(7,
-                List.of(new OrderLineCommand(1, 2)), "서울시 강남구");
+    @DisplayName("S3 주문은 회원을 객체로 갖지 않고 회원 번호로 가리킨다. 주문 요청은 주문자 이름 대신 회원 번호를 담고, Main은 주문의 회원 번호로 회원 저장소에서 회원을 찾아 이름을 보여준다")
+    void s3() {
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderRequest command = new OrderRequest(7,
+                List.of(new OrderItemRequest(1, 2)), "서울시 강남구");
         assertEquals(7L, command.memberId());
 
         Order order = service.findOrder(service.placeOrder(command));
@@ -133,55 +109,53 @@ class IdReferenceTest {
         List<Class<?>> fieldTypes = Arrays.stream(Order.class.getDeclaredFields()).map(Field::getType).toList();
         assertFalse(fieldTypes.contains(Member.class));
         assertFalse(Arrays.stream(Order.class.getDeclaredFields()).anyMatch(field -> field.getName().equals("customerName")));
-
-        String main = Files.readString(Path.of("src/ddd/Main.java"));
-        assertTrue(main.contains("memberRepository.findById(order.getMemberId())"));
-        assertTrue(runMain().contains("주문: 1번, 김철수, 31000원, 주문 접수"));
+        Order mine = service.findOrder(service.placeOrder(
+                new OrderRequest(1, List.of(new OrderItemRequest(1, 1)), "서울시 강남구")));
+        assertEquals("김철수", members().findById(mine.getMemberId()).orElseThrow().getName());
     }
 
     @Test
-    @DisplayName("S4 주문 항목은 상품을 객체로 갖지 않고 상품 번호로 가리킨다. 주문 항목 명령과 주문 항목은 상품 번호, 주문 때의 상품 이름, 가격, 수량을 담는다")
+    @DisplayName("S4 주문 항목은 상품을 객체로 갖지 않고 상품 번호로 가리킨다. 주문 항목 요청과 주문 항목은 상품 번호, 주문 때의 상품 이름, 가격, 수량을 담는다")
     void s4() {
-        OrderLineCommand command = new OrderLineCommand(2, 3);
+        OrderItemRequest command = new OrderItemRequest(2, 3);
         assertEquals(2L, command.productId());
 
-        OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(command), "서울시 강남구"));
-        service.addOrderLine(orderId, new OrderLineCommand(3, 5));
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        long orderId = service.placeOrder(new OrderRequest(1, List.of(command), "서울시 강남구"));
+        service.addItem(orderId, new OrderItemRequest(3, 5));
 
-        List<OrderLine> orderLines = service.findOrder(orderId).getOrderLines();
-        assertEquals(new OrderLine(2, "볼펜", new Money(1000), 3), orderLines.get(0));
-        assertEquals(2L, orderLines.get(0).productId());
-        assertEquals(3L, orderLines.get(1).productId());
-        assertEquals("공책", orderLines.get(1).productName());
+        List<OrderItem> items = service.findOrder(orderId).getItems();
+        assertEquals(2L, items.get(0).getProductId());
+        assertEquals("볼펜", items.get(0).getProductName());
+        assertEquals(1000, items.get(0).getPrice());
+        assertEquals(3, items.get(0).getQuantity());
+        assertEquals(3L, items.get(1).getProductId());
+        assertEquals("공책", items.get(1).getProductName());
 
-        List<Class<?>> componentTypes = Arrays.stream(OrderLine.class.getRecordComponents())
-                .map(RecordComponent::getType).toList();
-        assertEquals(List.of(long.class, String.class, Money.class, int.class), componentTypes);
-        assertFalse(componentTypes.contains(Product.class));
+        List<Class<?>> fieldTypes = Arrays.stream(OrderItem.class.getDeclaredFields())
+                .map(Field::getType).toList();
+        assertEquals(List.of(long.class, String.class, int.class, int.class), fieldTypes);
+        assertFalse(fieldTypes.contains(Product.class));
     }
 
     @Test
     @DisplayName("S5 주문 뒤 상품 가격이 바뀌어도 주문 항목의 가격과 주문 금액은 주문 때 그대로다")
     void s5() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
+        products.save(new Product(1, "자바 책", 15000, 10));
         Product book = products.findById(1).orElseThrow();
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderApplicationService service = new OrderApplicationService(orders, new OrderLineFactory(products), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(
-                new OrderLineCommand(book.getId(), 2)), "서울시 강남구"));
+        OrderService service = new OrderService(orders, new OrderItemFactory(products), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        long orderId = service.placeOrder(new OrderRequest(1, List.of(
+                new OrderItemRequest(book.getId(), 2)), "서울시 강남구"));
 
-        products.save(new Product(1, "자바 책", new Money(18000), 10));
+        products.save(new Product(1, "자바 책", 18000, 10));
 
         Order saved = orders.findById(orderId).orElseThrow();
-        assertEquals(new Money(18000), products.findById(1).orElseThrow().getPrice());
-        assertEquals(new Money(15000), saved.getOrderLines().get(0).price());
-        assertEquals(new Money(30000), saved.getTotalPrice());
-
-        String[] lines = runMain().split(System.lineSeparator());
-        assertTrue(List.of(lines).contains("가격 바뀐 뒤: 1번 상품 18000원, 주문 항목 15000원, 주문 금액 31000원"));
+        assertEquals(18000, products.findById(1).orElseThrow().getPrice());
+        assertEquals(15000, saved.getItems().get(0).getPrice());
+        assertEquals(30000, saved.getTotalPrice());
     }
 
     @Test

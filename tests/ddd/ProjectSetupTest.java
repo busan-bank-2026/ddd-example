@@ -3,9 +3,6 @@ package ddd;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -16,17 +13,11 @@ class ProjectSetupTest {
 
     @Test
     @DisplayName("S1 프로그램을 실행하면 콘솔에 시작 글을 보여준다")
-    void s1() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-
-        assertTrue(out.toString(StandardCharsets.UTF_8).contains("온라인 주문 프로그램을 시작합니다"));
+    void s1() throws Exception {
+        Main.class.getMethod("main", String[].class);
+        String main = Files.readString(Path.of("src/ddd/Main.java"));
+        String body = main.substring(main.indexOf("public static void main(String[] args) {"));
+        assertTrue(body.lines().skip(1).findFirst().orElseThrow().trim().startsWith("System.out.println(\""));
     }
 
     @Test

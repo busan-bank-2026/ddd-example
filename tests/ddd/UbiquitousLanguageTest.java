@@ -19,14 +19,13 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
 import ddd.order.domain.DiscountPolicy;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 class UbiquitousLanguageTest {
@@ -38,29 +37,29 @@ class UbiquitousLanguageTest {
         return members;
     }
 
-    private static OrderLineFactory orderLineFactory() {
+    private static OrderItemFactory orderItemFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        products.save(new Product(2, "볼펜", new Money(1000), 10));
-        products.save(new Product(3, "공책", new Money(2000), 10));
-        return new OrderLineFactory(products);
+        products.save(new Product(1, "자바 책", 15000, 10));
+        products.save(new Product(2, "볼펜", 1000, 10));
+        products.save(new Product(3, "공책", 2000, 10));
+        return new OrderItemFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
+    private final OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
 
     @Test
     @DisplayName("S1 주문을 만드는 일을 업무 말인 주문하기로 부른다")
     void s1() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
 
         assertEquals("주문 접수", service.findOrder(orderId).getStatus().label());
-        assertEquals(30000, service.findOrder(orderId).getTotalPrice().amount());
+        assertEquals(30000, service.findOrder(orderId).getTotalPrice());
     }
 
     @Test
     @DisplayName("S2 결제 상태를 바꾸는 일을 결제하기로 부른다")
     void s2() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
 
         service.pay(orderId);
 
@@ -70,7 +69,7 @@ class UbiquitousLanguageTest {
     @Test
     @DisplayName("S3 배송 상태를 바꾸는 일을 배송하기로 부른다")
     void s3() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         service.pay(orderId);
 
         service.ship(orderId);
@@ -81,7 +80,7 @@ class UbiquitousLanguageTest {
     @Test
     @DisplayName("S4 주문을 지우는 일을 주문 취소하기로 부른다. 주문은 지워지지 않고 취소 상태가 된다")
     void s4() {
-        long orderId = service.placeOrder(new PlaceOrderCommand(1, List.of(new OrderLineCommand(1, 2)), "서울시 강남구"));
+        long orderId = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
 
         service.cancel(orderId);
 

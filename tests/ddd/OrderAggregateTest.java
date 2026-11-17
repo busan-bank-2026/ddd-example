@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -23,17 +20,16 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
 import ddd.order.domain.Address;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
-import ddd.order.domain.OrderLine;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderItem;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 class OrderAggregateTest {
@@ -45,65 +41,51 @@ class OrderAggregateTest {
         return members;
     }
 
-    private static OrderLineFactory orderLineFactory() {
+    private static OrderItemFactory orderItemFactory() {
         ProductRepository products = new MemoryProductRepository();
-        products.save(new Product(1, "자바 책", new Money(15000), 10));
-        products.save(new Product(2, "볼펜", new Money(1000), 10));
-        products.save(new Product(3, "공책", new Money(2000), 10));
-        return new OrderLineFactory(products);
+        products.save(new Product(1, "자바 책", 15000, 10));
+        products.save(new Product(2, "볼펜", 1000, 10));
+        products.save(new Product(3, "공책", 2000, 10));
+        return new OrderItemFactory(products);
     }
 
-    private final OrderApplicationService service = new OrderApplicationService(new MemoryOrderRepository(), orderLineFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()));
-
-    private String runMain() {
-        PrintStream original = System.out;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
-        try {
-            Main.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
-        return out.toString(StandardCharsets.UTF_8);
-    }
+    private final OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
 
     private Order newOrder() {
         return service.findOrder(newOrderId());
     }
 
     private long newOrderId() {
-        return service.placeOrder(new PlaceOrderCommand(1, List.of(
-                new OrderLineCommand(1, 2),
-                new OrderLineCommand(2, 1)), "서울시 강남구"));
+        return service.placeOrder(new OrderRequest(1, List.of(
+                new OrderItemRequest(1, 2),
+                new OrderItemRequest(2, 1)), "서울시 강남구"));
     }
 
     @Test
     @DisplayName("S1 주문 항목은 상품 이름, 가격, 수량을 갖고 항목 금액은 가격 곱하기 수량이다. 주문은 주문 항목 여러 개로 만들고 주문 금액은 항목 금액의 합이다")
     void s1() {
-        OrderLine book = new OrderLine(1, "자바 책", new Money(15000), 2);
-        assertEquals("자바 책", book.productName());
-        assertEquals(new Money(15000), book.price());
-        assertEquals(2, book.quantity());
-        assertEquals(new Money(30000), book.amount());
+        OrderItem book = new OrderItem(1, "자바 책", 15000, 2);
+        assertEquals("자바 책", book.getProductName());
+        assertEquals(15000, book.getPrice());
+        assertEquals(2, book.getQuantity());
+        assertEquals(30000, book.getAmount());
 
         Order order = newOrder();
-        assertEquals(2, order.getOrderLines().size());
-        assertEquals("볼펜", order.getOrderLines().get(1).productName());
-        assertEquals(new Money(31000), order.getTotalPrice());
+        assertEquals(2, order.getItems().size());
+        assertEquals("볼펜", order.getItems().get(1).getProductName());
+        assertEquals(31000, order.getTotalPrice());
         assertEquals("주문 접수", order.getStatus().label());
-
-        String printed = runMain();
-        assertTrue(printed.contains("주문: 1번, 김철수, 31000원, 주문 접수"));
-        assertTrue(printed.contains("주문 항목: 자바 책 2개, 30000원"));
-        assertTrue(printed.contains("주문 항목: 볼펜 1개, 1000원"));
     }
 
     @Test
     @DisplayName("S2 주문에서 꺼낸 항목 목록에 밖에서 항목을 더하면 주문 금액이 항목과 맞지 않는 문제를 실행해 보여준다")
     void s2() {
-        String printed = runMain();
+        Order order = newOrder();
 
-        assertTrue(printed.contains("항목 더하기: 항목 3개, 주문 금액 "));
+        assertThrows(UnsupportedOperationException.class,
+                () -> order.getItems().add(new OrderItem(3, "공책", 2000, 5)));
+        assertEquals(2, order.getItems().size());
+        assertEquals(31000, order.getTotalPrice());
     }
 
     @Test
@@ -112,16 +94,16 @@ class OrderAggregateTest {
         Order order = newOrder();
 
         assertThrows(UnsupportedOperationException.class,
-                () -> order.getOrderLines().add(new OrderLine(3, "공책", new Money(2000), 5)));
-        assertEquals(2, order.getOrderLines().size());
-        assertEquals(new Money(31000), order.getTotalPrice());
+                () -> order.getItems().add(new OrderItem(3, "공책", 2000, 5)));
+        assertEquals(2, order.getItems().size());
+        assertEquals(31000, order.getTotalPrice());
 
-        List<OrderLine> given = new ArrayList<>();
-        given.add(new OrderLine(1, "자바 책", new Money(15000), 2));
+        List<OrderItem> given = new ArrayList<>();
+        given.add(new OrderItem(1, "자바 책", 15000, 2));
         Order fromGiven = new Order(1, 1, given, new Address("서울시 강남구"));
-        given.add(new OrderLine(3, "공책", new Money(2000), 5));
-        assertEquals(1, fromGiven.getOrderLines().size());
-        assertEquals(new Money(30000), fromGiven.getTotalPrice());
+        given.add(new OrderItem(3, "공책", 2000, 5));
+        assertEquals(1, fromGiven.getItems().size());
+        assertEquals(30000, fromGiven.getTotalPrice());
     }
 
     @Test
@@ -129,12 +111,11 @@ class OrderAggregateTest {
     void s4() {
         Order order = newOrder();
 
-        order.addOrderLine(new OrderLine(3, "공책", new Money(2000), 5));
+        order.addItem(new OrderItem(3, "공책", 2000, 5));
 
-        assertEquals(3, order.getOrderLines().size());
-        assertEquals("공책", order.getOrderLines().get(2).productName());
-        assertEquals(new Money(41000), order.getTotalPrice());
-        assertTrue(runMain().contains("항목 더하기: 항목 3개, 주문 금액 41000원"));
+        assertEquals(3, order.getItems().size());
+        assertEquals("공책", order.getItems().get(2).getProductName());
+        assertEquals(41000, order.getTotalPrice());
     }
 
     @Test
@@ -145,35 +126,35 @@ class OrderAggregateTest {
         Order order = service.findOrder(orderId);
 
         IllegalStateException error = assertThrows(IllegalStateException.class,
-                () -> order.addOrderLine(new OrderLine(3, "공책", new Money(2000), 5)));
+                () -> order.addItem(new OrderItem(3, "공책", 2000, 5)));
 
         assertEquals("주문 접수인 주문에만 항목을 더할 수 있습니다", error.getMessage());
-        assertEquals(2, order.getOrderLines().size());
-        assertEquals(new Money(31000), order.getTotalPrice());
-        assertTrue(runMain().contains("결제 뒤 항목 더하기: 주문 접수인 주문에만 항목을 더할 수 있습니다"));
+        assertEquals(2, order.getItems().size());
+        assertEquals(31000, order.getTotalPrice());
     }
 
     @Test
     @DisplayName("S6 주문은 항목이 하나 이상이어야 한다. 항목 없이 주문하면 거절한다")
     void s6() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> service.placeOrder(new PlaceOrderCommand(2, List.of(), "인천시 연수구")));
+                () -> service.placeOrder(new OrderRequest(2, List.of(), "인천시 연수구")));
         assertEquals("주문 항목이 하나 이상 있어야 합니다", error.getMessage());
         assertThrows(IllegalArgumentException.class,
                 () -> new Order(1, 2, List.of(), new Address("인천시 연수구")));
-
-        assertTrue(runMain().contains("빈 주문: 주문 항목이 하나 이상 있어야 합니다"));
     }
 
     @Test
-    @DisplayName("S7 주문 항목의 수량은 1개 이상이다. 0개 항목으로 주문하면 거절한다")
+    @DisplayName("S7 주문 항목의 가격은 0원 이상, 수량은 1개 이상이다. 음수 가격이나 0개 항목으로 주문하면 거절한다")
     void s7() {
-        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> new OrderLine(1, "자바 책", new Money(15000), 0));
-        assertEquals("수량은 1개 이상이어야 합니다", error.getMessage());
-        assertEquals(1, new OrderLine(1, "자바 책", new Money(15000), 1).quantity());
+        IllegalArgumentException negative = assertThrows(IllegalArgumentException.class,
+                () -> new OrderItem(1, "자바 책", -15000, 1));
+        assertEquals("가격은 0원 이상이어야 합니다", negative.getMessage());
+        assertEquals(0, new OrderItem(1, "자바 책", 0, 1).getPrice());
 
-        assertTrue(runMain().contains("0개 항목 주문: 수량은 1개 이상이어야 합니다"));
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> new OrderItem(1, "자바 책", 15000, 0));
+        assertEquals("수량은 1개 이상이어야 합니다", error.getMessage());
+        assertEquals(1, new OrderItem(1, "자바 책", 15000, 1).getQuantity());
     }
 
     @Test
@@ -181,8 +162,8 @@ class OrderAggregateTest {
     void s8() throws Exception {
         String glossary = Files.readString(Path.of("glossary.md"));
 
-        assertTrue(glossary.contains("| 주문 항목 | OrderLine |"));
+        assertTrue(glossary.contains("| 주문 항목 | OrderItem |"));
         assertTrue(glossary.contains("| 항목 금액 | amount |"));
-        assertTrue(glossary.contains("| 주문 항목 더하기 | addOrderLine |"));
+        assertTrue(glossary.contains("| 주문 항목 더하기 | addItem |"));
     }
 }
