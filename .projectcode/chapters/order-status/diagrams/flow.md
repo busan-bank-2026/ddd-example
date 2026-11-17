@@ -17,4 +17,4 @@ stateDiagram-v2
   CANCELED --> [*]
 ```
 
-화살표가 OrderStatus.canChangeTo가 허락하는 길이다. 그 밖의 길은 주문이 지금 상태를 넣은 말로 거절한다.
+화살표가 Order의 pay, ship, deliver, cancel이 지금 상태를 보고 허락하는 길이다. 그 밖의 길은 지금 상태를 넣은 말로 거절한다.

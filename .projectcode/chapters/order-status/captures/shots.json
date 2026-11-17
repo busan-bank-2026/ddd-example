@@ -3,17 +3,17 @@
   "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main",
   "cwd": "ddd",
   "shots": [
-    { "file": "T1-주문-상태-묶음.txt", "task": "T1", "commit": "ac2d522", "screen": "콘솔 실행과 glossary.md",
-      "see": "출력은 앞 장 열네 줄과 같고, 이어서 용어집에 주문 상태 OrderStatus 줄과 주문 접수 ORDERED 같은 상태의 코드 이름이 보인다",
+    { "file": "T1-주문-상태-묶음.txt", "task": "T1", "commit": "97420c3", "screen": "콘솔 실행과 glossary.md",
+      "see": "===== 주문 상태 ===== 아래에 결제와 배송의 상태 전후 두 줄과 거절 두 줄이 찍힌다. 이어서 용어집에 주문 상태 OrderStatus 줄과 주문 접수 ORDERED 같은 상태의 코드 이름이 보인다",
       "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && type glossary.md" } },
-    { "file": "T2-상태-전이-규칙.txt", "task": "T2", "commit": "aa4242e", "screen": "콘솔 실행",
-      "see": "결제 없이 배송 줄이 주문 접수인 주문은 배송할 수 없습니다로 바뀌고, 마지막에 두 번 결제: 결제 완료인 주문은 결제할 수 없습니다가 더 찍힌다",
+    { "file": "T2-지금-상태-보고-정하기.txt", "task": "T2", "commit": "2ab4865", "screen": "콘솔 실행",
+      "see": "결제 없이 배송 줄이 주문 접수인 주문은 배송할 수 없습니다로 바뀌고, [두 번 결제하기]에 결제 완료인 주문은 결제할 수 없습니다가 찍힌다",
       "run": {} },
-    { "file": "T3-배송-완료하기.txt", "task": "T3", "commit": "0a70e42", "screen": "콘솔 실행과 glossary.md",
-      "see": "마지막에 배송 완료: 배송 완료가 더 찍히고, 이어서 용어집에 배송 완료하기 deliver 줄과 배송 완료 DELIVERED 줄이 보인다",
+    { "file": "T3-배송-완료하기.txt", "task": "T3", "commit": "b9fe2a9", "screen": "콘솔 실행과 glossary.md",
+      "see": "[배송 완료하기]에 주문 상태: 배송 중 -> 배송 완료가 찍힌다. 이어서 용어집에 배송 완료하기 deliver와 배송 완료 DELIVERED 줄이 보인다",
       "run": { "command": "javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main && type glossary.md" } },
-    { "file": "done-주문-장면.txt", "task": "done", "commit": "0a70e42", "screen": "콘솔 실행 (이클립스 Run 대신)",
-      "see": "시작 글부터 배송 완료까지 열여섯 줄이 spec 실행 결과와 같게 찍힌다",
+    { "file": "done-주문-장면.txt", "task": "done", "commit": "b9fe2a9", "screen": "콘솔 실행 (이클립스 Run 대신)",
+      "see": "===== 주문 상태 =====부터 배송 완료까지 spec 실행 결과와 같게 찍힌다",
       "run": {} }
   ]
 }
