@@ -1,4 +1,4 @@
 package ddd.order.application;
 
-public record OrderSummary(long orderId, String memberName, int orderLineCount, int paymentPrice, String status) {
+public record OrderSummary(long orderId, String memberName, int itemCount, int paymentPrice, String status) {
 }

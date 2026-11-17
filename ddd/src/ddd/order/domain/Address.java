@@ -1,8 +1,7 @@
 package ddd.order.domain;
 
-import java.io.Serializable;
 
-public record Address(String value) implements Serializable {
+public record Address(String value) {
 
     public Address {
         if (value == null || value.isBlank()) {

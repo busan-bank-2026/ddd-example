@@ -2,10 +2,11 @@ package ddd.catalog.application;
 
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;
-import ddd.order.domain.OrderLine;
+import ddd.order.application.EventHandler;
+import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderPlaced;
 
-public class DecreaseStockHandler {
+public class DecreaseStockHandler implements EventHandler {
 
     private final ProductRepository productRepository;
 
@@ -13,10 +14,14 @@ public class DecreaseStockHandler {
         this.productRepository = productRepository;
     }
 
-    public void handle(OrderPlaced event) {
-        for (OrderLine orderLine : event.orderLines()) {
-            Product product = productRepository.findById(orderLine.productId()).orElseThrow();
-            product.decreaseStock(orderLine.quantity());
+    @Override
+    public void handle(Object event) {
+        if (!(event instanceof OrderPlaced placed)) {
+            return;
+        }
+        for (OrderItem item : placed.items()) {
+            Product product = productRepository.findById(item.getProductId()).orElseThrow();
+            product.decreaseStock(item.getQuantity());
             productRepository.save(product);
         }
     }

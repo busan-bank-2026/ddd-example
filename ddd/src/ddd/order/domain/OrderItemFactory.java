@@ -3,17 +3,17 @@ package ddd.order.domain;
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;
 
-public class OrderLineFactory {
+public class OrderItemFactory {
 
     private final ProductRepository productRepository;
 
-    public OrderLineFactory(ProductRepository productRepository) {
+    public OrderItemFactory(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    public OrderLine create(long productId, int quantity) {
+    public OrderItem create(long productId, int quantity) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품이 없습니다"));
-        return new OrderLine(product.getId(), product.getName(), product.getPrice(), quantity);
+        return new OrderItem(product.getId(), product.getName(), product.getPrice(), quantity);
     }
 }

@@ -22,8 +22,8 @@ public class OrderQueryService {
         List<OrderSummary> summaries = new ArrayList<>();
         for (Order order : orderRepository.findByMemberId(memberId)) {
             Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
-            summaries.add(new OrderSummary(order.getId(), member.getName(), order.getOrderLines().size(),
-                    order.getPaymentPrice().amount(), order.getStatus().label()));
+            summaries.add(new OrderSummary(order.getId(), member.getName(), order.getItems().size(),
+                    order.getPaymentPrice(), order.getStatus().label()));
         }
         return summaries;
     }

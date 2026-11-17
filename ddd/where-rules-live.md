@@ -6,13 +6,13 @@
 
 | 두는 곳 | 두는 규칙 | 이 프로그램의 예 |
 |---|---|---|
-| 값 객체 | 값 하나가 늘 지켜야 하는 것 | Money는 0원 이상이다. Address는 비어 있지 않다 |
-| 애그리거트 | 한 애그리거트 안에서 늘 함께 맞아야 하는 것 | Order는 항목이 하나 이상이고 주문 금액이 항목 합과 같다. OrderStatus가 상태가 바뀌는 길을 정한다 |
+| 값 객체 | 값 하나가 늘 지켜야 하는 것 | Address는 비어 있지 않다 |
+| 애그리거트 | 한 애그리거트 안에서 늘 함께 맞아야 하는 것 | Order는 항목이 하나 이상이고 주문 금액이 항목 합과 같다. 결제, 배송, 취소는 Order가 지금 상태를 보고 정한다 |
 | 도메인 서비스 | 두 애그리거트 이상을 읽고 계산만 하는 것 | DiscountPolicy는 회원 등급과 주문 금액으로 할인 금액을 낸다 |
 | 명세 | 참 거짓으로 답하는 조건 | FreeShippingSpecification은 50000원 이상이고 제주가 아니면 무료 배송이다 |
 | 이벤트 | 다른 애그리거트가 나중에 따로 맞추는 것 | OrderPlaced를 받아 재고를 줄이고 OrderCanceled를 받아 되돌린다 |
-| 사가 | 따로 저장한 단계가 실패하면 앞 단계를 되돌리는 것 | OrderApplicationService의 결제하기가 거절되면 주문 취소하기로 보상한다 |
-| 응용 서비스 | 꺼내고 시키고 저장하는 순서 | OrderApplicationService는 주문을 꺼내 주문에게 시키고 저장한다. 규칙은 갖지 않는다 |
+| 사가 | 따로 저장한 단계가 실패하면 앞 단계를 되돌리는 것 | OrderService의 결제하기가 거절되면 주문 취소하기로 보상한다 |
+| 응용 서비스 | 꺼내고 시키고 저장하는 순서 | OrderService는 주문을 꺼내 주문에게 시키고 저장한다. 규칙은 갖지 않는다 |
 
 ## 고르는 순서
 
@@ -31,9 +31,9 @@
 
 | 단계 | 맡는 곳 | 보상 | 보상을 맡는 곳 |
 |---|---|---|---|
-| 주문 접수 | OrderApplicationService의 주문하기 | 주문 취소 | OrderApplicationService의 주문 취소하기 |
+| 주문 접수 | OrderService의 주문하기 | 주문 취소 | OrderService의 주문 취소하기 |
 | 재고 줄이기 | DecreaseStockHandler | 재고 되돌리기 | IncreaseStockHandler |
-| 결제 | PaymentGateway | 실패하면 위 두 보상을 한다 | OrderApplicationService의 결제하기 |
+| 결제 | PaymentGateway | 실패하면 위 두 보상을 한다 | OrderService의 결제하기 |
 
 - 보상은 끝난 일을 지우지 않고 반대 일을 한 번 더 한다
 - 결제가 거절된 주문은 취소로 남는다

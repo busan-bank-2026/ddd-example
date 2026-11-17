@@ -12,234 +12,55 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
-import ddd.order.application.OrderApplicationService;
-import ddd.order.application.OrderLineCommand;
-import ddd.order.application.OrderQueryService;
-import ddd.order.application.OrderSummary;
-import ddd.order.application.PlaceOrderCommand;
+import ddd.order.application.OrderService;
+import ddd.order.application.OrderItemRequest;
+import ddd.order.application.OrderRequest;
 import ddd.order.domain.DiscountPolicy;
-import ddd.order.domain.Order;
-import ddd.order.domain.OrderCanceled;
-import ddd.order.domain.OrderLine;
-import ddd.order.domain.OrderLineFactory;
-import ddd.order.domain.OrderPlaced;
-import ddd.order.domain.OrderRepository;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import ddd.shared.Money;
-import ddd.shipping.application.OrderPaidMessageHandler;
-import ddd.shipping.domain.Shipment;
-import ddd.shipping.domain.ShipmentRepository;
-import ddd.shipping.infrastructure.MemoryShipmentRepository;
 import legacypay.LegacyPayGateway;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("온라인 주문 프로그램을 시작합니다");
+        System.out.println("===== 결제 실패 되돌리기 =====");
 
         MemberRepository memberRepository = new MemoryMemberRepository();
-        memberRepository.save(new Member(1, "김철수", MemberGrade.VIP));
-        memberRepository.save(new Member(2, "이영희", MemberGrade.BASIC));
+        memberRepository.save(new Member(1, "김철수", MemberGrade.BASIC));
 
         ProductRepository productRepository = new MemoryProductRepository();
-        productRepository.save(new Product(1, "자바 책", new Money(15000), 10));
-        productRepository.save(new Product(2, "볼펜", new Money(1000), 10));
-        productRepository.save(new Product(3, "공책", new Money(2000), 10));
+        productRepository.save(new Product(1, "노트북", 120000, 10));
 
         EventPublisher eventPublisher = new EventPublisher();
-        DecreaseStockHandler decreaseStockHandler = new DecreaseStockHandler(productRepository);
-        eventPublisher.subscribe(OrderPlaced.class, decreaseStockHandler::handle);
-        IncreaseStockHandler increaseStockHandler = new IncreaseStockHandler(productRepository);
-        eventPublisher.subscribe(OrderCanceled.class, increaseStockHandler::handle);
-        OrderRepository orderRepository = new MemoryOrderRepository();
-        OrderApplicationService orderService = new OrderApplicationService(orderRepository,
-                new OrderLineFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
-                new LegacyPaymentAdapter(new LegacyPayGateway()));
+        eventPublisher.subscribe(new DecreaseStockHandler(productRepository));
+        eventPublisher.subscribe(new IncreaseStockHandler(productRepository));
+        OrderService orderService = new OrderService(new MemoryOrderRepository(),
+                new OrderItemFactory(productRepository), memberRepository, new DiscountPolicy(), eventPublisher,
+                new LegacyPaymentAdapter(new LegacyPayGateway()), message -> System.out.println("보낸 메시지: " + message));
 
-        List<OrderLineCommand> orderLines = List.of(
-                new OrderLineCommand(1, 2),
-                new OrderLineCommand(2, 1));
-        long orderId = orderService.placeOrder(new PlaceOrderCommand(1, orderLines, "서울시 강남구"));
-        Order order = orderService.findOrder(orderId);
-        Member member = memberRepository.findById(order.getMemberId()).orElseThrow();
-        System.out.println("주문: " + order.getId() + "번, " + member.getName() + ", "
-                + order.getTotalPrice().amount() + "원, " + order.getStatus().label());
-        for (OrderLine orderLine : order.getOrderLines()) {
-            System.out.println("주문 항목: " + orderLine.productName() + " " + orderLine.quantity() + "개, "
-                    + orderLine.amount().amount() + "원");
-        }
-        System.out.println("주문 뒤: 이벤트 " + order.getEvents().size() + "개, 자바 책 재고 "
-                + productRepository.findById(1).orElseThrow().getStock() + "개");
+        System.out.println();
+        System.out.println("[주문하기]");
+        int stockBefore = productRepository.findById(1).orElseThrow().getStock();
+        long orderId = orderService.placeOrder(new OrderRequest(1,
+                List.of(new OrderItemRequest(1, 1)), "서울시 서초구"));
         eventPublisher.processEvents();
-        System.out.println("이벤트 처리 뒤: 자바 책 재고 " + productRepository.findById(1).orElseThrow().getStock() + "개");
+        int stockAfterOrder = productRepository.findById(1).orElseThrow().getStock();
+        System.out.println("노트북 1개 주문: " + orderId + "번 주문, "
+                + orderService.findOrder(orderId).getStatus().label());
+        System.out.println("노트북 재고: " + stockBefore + "개 -> " + stockAfterOrder + "개");
 
-        orderService.pay(orderId);
-        System.out.println("결제: " + orderService.findOrder(orderId).getStatus().label());
-        Order paidOrder = orderService.findOrder(orderId);
-        System.out.println("할인: " + member.getGrade() + " " + paidOrder.getDiscountPrice().amount() + "원, 결제 금액 "
-                + paidOrder.getPaymentPrice().amount() + "원");
-        System.out.println("배송비: " + paidOrder.getShippingFee().amount() + "원");
-
-        orderService.ship(orderId);
-        System.out.println("배송: " + orderService.findOrder(orderId).getStatus().label());
-
+        System.out.println();
+        System.out.println("[결제하기]");
+        String statusBefore = orderService.findOrder(orderId).getStatus().label();
         try {
-            orderService.cancel(orderId);
-            System.out.println("취소: " + orderService.findOrder(orderId).getStatus().label());
+            orderService.pay(orderId);
         } catch (IllegalStateException e) {
-            System.out.println("취소: " + e.getMessage());
+            System.out.println("결제 거절: " + e.getMessage());
         }
-
-        long order2Id = orderService.placeOrder(new PlaceOrderCommand(2,
-                List.of(new OrderLineCommand(1, 1)), "부산시 해운대구"));
-        try {
-            orderService.ship(order2Id);
-            System.out.println("결제 없이 배송: " + orderService.findOrder(order2Id).getStatus().label());
-        } catch (IllegalStateException e) {
-            System.out.println("결제 없이 배송: " + e.getMessage());
-        }
-
-        try {
-            productRepository.save(new Product(4, "할인 책", new Money(-15000), 10));
-            long order3Id = orderService.placeOrder(new PlaceOrderCommand(2,
-                    List.of(new OrderLineCommand(4, 2)), "대구시 수성구"));
-            System.out.println("음수 금액 주문: " + orderService.findOrder(order3Id).getTotalPrice().amount() + "원");
-        } catch (IllegalArgumentException e) {
-            System.out.println("음수 금액 주문: " + e.getMessage());
-        }
-
-        try {
-            long order4Id = orderService.placeOrder(new PlaceOrderCommand(2,
-                    List.of(new OrderLineCommand(1, 1)), ""));
-            System.out.println("빈 주소 주문: " + orderService.findOrder(order4Id).getStatus().label());
-        } catch (IllegalArgumentException e) {
-            System.out.println("빈 주소 주문: " + e.getMessage());
-        }
-
-        long order5Id = orderService.placeOrder(new PlaceOrderCommand(2, List.of(
-                new OrderLineCommand(1, 2),
-                new OrderLineCommand(2, 1)), "광주시 북구"));
-        orderService.addOrderLine(order5Id, new OrderLineCommand(3, 5));
-        Order order5 = orderService.findOrder(order5Id);
-        System.out.println("항목 더하기: 항목 " + order5.getOrderLines().size() + "개, 주문 금액 "
-                + order5.getTotalPrice().amount() + "원");
-
-        orderService.pay(order5Id);
-        try {
-            orderService.addOrderLine(order5Id, new OrderLineCommand(3, 1));
-            System.out.println("결제 뒤 항목 더하기: 항목 " + orderService.findOrder(order5Id).getOrderLines().size() + "개");
-        } catch (IllegalStateException e) {
-            System.out.println("결제 뒤 항목 더하기: " + e.getMessage());
-        }
-
-        try {
-            long order6Id = orderService.placeOrder(new PlaceOrderCommand(2, List.of(), "인천시 연수구"));
-            System.out.println("빈 주문: " + orderService.findOrder(order6Id).getStatus().label());
-        } catch (IllegalArgumentException e) {
-            System.out.println("빈 주문: " + e.getMessage());
-        }
-
-        try {
-            long order7Id = orderService.placeOrder(new PlaceOrderCommand(2,
-                    List.of(new OrderLineCommand(1, 0)), "대전시 유성구"));
-            System.out.println("0개 항목 주문: " + orderService.findOrder(order7Id).getTotalPrice().amount() + "원");
-        } catch (IllegalArgumentException e) {
-            System.out.println("0개 항목 주문: " + e.getMessage());
-        }
-
-        try {
-            orderService.pay(order5Id);
-            System.out.println("두 번 결제: " + orderService.findOrder(order5Id).getStatus().label());
-        } catch (IllegalStateException e) {
-            System.out.println("두 번 결제: " + e.getMessage());
-        }
-
-        orderService.deliver(orderId);
-        System.out.println("배송 완료: " + orderService.findOrder(orderId).getStatus().label());
-
-        try {
-            orderService.pay(100);
-            System.out.println("없는 주문 결제: " + orderService.findOrder(100).getStatus().label());
-        } catch (IllegalArgumentException e) {
-            System.out.println("없는 주문 결제: " + e.getMessage());
-        }
-
-        try {
-            long order8Id = orderService.placeOrder(new PlaceOrderCommand(2,
-                    List.of(new OrderLineCommand(100, 1)), "울산시 남구"));
-            System.out.println("없는 상품 주문: " + orderService.findOrder(order8Id).getStatus().label());
-        } catch (IllegalArgumentException e) {
-            System.out.println("없는 상품 주문: " + e.getMessage());
-        }
-
-        Order notSaved = orderService.findOrder(order2Id);
-        notSaved.cancel();
-        System.out.println("저장 안 한 취소: " + orderService.findOrder(order2Id).getStatus().label());
-
-        long seoulOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
-                List.of(new OrderLineCommand(1, 4)), "서울시 마포구"));
-        long jejuOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
-                List.of(new OrderLineCommand(1, 4)), "제주시 연동"));
-        System.out.println("6만원 주문 배송비: 서울 " + orderService.findOrder(seoulOrderId).getShippingFee().amount()
-                + "원, 제주 " + orderService.findOrder(jejuOrderId).getShippingFee().amount() + "원");
-
-        productRepository.save(new Product(1, "자바 책", new Money(18000), 10));
-        Order firstOrder = orderService.findOrder(orderId);
-        OrderLine bookLine = firstOrder.getOrderLines().get(0);
-        Product book = productRepository.findById(bookLine.productId()).orElseThrow();
-        System.out.println("가격 바뀐 뒤: " + book.getId() + "번 상품 " + book.getPrice().amount() + "원, 주문 항목 "
-                + bookLine.price().amount() + "원, 주문 금액 " + firstOrder.getTotalPrice().amount() + "원");
-
-        Order orderA = orderService.findOrder(order5Id);
-        Order orderB = orderService.findOrder(order5Id);
-        orderA.ship();
-        orderRepository.save(orderA);
-        try {
-            orderB.cancel();
-            orderRepository.save(orderB);
-            System.out.println("동시 수정: " + orderService.findOrder(order5Id).getStatus().label());
-        } catch (IllegalStateException e) {
-            System.out.println("동시 수정: " + e.getMessage());
-        }
-
-        ShipmentRepository shipmentRepository = new MemoryShipmentRepository();
-        OrderPaidMessageHandler orderPaidMessageHandler = new OrderPaidMessageHandler(shipmentRepository);
-        eventPublisher.subscribe(String.class, message -> System.out.println("결제 완료 메시지: " + message));
-        eventPublisher.subscribe(String.class, orderPaidMessageHandler::handle);
         eventPublisher.processEvents();
-        Shipment shipment = shipmentRepository.findByOrderId(orderId).orElseThrow();
-        System.out.println("배송 컨텍스트: " + shipment.getOrderId() + "번 주문, " + shipment.getAddress());
-
-        LegacyPayGateway legacyPayGateway = new LegacyPayGateway();
-        System.out.println("외부 결제 응답: 27900원 " + legacyPayGateway.approve("DDD-SHOP", 27900) + ", 108000원 "
-                + legacyPayGateway.approve("DDD-SHOP", 108000));
-
-        long bigOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
-                List.of(new OrderLineCommand(1, 6)), "서울시 송파구"));
-        try {
-            orderService.pay(bigOrderId);
-            System.out.println("한도 넘은 결제: " + orderService.findOrder(bigOrderId).getStatus().label());
-        } catch (IllegalStateException e) {
-            System.out.println("한도 넘은 결제: " + e.getMessage() + ", "
-                    + orderService.findOrder(bigOrderId).getStatus().label());
-        }
-
-        OrderQueryService orderQueryService = new OrderQueryService(orderRepository, memberRepository);
-        for (OrderSummary summary : orderQueryService.findOrderSummaries(1)) {
-            System.out.println("주문 목록: " + summary.orderId() + "번, " + summary.memberName() + ", 항목 "
-                    + summary.orderLineCount() + "개, " + summary.paymentPrice() + "원, " + summary.status());
-        }
-
-        productRepository.save(new Product(5, "노트북", new Money(120000), 10));
-        long laptopOrderId = orderService.placeOrder(new PlaceOrderCommand(2,
-                List.of(new OrderLineCommand(5, 1)), "서울시 서초구"));
-        try {
-            orderService.pay(laptopOrderId);
-        } catch (IllegalStateException e) {
-            eventPublisher.processEvents();
-            System.out.println("결제 실패 뒤: 노트북 재고 " + productRepository.findById(5).orElseThrow().getStock() + "개, "
-                    + orderService.findOrder(laptopOrderId).getStatus().label());
-        }
+        int stockAfterPay = productRepository.findById(1).orElseThrow().getStock();
+        System.out.println("주문 상태: " + statusBefore + " -> " + orderService.findOrder(orderId).getStatus().label());
+        System.out.println("노트북 재고: " + stockAfterOrder + "개 -> " + stockAfterPay + "개");
     }
 }

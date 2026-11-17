@@ -1,10 +1,5 @@
 package ddd.order.infrastructure;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +20,7 @@ public class MemoryOrderRepository implements OrderRepository {
             throw new IllegalStateException("다른 곳에서 먼저 바꾼 주문입니다");
         }
         order.increaseVersion();
-        orders.put(order.getId(), copy(order));
+        orders.put(order.getId(), new Order(order));
     }
 
     @Override
@@ -34,7 +29,7 @@ public class MemoryOrderRepository implements OrderRepository {
         if (order == null) {
             return Optional.empty();
         }
-        return Optional.of(copy(order));
+        return Optional.of(new Order(order));
     }
 
     @Override
@@ -42,21 +37,9 @@ public class MemoryOrderRepository implements OrderRepository {
         List<Order> found = new ArrayList<>();
         for (Order order : orders.values()) {
             if (order.getMemberId() == memberId) {
-                found.add(copy(order));
+                found.add(new Order(order));
             }
         }
         return found;
-    }
-
-    private Order copy(Order order) {
-        try {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(bytes);
-            out.writeObject(order);
-            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
-            return (Order) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
     }
 }

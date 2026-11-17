@@ -1,15 +1,14 @@
 package ddd.catalog.domain;
 
-import ddd.shared.Money;
 
 public class Product {
 
     private final long id;
     private final String name;
-    private final Money price;
+    private final int price;
     private int stock;
 
-    public Product(long id, String name, Money price, int stock) {
+    public Product(long id, String name, int price, int stock) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -24,7 +23,7 @@ public class Product {
         return name;
     }
 
-    public Money getPrice() {
+    public int getPrice() {
         return price;
     }
 

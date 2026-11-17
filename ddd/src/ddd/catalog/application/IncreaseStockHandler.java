@@ -2,10 +2,11 @@ package ddd.catalog.application;
 
 import ddd.catalog.domain.Product;
 import ddd.catalog.domain.ProductRepository;
+import ddd.order.application.EventHandler;
 import ddd.order.domain.OrderCanceled;
-import ddd.order.domain.OrderLine;
+import ddd.order.domain.OrderItem;
 
-public class IncreaseStockHandler {
+public class IncreaseStockHandler implements EventHandler {
 
     private final ProductRepository productRepository;
 
@@ -13,10 +14,14 @@ public class IncreaseStockHandler {
         this.productRepository = productRepository;
     }
 
-    public void handle(OrderCanceled event) {
-        for (OrderLine orderLine : event.orderLines()) {
-            Product product = productRepository.findById(orderLine.productId()).orElseThrow();
-            product.increaseStock(orderLine.quantity());
+    @Override
+    public void handle(Object event) {
+        if (!(event instanceof OrderCanceled canceled)) {
+            return;
+        }
+        for (OrderItem item : canceled.items()) {
+            Product product = productRepository.findById(item.getProductId()).orElseThrow();
+            product.increaseStock(item.getQuantity());
             productRepository.save(product);
         }
     }

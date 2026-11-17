@@ -1,41 +1,49 @@
 package ddd.order.domain;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ddd.shared.Money;
 
-public class Order implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Order {
 
     private long id;
     private long memberId;
-    private List<OrderLine> orderLines;
+    private List<OrderItem> items;
     private Address address;
-    private Money totalPrice;
-    private Money discountPrice;
+    private int totalPrice;
+    private int discountPrice;
     private OrderStatus status;
     private List<Object> events;
     private long version;
 
-    public Order(long id, long memberId, List<OrderLine> orderLines, Address address) {
-        if (orderLines.isEmpty()) {
+    public Order(long id, long memberId, List<OrderItem> items, Address address) {
+        if (items.isEmpty()) {
             throw new IllegalArgumentException("주문 항목이 하나 이상 있어야 합니다");
         }
         this.id = id;
         this.memberId = memberId;
-        this.orderLines = new ArrayList<>(orderLines);
+        this.items = new ArrayList<>(items);
         this.address = address;
-        this.totalPrice = new Money(0);
-        for (OrderLine orderLine : orderLines) {
-            totalPrice = totalPrice.plus(orderLine.amount());
+        this.totalPrice = 0;
+        for (OrderItem item : items) {
+            totalPrice = totalPrice + item.getAmount();
         }
-        this.discountPrice = new Money(0);
+        this.discountPrice = 0;
         this.status = OrderStatus.ORDERED;
         this.events = new ArrayList<>();
-        events.add(new OrderPlaced(id, List.copyOf(orderLines)));
+        events.add(new OrderPlaced(id, List.copyOf(items)));
+    }
+
+    public Order(Order other) {
+        this.id = other.id;
+        this.memberId = other.memberId;
+        this.items = new ArrayList<>(other.items);
+        this.address = other.address;
+        this.totalPrice = other.totalPrice;
+        this.discountPrice = other.discountPrice;
+        this.status = other.status;
+        this.events = new ArrayList<>(other.events);
+        this.version = other.version;
     }
 
     public long getId() {
@@ -46,31 +54,31 @@ public class Order implements Serializable {
         return memberId;
     }
 
-    public List<OrderLine> getOrderLines() {
-        return List.copyOf(orderLines);
+    public List<OrderItem> getItems() {
+        return List.copyOf(items);
     }
 
     public Address getAddress() {
         return address;
     }
 
-    public Money getTotalPrice() {
+    public int getTotalPrice() {
         return totalPrice;
     }
 
-    public Money getDiscountPrice() {
+    public int getDiscountPrice() {
         return discountPrice;
     }
 
-    public Money getPaymentPrice() {
-        return totalPrice.minus(discountPrice);
+    public int getPaymentPrice() {
+        return totalPrice - discountPrice;
     }
 
-    public Money getShippingFee() {
+    public int getShippingFee() {
         if (new FreeShippingSpecification().isSatisfiedBy(this)) {
-            return new Money(0);
+            return 0;
         }
-        return new Money(3000);
+        return 3000;
     }
 
     public OrderStatus getStatus() {
@@ -89,16 +97,16 @@ public class Order implements Serializable {
         version++;
     }
 
-    public void addOrderLine(OrderLine orderLine) {
+    public void addItem(OrderItem item) {
         if (status != OrderStatus.ORDERED) {
             throw new IllegalStateException("주문 접수인 주문에만 항목을 더할 수 있습니다");
         }
-        orderLines.add(orderLine);
-        totalPrice = totalPrice.plus(orderLine.amount());
+        items.add(item);
+        totalPrice = totalPrice + item.getAmount();
     }
 
-    public void pay(Money discountPrice) {
-        if (!status.canChangeTo(OrderStatus.PAID)) {
+    public void pay(int discountPrice) {
+        if (status != OrderStatus.ORDERED) {
             throw new IllegalStateException(status.label() + "인 주문은 결제할 수 없습니다");
         }
         this.discountPrice = discountPrice;
@@ -106,21 +114,21 @@ public class Order implements Serializable {
     }
 
     public void ship() {
-        if (!status.canChangeTo(OrderStatus.SHIPPING)) {
+        if (status != OrderStatus.PAID) {
             throw new IllegalStateException(status.label() + "인 주문은 배송할 수 없습니다");
         }
         status = OrderStatus.SHIPPING;
     }
 
     public void deliver() {
-        if (!status.canChangeTo(OrderStatus.DELIVERED)) {
+        if (status != OrderStatus.SHIPPING) {
             throw new IllegalStateException(status.label() + "인 주문은 배송 완료할 수 없습니다");
         }
         status = OrderStatus.DELIVERED;
     }
 
     public void cancel() {
-        if (!status.canChangeTo(OrderStatus.CANCELED)) {
+        if (status != OrderStatus.ORDERED && status != OrderStatus.PAID) {
             throw new IllegalStateException(status.label() + "인 주문은 취소할 수 없습니다");
         }
         status = OrderStatus.CANCELED;

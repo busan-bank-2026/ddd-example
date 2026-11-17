@@ -2,7 +2,6 @@ package ddd.order.infrastructure;
 
 import ddd.order.domain.PaymentGateway;
 import ddd.order.domain.PaymentResult;
-import ddd.shared.Money;
 import legacypay.LegacyPayGateway;
 
 public class LegacyPaymentAdapter implements PaymentGateway {
@@ -16,8 +15,8 @@ public class LegacyPaymentAdapter implements PaymentGateway {
     }
 
     @Override
-    public PaymentResult pay(Money amount) {
-        String code = legacyPayGateway.approve(MERCHANT_KEY, amount.amount());
+    public PaymentResult pay(int amount) {
+        String code = legacyPayGateway.approve(MERCHANT_KEY, amount);
         if (code.equals("0000")) {
             return new PaymentResult(true, "");
         }

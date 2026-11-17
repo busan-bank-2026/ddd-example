@@ -9,41 +9,41 @@ import ddd.order.domain.Address;
 import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
 import ddd.order.domain.OrderCanceled;
-import ddd.order.domain.OrderLine;
-import ddd.order.domain.OrderLineFactory;
+import ddd.order.domain.OrderItem;
+import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.PaymentGateway;
 import ddd.order.domain.PaymentResult;
 
-public class OrderApplicationService {
+public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderLineFactory orderLineFactory;
+    private final OrderItemFactory orderItemFactory;
     private final MemberRepository memberRepository;
     private final DiscountPolicy discountPolicy;
     private final EventPublisher eventPublisher;
-    private final OrderOpenHostService orderOpenHostService;
     private final PaymentGateway paymentGateway;
+    private final OrderPaidNotifier orderPaidNotifier;
     private long nextId = 1;
 
-    public OrderApplicationService(OrderRepository orderRepository, OrderLineFactory orderLineFactory,
+    public OrderService(OrderRepository orderRepository, OrderItemFactory orderItemFactory,
             MemberRepository memberRepository, DiscountPolicy discountPolicy, EventPublisher eventPublisher,
-            PaymentGateway paymentGateway) {
+            PaymentGateway paymentGateway, MessageSender messageSender) {
         this.orderRepository = orderRepository;
-        this.orderLineFactory = orderLineFactory;
+        this.orderItemFactory = orderItemFactory;
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
         this.eventPublisher = eventPublisher;
-        this.orderOpenHostService = new OrderOpenHostService(eventPublisher);
         this.paymentGateway = paymentGateway;
+        this.orderPaidNotifier = new OrderPaidNotifier(messageSender);
     }
 
-    public long placeOrder(PlaceOrderCommand command) {
-        List<OrderLine> orderLines = new ArrayList<>();
-        for (OrderLineCommand orderLineCommand : command.orderLines()) {
-            orderLines.add(orderLineFactory.create(orderLineCommand.productId(), orderLineCommand.quantity()));
+    public long placeOrder(OrderRequest request) {
+        List<OrderItem> items = new ArrayList<>();
+        for (OrderItemRequest itemRequest : request.items()) {
+            items.add(orderItemFactory.create(itemRequest.productId(), itemRequest.quantity()));
         }
-        Order order = new Order(nextId++, command.memberId(), orderLines, new Address(command.address()));
+        Order order = new Order(nextId++, request.memberId(), items, new Address(request.address()));
         orderRepository.save(order);
         eventPublisher.publish(order.getEvents());
         return order.getId();
@@ -53,9 +53,9 @@ public class OrderApplicationService {
         return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문이 없습니다"));
     }
 
-    public void addOrderLine(long orderId, OrderLineCommand command) {
+    public void addItem(long orderId, OrderItemRequest request) {
         Order order = findOrder(orderId);
-        order.addOrderLine(orderLineFactory.create(command.productId(), command.quantity()));
+        order.addItem(orderItemFactory.create(request.productId(), request.quantity()));
         orderRepository.save(order);
     }
 
@@ -69,7 +69,7 @@ public class OrderApplicationService {
             throw new IllegalStateException(result.reason());
         }
         orderRepository.save(order);
-        orderOpenHostService.publishOrderPaid(order);
+        orderPaidNotifier.notifyPaid(order);
     }
 
     public void ship(long orderId) {
@@ -88,6 +88,6 @@ public class OrderApplicationService {
         Order order = findOrder(orderId);
         order.cancel();
         orderRepository.save(order);
-        eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getOrderLines())));
+        eventPublisher.publish(List.of(new OrderCanceled(order.getId(), order.getItems())));
     }
 }

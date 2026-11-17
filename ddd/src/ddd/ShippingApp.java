@@ -9,6 +9,7 @@ import ddd.shipping.infrastructure.SocketMessageReceiver;
 public class ShippingApp {
 
     public static void main(String[] args) {
+        System.out.println("===== 배송 앱 =====");
         ShipmentRepository shipmentRepository = new MemoryShipmentRepository();
         OrderPaidMessageHandler orderPaidMessageHandler = new OrderPaidMessageHandler(shipmentRepository);
 
