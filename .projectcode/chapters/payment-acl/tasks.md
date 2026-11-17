@@ -9,26 +9,26 @@
   - 근거: S1
   - 진행: 붙여넣기. LegacyPayGateway.java 전체
   - 파일: ddd/src/legacypay/LegacyPayGateway.java, ddd/src/ddd/Main.java
-  - 실행하면: 배송 컨텍스트 줄 다음에 외부 결제 응답: 27900원 0000, 108000원 E101이 찍히고, src에 ddd와 나란히 legacypay 폴더가 보인다
+  - 실행하면: ===== 외부 결제 연결 ===== 아래 [외부 결제 모듈에 직접 맡기기]에 27900원 맡기기: 0000과 108000원 맡기기: E101이 찍히고, src에 ddd와 나란히 legacypay 폴더가 보인다
   - Why: 바깥 모듈은 우리가 고칠 수 없고 우리와 다른 말을 쓴다. 그 말을 먼저 들어 봐야 무엇을 번역할지 안다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
 - [x] T2 결제 어댑터로 외부 말을 우리 말로 바꾸기
   - 근거: S2, S3, S4, S5
-  - 파일: ddd/src/ddd/order/domain/PaymentGateway.java, ddd/src/ddd/order/domain/PaymentResult.java, ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 외부 결제 응답 줄 다음에 한도 넘은 결제: 결제 한도를 넘었습니다, 주문 접수가 찍히고, 앞 결제 두 건은 그대로 결제 완료다
-  - Why: 주문은 결제 창구와 결제 결과라는 우리 말만 쓰고, 코드 글자와 원 단위 int는 어댑터 한 곳에서 번역하면 외부 모듈이 바뀌어도 주문 모델은 그대로다
+  - 파일: ddd/src/ddd/order/domain/PaymentGateway.java, ddd/src/ddd/order/domain/PaymentResult.java, ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/Main.java, ddd/glossary.md
+  - 실행하면: [결제 어댑터로 결제하기]에 주문 상태: 주문 접수 -> 결제 완료가, [한도 넘은 결제]에 자바 책 8개 결제: 결제 한도를 넘었습니다와 주문 상태: 주문 접수 -> 주문 접수가 찍힌다
+  - Why: 주문은 결제 창구와 결제 결과라는 우리 말만 쓰고, 코드 글자와 가게 키는 어댑터 한 곳에서 번역하면 외부 모듈이 바뀌어도 주문 모델은 그대로다
   - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
 - [x] T3 컨텍스트 맵에 부패 방지 계층 적기
   - 근거: S6
   - 파일: ddd/context-map.md, ddd/glossary.md
-  - 실행하면: 출력 서른한 줄이 그대로 나오고, context-map.md에 부패 방지 계층 절과 외부 말과 우리 말 표, 결제 하위 도메인 줄이 보인다
+  - 실행하면: 출력은 T2와 같고, context-map.md에 부패 방지 계층 절과 외부 말과 우리 말 표, 결제 하위 도메인 줄이 보인다
   - Why: 어느 경계에서 누가 번역하는지 지도에 적어야 다음 사람이 외부 말을 주문 안으로 끌어들이지 않는다
   - 다른 장: ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock, bounded-contexts, shipping-context
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [ ] T4 결제 창구가 int 금액을 받기
+- [x] T4 결제 창구가 int 금액을 받기
   - 근거: 고침 T1, T2, T3
-  - 파일: 샌드박스에서 그 장 시점 코드에 얹을 때 정한다
+  - 파일: ddd/context-map.md, ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/MessageSender.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderLineCommand.java, ddd/src/ddd/order/application/OrderOpenHostService.java, ddd/src/ddd/order/application/OrderPaidNotifier.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/PlaceOrderCommand.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderLineFactory.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderLine.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/PaymentGateway.java, ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/shared/Money.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 돈 값 객체가 없어졌다. 출력은 이 장 장면만 보인다
