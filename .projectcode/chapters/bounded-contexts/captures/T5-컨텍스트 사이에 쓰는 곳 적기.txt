@@ -1,0 +1,7 @@
+$ javac -encoding UTF-8 -d bin --source-path src src/ddd/Main.java && java -Dfile.encoding=UTF-8 -cp bin ddd.Main
+===== 컨텍스트 나누기 =====
+
+[세 컨텍스트를 거쳐 주문하기]
+주문 컨텍스트: 1번 주문, 30000원, 주문 접수
+회원 컨텍스트: 김철수, BASIC
+상품 컨텍스트: 자바 책 재고 10개 -> 8개

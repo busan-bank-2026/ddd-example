@@ -27,3 +27,57 @@
 
 ## 라이브러리
 - 추가 없음
+
+## 현재 따라치기 파일 목록
+
+| 파일 | 변경 |
+|---|---|
+| ddd/context-map.md | 고침 |
+| ddd/glossary.md | 고침 |
+| ddd/src/ddd/Main.java | 고침 |
+| ddd/src/ddd/catalog/application/DecreaseStockHandler.java | 새로 |
+| ddd/src/ddd/catalog/application/ProductService.java | 새로 |
+| ddd/src/ddd/catalog/domain/Product.java | 새로 |
+| ddd/src/ddd/catalog/domain/ProductRepository.java | 고침 |
+| ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java | 고침 |
+| ddd/src/ddd/member/application/MemberService.java | 새로 |
+| ddd/src/ddd/member/domain/Member.java | 새로 |
+| ddd/src/ddd/member/domain/MemberGrade.java | 새로 |
+| ddd/src/ddd/member/domain/MemberRepository.java | 고침 |
+| ddd/src/ddd/member/infrastructure/MemoryMemberRepository.java | 고침 |
+| ddd/src/ddd/order/application/EventPublisher.java | 새로 |
+| ddd/src/ddd/order/application/OrderService.java | 고침 |
+| ddd/src/ddd/order/domain/DiscountPolicy.java | 고침 |
+| ddd/src/ddd/order/domain/Member.java | 지움 |
+| ddd/src/ddd/order/domain/MemberGrade.java | 지움 |
+| ddd/src/ddd/order/domain/MemberRepository.java | 지움 |
+| ddd/src/ddd/order/domain/OrderItemFactory.java | 고침 |
+| ddd/src/ddd/order/domain/OrderPlaced.java | 새로 |
+| ddd/src/ddd/order/domain/Product.java | 지움 |
+| ddd/src/ddd/order/domain/ProductRepository.java | 지움 |
+| ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java | 지움 |
+| ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java | 고침 |
+| ddd/src/ddd/order/infrastructure/MemoryProductRepository.java | 지움 |
+| ddd/where-rules-live.md | 고침 |
+
+## 강의 범위 축소로 지우는 파일
+
+- ddd/src/ddd/OrderApp.java
+- ddd/src/ddd/ShippingApp.java
+- ddd/src/ddd/catalog/application/IncreaseStockHandler.java
+- ddd/src/ddd/order/application/EventHandler.java
+- ddd/src/ddd/order/application/MessageSender.java
+- ddd/src/ddd/order/application/OrderPaidNotifier.java
+- ddd/src/ddd/order/application/OrderQueryService.java
+- ddd/src/ddd/order/application/OrderSummary.java
+- ddd/src/ddd/order/domain/OrderCanceled.java
+- ddd/src/ddd/order/domain/PaymentGateway.java
+- ddd/src/ddd/order/domain/PaymentResult.java
+- ddd/src/ddd/order/infrastructure/LegacyPaymentAdapter.java
+- ddd/src/ddd/order/infrastructure/SocketMessageSender.java
+- ddd/src/ddd/shipping/application/OrderPaidMessageHandler.java
+- ddd/src/ddd/shipping/domain/Shipment.java
+- ddd/src/ddd/shipping/domain/ShipmentRepository.java
+- ddd/src/ddd/shipping/infrastructure/MemoryShipmentRepository.java
+- ddd/src/ddd/shipping/infrastructure/SocketMessageReceiver.java
+- ddd/src/legacypay/LegacyPayGateway.java

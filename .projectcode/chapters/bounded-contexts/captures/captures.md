@@ -2,8 +2,10 @@
 
 | 파일 | 장 | task | 커밋 | 찍은 화면 | 보이는 것 |
 |---|---|---|---|---|---|
-| T1-하위-도메인.txt | bounded-contexts | T1 | 5924f96 | 콘솔 실행과 context-map.md | ===== 컨텍스트 나누기 ===== 아래 [세 컨텍스트를 거쳐 주문하기]에 주문, 회원, 상품 컨텍스트 줄이 찍히고, 이어서 context-map.md에 주문 핵심, 상품 지원, 회원 일반 하위 도메인과 컨텍스트 묶음 표가 보인다 |
-| T3-회원-컨텍스트.txt | bounded-contexts | T3 | 26d387d | 콘솔 실행과 src 폴더 | 출력은 T1과 같고, 이어서 src/ddd에 member 폴더가 생기고 그 아래 domain에 세 파일, infrastructure에 MemoryMemberRepository.java가 보인다 |
-| T4-상품-컨텍스트.txt | bounded-contexts | T4 | 6648b3e | 콘솔 실행과 src 폴더 | 출력은 T1과 같고, 이어서 src/ddd에 catalog 폴더가 생기고 그 아래 domain, application, infrastructure에 네 파일이 보인다 |
-| T5-컨텍스트-사이.txt | bounded-contexts | T5 | 61b08b1 | 콘솔 실행과 src 폴더와 context-map.md | 출력은 T1과 같고, 이어서 src/ddd에는 Main.java와 catalog, member, order만 있고, context-map.md에 컨텍스트 사이 표가 보인다 |
-| done-주문-장면.txt | bounded-contexts | done | 61b08b1 | 콘솔 실행 (이클립스 Run 대신) | ===== 컨텍스트 나누기 =====부터 상품 컨텍스트: 자바 책 재고 10개 -> 8개 줄까지 spec 실행 결과와 같게 찍힌다 |
+| T1-하위 도메인과 컨텍스트 정하기.txt | bounded-contexts | T1 | f6abcd3de3dae84439bef5eb5fe6f380908b8c59 | 콘솔 실행 | 하위 도메인과 컨텍스트 정하기. 상품 컨텍스트: 자바 책 재고 10개 -> 8개 |
+| T3-회원 컨텍스트 만들기.txt | bounded-contexts | T3 | 1bbc6ea3d3854dd2c2012165aa132ac08c46602f | 콘솔 실행 | 회원 컨텍스트 만들기. 상품 컨텍스트: 자바 책 재고 10개 -> 8개 |
+| T4-상품 컨텍스트 만들기.txt | bounded-contexts | T4 | 0c2033121bed8cb48282d098cea8b31e4d4804ed | 콘솔 실행 | 상품 컨텍스트 만들기. 상품 컨텍스트: 자바 책 재고 10개 -> 8개 |
+| T5-컨텍스트 사이에 쓰는 곳 적기.txt | bounded-contexts | T5 | f0a5e3a624a7fc6c773d3ded054d14b54c81e849 | 콘솔 실행 | 컨텍스트 사이에 쓰는 곳 적기. 상품 컨텍스트: 자바 책 재고 10개 -> 8개 |
+| T7-회원과 상품 서비스 만들기.txt | bounded-contexts | T7 | 71113e35d2f35ca70d67230b53d11865500996b7 | 콘솔 실행 | 회원과 상품 서비스 만들기. 상품 컨텍스트: 자바 책 재고 10개 -> 8개 |
+| T8-주문 접수 이벤트로 재고 감소 연결하기.txt | bounded-contexts | T8 | 4f83e106db741e6c360b7510c36110ce41499e9c | 콘솔 실행 | 주문 접수 이벤트로 재고 감소 연결하기. 상품 컨텍스트: 자바 책 재고 10개 -> 8개 |
+| done-주문-장면.txt | bounded-contexts | done | 4f83e106db741e6c360b7510c36110ce41499e9c | 장 끝 콘솔 실행 | 장 끝 실행 결과. 상품 컨텍스트: 자바 책 재고 10개 -> 8개 |

@@ -4,44 +4,38 @@
 - [x] T1 하위 도메인과 컨텍스트 정하기
   - 근거: S1
   - 파일: ddd/context-map.md, ddd/src/ddd/Main.java
-  - 실행하면: ===== 컨텍스트 나누기 ===== 아래 [세 컨텍스트를 거쳐 주문하기]에 주문, 회원, 상품 컨텍스트 줄이 찍히고, context-map.md에 주문 핵심, 상품 지원, 회원 일반 하위 도메인과 맡는 컨텍스트 묶음이 보인다
-  - Why: 어디서 나눌지는 코드보다 업무에서 먼저 정한다. 이 가게의 핵심이 무엇인지 알아야 경계를 긋는다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
-- [x] T2 공유 커널로 돈 옮기기
-  - 근거: 없음. 이 할 일은 spec에서 빠졌다
-  - 파일: 없음
-  - 실행하면: 고친 뒤 이 단계는 없어졌다. 돈 값 객체가 없어져 금액은 int이고, 컨텍스트가 함께 쓸 공유 커널이 없다
-  - Why: 주문과 상품이 모두 쓰는 돈을 한 곳에 두고 함께 지키기로 약속해야 컨텍스트를 나눠도 돈 규칙이 하나로 남는다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+  - 실행하면: captures/shots.json의 T1 실행 결과가 보인다
+  - Why: 업무의 책임과 모델이 통하는 경계를 먼저 정한다
 - [x] T3 회원 컨텍스트 만들기
   - 근거: S2
-  - 파일: ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/MemberGrade.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/member/domain/Member.java, ddd/src/ddd/member/domain/MemberGrade.java, ddd/src/ddd/member/domain/MemberRepository.java, ddd/src/ddd/member/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/Main.java
-  - 실행하면: ddd.member.domain, ddd.member.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 T1과 같고 src/ddd/member에 domain, infrastructure 폴더가 보인다
-  - Why: 회원은 이름과 등급만 맡는 일반 하위 도메인이라 주문 규칙과 떼어 두면 주문을 바꿀 때 회원을 건드리지 않는다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+  - 파일: ddd/src/ddd/Main.java, ddd/src/ddd/member/domain/Member.java, ddd/src/ddd/member/domain/MemberGrade.java, ddd/src/ddd/member/domain/MemberRepository.java, ddd/src/ddd/member/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/MemberGrade.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java
+  - 실행하면: captures/shots.json의 T3 실행 결과가 보인다
+  - Why: 회원 이름과 등급을 맡는 모델을 회원 컨텍스트로 옮긴다
 - [x] T4 상품 컨텍스트 만들기
-  - 근거: S3
-  - 파일: ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/application/DecreaseStockHandler.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/domain/ProductRepository.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/Main.java
-  - 실행하면: ddd.catalog.domain, ddd.catalog.application, ddd.catalog.infrastructure 패키지를 만들고 네 클래스를 옮기면 출력은 T1과 같고 src/ddd/catalog에 세 폴더가 보인다
-  - Why: 상품과 재고는 주문을 돕는 지원 하위 도메인이다. 재고를 줄이는 처리기도 상품 쪽에 두면 상품 규칙이 한 컨텍스트에 모인다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+  - 근거: S2
+  - 파일: ddd/src/ddd/Main.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/catalog/domain/ProductRepository.java, ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
+  - 실행하면: captures/shots.json의 T4 실행 결과가 보인다
+  - Why: 현재 상품 가격과 재고를 상품 컨텍스트로 모은다
 - [x] T5 컨텍스트 사이에 쓰는 곳 적기
-  - 근거: S4, S5
+  - 근거: S1, S8
   - 파일: ddd/context-map.md
-  - 실행하면: 출력은 T1과 같고 src/ddd에는 Main.java와 catalog, member, order만 있다. 주문 클래스는 이미 ddd.order에 있어 옮기지 않는다. context-map.md에 컨텍스트 사이 표가 보인다
-  - Why: 핵심 하위 도메인인 주문을 자기 경계 안에 두면, 다른 컨텍스트를 가져다 쓰는 곳이 import로 드러나 컨텍스트 맵에 적을 수 있다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events, optimistic-lock
+  - 실행하면: captures/shots.json의 T5 실행 결과가 보인다
+  - Why: 패키지를 나눈 뒤에도 남아 있는 컨텍스트 사이 의존을 적는다
+- [x] T7 회원과 상품 서비스 만들기
+  - 근거: S3, S4, S5, S7, S8
+  - 파일: ddd/context-map.md, ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/catalog/application/ProductService.java, ddd/src/ddd/catalog/domain/ProductRepository.java, ddd/src/ddd/catalog/infrastructure/MemoryProductRepository.java, ddd/src/ddd/member/application/MemberService.java, ddd/src/ddd/member/domain/MemberRepository.java, ddd/src/ddd/member/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/where-rules-live.md
+  - 실행하면: captures/shots.json의 T7 실행 결과가 보인다
+  - Why: 각 컨텍스트의 조회와 실행 순서를 응용 서비스가 맡는다
+- [x] T8 주문 접수 이벤트로 재고 감소 연결하기
+  - 근거: S6, S7, S8
+  - 파일: ddd/context-map.md, ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/where-rules-live.md
+  - 실행하면: captures/shots.json의 T8 실행 결과가 보인다
+  - Why: 주문 접수 사실과 그 사실에 대한 상품의 반응을 분리한다
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [x] T6 공유 커널 빼고 회원과 상품만 옮기기
-  - 근거: 고침 T1, T2, T3, T4, T5
-  - 파일: ddd/context-map.md, ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderLineCommand.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/PlaceOrderCommand.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderLine.java, ddd/src/ddd/order/domain/OrderLineFactory.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/shared/Money.java
-  - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
-  - Why: 돈 값 객체가 없어 공유 커널이 없다. 주문은 이미 ddd.order에 있어서 회원과 상품만 옮긴다
-
-- [ ] T9 서비스와 즉시 처리 이벤트로 강의 마무리하기
+- [x] T9 서비스와 즉시 처리 이벤트로 강의 마무리하기
   - 근거: 고침 T1, T3, T4, T5
-  - 파일: plan.md의 파일 목록과 해당 장 시점 Main
-  - 실행하면: spec의 현재 실행 흐름과 같다
-  - Why: 컨텍스트 책임과 이벤트 반응을 짧은 호출 흐름으로 보인다
+  - 파일: plan.md의 현재 수업 파일과 수정 범위
+  - 실행하면: 고친 코드가 원래 따라치기 단계에 반영된다
+  - Why: 승인한 단순한 수업 흐름과 코드, 자료를 일치시킨다
