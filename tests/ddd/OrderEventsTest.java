@@ -42,7 +42,15 @@ class OrderEventsTest {
         var members = new MemoryMemberRepository();
         members.save(new Member(1, "김철수", MemberGrade.BASIC));
         var orders = new MemoryOrderRepository();
-        var publisher = new EventPublisher(new DecreaseStockHandler(new ProductService(products)));
+        Thread callingThread = Thread.currentThread();
+        var publisher = new EventPublisher(new DecreaseStockHandler(new ProductService(products)) {
+            @Override
+            public void handle(OrderPlaced event) {
+                assertSame(callingThread, Thread.currentThread());
+                assertTrue(orders.findById(event.orderId()).isPresent(), "이벤트 처리 전에 주문을 저장해야 합니다");
+                super.handle(event);
+            }
+        });
         var service = new OrderService(orders, new OrderItemFactory(products),
                 new MemberService(members), new DiscountPolicy(), publisher);
 

@@ -2,10 +2,14 @@ package ddd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
 import ddd.catalog.application.ProductService;
 import ddd.catalog.domain.Product;
+import ddd.catalog.domain.ProductRepository;
 import ddd.catalog.infrastructure.MemoryProductRepository;
 import ddd.member.application.MemberService;
 import ddd.member.domain.Member;
@@ -13,6 +17,30 @@ import ddd.member.domain.MemberGrade;
 import ddd.member.infrastructure.MemoryMemberRepository;
 
 class ContextServicesTest {
+
+    private static class CopyingProductRepository implements ProductRepository {
+
+        private final MemoryProductRepository storage = new MemoryProductRepository();
+
+        private Product copy(Product product) {
+            return new Product(product.getId(), product.getName(), product.getPrice(), product.getStock());
+        }
+
+        @Override
+        public void save(Product product) {
+            storage.save(copy(product));
+        }
+
+        @Override
+        public Optional<Product> findById(long id) {
+            return storage.findById(id).map(this::copy);
+        }
+
+        @Override
+        public List<Product> findAll() {
+            return storage.findAll().stream().map(this::copy).toList();
+        }
+    }
 
     @Test
     void memberServiceListsAndFindsMembers() {
@@ -38,5 +66,16 @@ class ContextServicesTest {
         assertEquals(7, service.findProduct(1).getStock());
         assertEquals(20, service.findProduct(2).getStock());
         assertThrows(IllegalArgumentException.class, () -> service.findProduct(99));
+    }
+
+    @Test
+    void productServiceSavesStockAfterChangingARepositoryCopy() {
+        var repository = new CopyingProductRepository();
+        repository.save(new Product(1, "자바 책", 15000, 10));
+        var service = new ProductService(repository);
+
+        service.decreaseStock(1, 3);
+
+        assertEquals(7, repository.findById(1).orElseThrow().getStock());
     }
 }
