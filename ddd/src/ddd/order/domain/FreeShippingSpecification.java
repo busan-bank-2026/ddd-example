@@ -1,9 +1,9 @@
 package ddd.order.domain;
 
-public class FreeShippingSpecification implements OrderSpecification {
+public class FreeShippingSpecification {
 
-    @Override
     public boolean isSatisfiedBy(Order order) {
-        return new FreeShippingPriceSpecification().and(new FreeShippingAreaSpecification()).isSatisfiedBy(order);
+        return order.getPaymentPrice() >= 50000
+                && !order.getAddress().value().startsWith("제주");
     }
 }
