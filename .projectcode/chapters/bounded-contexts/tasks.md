@@ -39,3 +39,9 @@
   - 파일: ddd/context-map.md, ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/catalog/application/DecreaseStockHandler.java, ddd/src/ddd/catalog/domain/Product.java, ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/OrderApplicationService.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderLineCommand.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/PlaceOrderCommand.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderLine.java, ddd/src/ddd/order/domain/OrderLineFactory.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/shared/Money.java
   - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
   - Why: 돈 값 객체가 없어 공유 커널이 없다. 주문은 이미 ddd.order에 있어서 회원과 상품만 옮긴다
+
+- [ ] T9 서비스와 즉시 처리 이벤트로 강의 마무리하기
+  - 근거: 고침 T1, T3, T4, T5
+  - 파일: plan.md의 파일 목록과 해당 장 시점 Main
+  - 실행하면: spec의 현재 실행 흐름과 같다
+  - Why: 컨텍스트 책임과 이벤트 반응을 짧은 호출 흐름으로 보인다
