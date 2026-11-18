@@ -32,9 +32,7 @@ import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
 import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderItemFactory;
-import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import legacypay.LegacyPayGateway;
 
 class RichEntityTest {
 
@@ -71,7 +69,7 @@ class RichEntityTest {
         assertEquals(first.hashCode(), sameNumber.hashCode());
         assertNotEquals(first, otherNumber);
 
-        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         long placed1 = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         long placed2 = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         assertEquals(1, placed1);
@@ -110,7 +108,7 @@ class RichEntityTest {
         unpaid.cancel();
         assertEquals("취소", unpaid.getStatus().label());
 
-        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         long placed = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         service.pay(placed);
         service.ship(placed);

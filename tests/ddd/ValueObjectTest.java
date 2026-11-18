@@ -32,9 +32,7 @@ import ddd.order.domain.DiscountPolicy;
 import ddd.order.domain.Order;
 import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderItemFactory;
-import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import legacypay.LegacyPayGateway;
 
 class ValueObjectTest {
 
@@ -44,8 +42,8 @@ class ValueObjectTest {
         members.save(new Member(2, "이영희", MemberGrade.BASIC));
         ProductRepository products = new MemoryProductRepository();
         products.save(new Product(1, "자바 책", 15000, 10));
-        return new OrderService(new MemoryOrderRepository(), new OrderItemFactory(products), members,
-                new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        return new OrderService(new MemoryOrderRepository(), new OrderItemFactory(products), new ddd.member.application.MemberService(members),
+                new DiscountPolicy(), TestServices.publisher());
     }
 
     @Test

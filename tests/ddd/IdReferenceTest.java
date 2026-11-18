@@ -30,9 +30,7 @@ import ddd.order.domain.Order;
 import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
-import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import legacypay.LegacyPayGateway;
 
 class IdReferenceTest {
 
@@ -98,7 +96,7 @@ class IdReferenceTest {
     @Test
     @DisplayName("S3 주문은 회원을 객체로 갖지 않고 회원 번호로 가리킨다. 주문 요청은 주문자 이름 대신 회원 번호를 담고, Main은 주문의 회원 번호로 회원 저장소에서 회원을 찾아 이름을 보여준다")
     void s3() {
-        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         OrderRequest command = new OrderRequest(7,
                 List.of(new OrderItemRequest(1, 2)), "서울시 강남구");
         assertEquals(7L, command.memberId());
@@ -120,7 +118,7 @@ class IdReferenceTest {
         OrderItemRequest command = new OrderItemRequest(2, 3);
         assertEquals(2L, command.productId());
 
-        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         long orderId = service.placeOrder(new OrderRequest(1, List.of(command), "서울시 강남구"));
         service.addItem(orderId, new OrderItemRequest(3, 5));
 
@@ -146,7 +144,7 @@ class IdReferenceTest {
         Product book = products.findById(1).orElseThrow();
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderService service = new OrderService(orders, new OrderItemFactory(products), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(orders, new OrderItemFactory(products), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         long orderId = service.placeOrder(new OrderRequest(1, List.of(
                 new OrderItemRequest(book.getId(), 2)), "서울시 강남구"));
 

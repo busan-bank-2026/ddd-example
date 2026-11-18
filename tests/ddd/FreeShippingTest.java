@@ -12,12 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import ddd.order.domain.Address;
-import ddd.order.domain.FreeShippingAreaSpecification;
-import ddd.order.domain.FreeShippingPriceSpecification;
 import ddd.order.domain.FreeShippingSpecification;
 import ddd.order.domain.Order;
 import ddd.order.domain.OrderItem;
-import ddd.order.domain.OrderSpecification;
 import ddd.order.domain.OrderStatus;
 
 class FreeShippingTest {
@@ -62,7 +59,7 @@ class FreeShippingTest {
     }
 
     @Test
-    @DisplayName("S3 배송 주소가 제주인 주문은 결제 금액이 50000원 이상이어도 무료 배송이 아니다. 무료 배송 명세는 무료 배송 금액 명세와 무료 배송 지역 명세를 and로 묶어 만든다. Main이 6만원 주문의 서울과 제주 배송비를 보여준다")
+    @DisplayName("S3 배송 주소가 제주인 주문은 결제 금액이 50000원 이상이어도 무료 배송이 아니다. 무료 배송 명세 한 클래스에서 금액과 지역을 함께 판단한다. Main이 6만원 주문의 서울과 제주 배송비를 보여준다")
     void s3() {
         Order jeju = newOrder(60000, "제주시 연동");
         Order seoul = newOrder(60000, "서울시 마포구");
@@ -72,32 +69,17 @@ class FreeShippingTest {
         assertEquals(3000, jeju.getShippingFee());
         assertEquals(0, seoul.getShippingFee());
 
-        OrderSpecification price = new FreeShippingPriceSpecification();
-        OrderSpecification area = new FreeShippingAreaSpecification();
-        assertTrue(price.isSatisfiedBy(jeju));
-        assertFalse(price.isSatisfiedBy(cheapJeju));
-        assertFalse(area.isSatisfiedBy(jeju));
-        assertTrue(area.isSatisfiedBy(seoul));
+        assertFalse(new FreeShippingSpecification().isSatisfiedBy(cheapJeju));
+        assertFalse(new FreeShippingSpecification().isSatisfiedBy(newOrder(30000, "서울시 마포구")));
 
-        assertTrue(OrderSpecification.class.isInterface());
-        assertTrue(OrderSpecification.class.isAssignableFrom(FreeShippingSpecification.class));
-        OrderSpecification both = price.and(area);
-        for (Order order : List.of(jeju, seoul, cheapJeju, newOrder(30000, "서울시 마포구"))) {
-            assertEquals(new FreeShippingSpecification().isSatisfiedBy(order), both.isSatisfiedBy(order));
-        }
-        assertTrue(both.isSatisfiedBy(seoul));
-        assertFalse(both.isSatisfiedBy(jeju));
     }
 
     @Test
-    @DisplayName("S4 용어집에 주문 명세, 무료 배송 명세, 무료 배송 금액 명세, 무료 배송 지역 명세, 배송비를 더한다")
+    @DisplayName("S4 용어집에 무료 배송 명세와 배송비를 더한다")
     void s4() throws Exception {
         String glossary = Files.readString(Path.of("glossary.md"));
 
-        assertTrue(glossary.contains("| 주문 명세 | OrderSpecification |"));
         assertTrue(glossary.contains("| 무료 배송 명세 | FreeShippingSpecification |"));
-        assertTrue(glossary.contains("| 무료 배송 금액 명세 | FreeShippingPriceSpecification |"));
-        assertTrue(glossary.contains("| 무료 배송 지역 명세 | FreeShippingAreaSpecification |"));
         assertTrue(glossary.contains("| 배송비 | shippingFee |"));
     }
 }

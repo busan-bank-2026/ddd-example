@@ -29,9 +29,7 @@ import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
-import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import legacypay.LegacyPayGateway;
 
 class OrderRepositoryTest {
 
@@ -102,7 +100,7 @@ class OrderRepositoryTest {
     @DisplayName("S3 주문하기는 주문을 주문 저장소에 저장하고 주문 번호를 돌려준다")
     void s3() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderService service = new OrderService(repository, orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(repository, orderItemFactory(), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
 
         long firstId = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         long secondId = service.placeOrder(new OrderRequest(2, List.of(new OrderItemRequest(2, 1)), "부산시 해운대구"));
@@ -119,7 +117,7 @@ class OrderRepositoryTest {
     @DisplayName("S4 결제하기, 배송하기, 배송 완료하기, 주문 취소하기, 주문 항목 더하기는 주문 번호를 받아 저장소에서 주문을 꺼내 주문에게 시키고 다시 저장한다")
     void s4() {
         OrderRepository repository = new MemoryOrderRepository();
-        OrderService service = new OrderService(repository, orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(repository, orderItemFactory(), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         long orderId = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
 
         service.addItem(orderId, new OrderItemRequest(3, 5));
@@ -141,7 +139,7 @@ class OrderRepositoryTest {
     @Test
     @DisplayName("S5 없는 주문 번호로 결제하면 주문이 없습니다로 거절한다")
     void s5() {
-        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(new MemoryOrderRepository(), orderItemFactory(), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
 
         IllegalArgumentException payError = assertThrows(IllegalArgumentException.class, () -> service.pay(100));

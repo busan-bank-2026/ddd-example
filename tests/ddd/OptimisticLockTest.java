@@ -29,9 +29,7 @@ import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
-import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import legacypay.LegacyPayGateway;
 
 class OptimisticLockTest {
 
@@ -84,7 +82,7 @@ class OptimisticLockTest {
 
         OrderRepository serviceOrders = new MemoryOrderRepository();
         OrderService service = new OrderService(serviceOrders, new OrderItemFactory(products()),
-                members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+                new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         long orderId = service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(1, 2)), "서울시 강남구"));
         assertEquals(1, serviceOrders.findById(orderId).orElseThrow().getVersion());
         service.pay(orderId);

@@ -22,7 +22,6 @@ import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
 import ddd.order.application.OrderService;
-import ddd.order.application.MessageSender;
 import ddd.order.application.OrderItemRequest;
 import ddd.order.application.OrderRequest;
 import ddd.order.domain.DiscountPolicy;
@@ -30,10 +29,7 @@ import ddd.order.domain.Order;
 import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
-import ddd.order.domain.PaymentGateway;
-import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import legacypay.LegacyPayGateway;
 
 class OrderFactoryTest {
 
@@ -88,12 +84,11 @@ class OrderFactoryTest {
     @Test
     @DisplayName("S3 주문 응용 서비스는 주문하기와 주문 항목 더하기에서 주문 항목 팩토리에게 주문 항목을 만들게 한다. Main은 팩토리를 만들어 주문 응용 서비스에 넘기고, 상품 번호와 수량으로 주문한 주문 항목의 이름과 가격을 보여준다")
     void s3() {
-        assertEquals(List.of(OrderRepository.class, OrderItemFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class,
-                PaymentGateway.class, MessageSender.class),
+        assertEquals(List.of(OrderRepository.class, OrderItemFactory.class, ddd.member.application.MemberService.class, DiscountPolicy.class, EventPublisher.class),
                 List.of(OrderService.class.getConstructors()[0].getParameterTypes()));
 
         OrderRepository orders = new MemoryOrderRepository();
-        OrderService service = new OrderService(orders, new OrderItemFactory(products()), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(orders, new OrderItemFactory(products()), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
         long orderId = service.placeOrder(new OrderRequest(1, List.of(
                 new OrderItemRequest(1, 2),
                 new OrderItemRequest(2, 1)), "서울시 강남구"));
@@ -109,7 +104,7 @@ class OrderFactoryTest {
     @DisplayName("S4 없는 상품 번호로 주문하거나 항목을 더하면 상품이 없습니다로 거절하고 아무것도 저장하지 않는다. Main이 없는 상품 주문 장면을 보여준다")
     void s4() {
         OrderRepository orders = new MemoryOrderRepository();
-        OrderService service = new OrderService(orders, new OrderItemFactory(products()), members(), new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+        OrderService service = new OrderService(orders, new OrderItemFactory(products()), new ddd.member.application.MemberService(members()), new DiscountPolicy(), TestServices.publisher());
 
         IllegalArgumentException placing = assertThrows(IllegalArgumentException.class,
                 () -> service.placeOrder(new OrderRequest(1, List.of(new OrderItemRequest(100, 1)), "서울시 강남구")));

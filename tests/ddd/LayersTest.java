@@ -58,8 +58,7 @@ class LayersTest {
         }
         Class<?> service = Class.forName("ddd.order.application.OrderService");
         assertEquals(List.of(Class.forName("ddd.order.domain.OrderRepository"), Class.forName("ddd.order.domain.OrderItemFactory"),
-                Class.forName("ddd.member.domain.MemberRepository"), Class.forName("ddd.order.domain.DiscountPolicy"), Class.forName("ddd.order.application.EventPublisher"),
-                Class.forName("ddd.order.domain.PaymentGateway"), Class.forName("ddd.order.application.MessageSender")),
+                Class.forName("ddd.member.application.MemberService"), Class.forName("ddd.order.domain.DiscountPolicy"), Class.forName("ddd.order.application.EventPublisher")),
                 List.of(service.getConstructors()[0].getParameterTypes()));
     }
 
@@ -89,7 +88,7 @@ class LayersTest {
         }
 
         try (Stream<Path> files = Files.list(Path.of("src/ddd"))) {
-            assertEquals(List.of("Main.java", "OrderApp.java", "ShippingApp.java", "catalog", "member", "order", "shipping"),
+            assertEquals(List.of("Main.java", "catalog", "member", "order"),
                     files.map(file -> file.getFileName().toString()).sorted().toList());
         }
         String main = Files.readString(Path.of("src/ddd/Main.java"));

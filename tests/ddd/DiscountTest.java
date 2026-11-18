@@ -21,7 +21,6 @@ import ddd.member.domain.MemberRepository;
 import ddd.member.infrastructure.MemoryMemberRepository;
 import ddd.order.application.EventPublisher;
 import ddd.order.application.OrderService;
-import ddd.order.application.MessageSender;
 import ddd.order.application.OrderItemRequest;
 import ddd.order.application.OrderRequest;
 import ddd.order.domain.Address;
@@ -31,10 +30,7 @@ import ddd.order.domain.OrderItem;
 import ddd.order.domain.OrderItemFactory;
 import ddd.order.domain.OrderRepository;
 import ddd.order.domain.OrderStatus;
-import ddd.order.domain.PaymentGateway;
-import ddd.order.infrastructure.LegacyPaymentAdapter;
 import ddd.order.infrastructure.MemoryOrderRepository;
-import legacypay.LegacyPayGateway;
 
 class DiscountTest {
 
@@ -95,8 +91,7 @@ class DiscountTest {
     @Test
     @DisplayName("S4 주문 응용 서비스는 결제하기에서 주문을 꺼내고, 회원을 찾고, 할인 정책에게 할인 금액을 계산하게 하고, 주문에게 결제를 시키고, 저장한다. Main이 VIP 회원과 일반 회원이 같은 상품을 주문하고 결제한 결제 금액과 할인 금액을 보여준다")
     void s4() {
-        assertEquals(List.of(OrderRepository.class, OrderItemFactory.class, MemberRepository.class, DiscountPolicy.class, EventPublisher.class,
-                PaymentGateway.class, MessageSender.class),
+        assertEquals(List.of(OrderRepository.class, OrderItemFactory.class, ddd.member.application.MemberService.class, DiscountPolicy.class, EventPublisher.class),
                 List.of(OrderService.class.getConstructors()[0].getParameterTypes()));
 
         ProductRepository products = new MemoryProductRepository();
@@ -107,7 +102,7 @@ class DiscountTest {
         members.save(new Member(2, "이영희", MemberGrade.BASIC));
         OrderRepository orders = new MemoryOrderRepository();
         OrderService service = new OrderService(orders, new OrderItemFactory(products),
-                members, new DiscountPolicy(), new EventPublisher(), new LegacyPaymentAdapter(new LegacyPayGateway()), message -> {});
+                new ddd.member.application.MemberService(members), new DiscountPolicy(), TestServices.publisher());
 
         List<OrderItemRequest> lines = List.of(new OrderItemRequest(1, 2), new OrderItemRequest(2, 1));
         long vipOrderId = service.placeOrder(new OrderRequest(1, lines, "서울시 강남구"));

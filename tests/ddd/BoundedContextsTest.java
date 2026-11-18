@@ -1,4 +1,4 @@
-package ddd;
+﻿package ddd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -75,7 +75,7 @@ class BoundedContextsTest {
         assertMoved("ddd.infrastructure", "ddd.member.infrastructure", "MemoryMemberRepository");
         assertTrue(Class.forName("ddd.member.domain.MemberRepository")
                 .isAssignableFrom(Class.forName("ddd.member.infrastructure.MemoryMemberRepository")));
-        assertEquals(List.of("domain", "infrastructure"), names("src/ddd/member"));
+        assertEquals(List.of("application", "domain", "infrastructure"), names("src/ddd/member"));
     }
 
     @Test
@@ -94,9 +94,8 @@ class BoundedContextsTest {
     @Test
     @DisplayName("S4 주문 쪽 클래스는 layers 장부터 주문 컨텍스트 묶음 ddd.order 안의 domain, application, infrastructure에 있다. 회원과 상품을 옮기면 src/ddd에는 Main과 세 묶음만 남는다")
     void s4() throws Exception {
-        for (String name : List.of("Address", "DiscountPolicy", "FreeShippingAreaSpecification",
-                "FreeShippingPriceSpecification", "FreeShippingSpecification", "Order", "OrderItem",
-                "OrderItemFactory", "OrderPlaced", "OrderRepository", "OrderSpecification", "OrderStatus")) {
+        for (String name : List.of("Address", "DiscountPolicy", "FreeShippingSpecification", "Order", "OrderItem",
+                "OrderItemFactory", "OrderPlaced", "OrderRepository", "OrderStatus")) {
             assertMoved("ddd.domain", "ddd.order.domain", name);
         }
         for (String name : List.of("EventPublisher", "OrderService", "OrderItemRequest", "OrderRequest")) {
@@ -106,7 +105,7 @@ class BoundedContextsTest {
         assertTrue(Class.forName("ddd.order.domain.OrderRepository")
                 .isAssignableFrom(Class.forName("ddd.order.infrastructure.MemoryOrderRepository")));
         assertEquals(List.of("application", "domain", "infrastructure"), names("src/ddd/order"));
-        assertEquals(List.of("Main.java", "OrderApp.java", "ShippingApp.java", "catalog", "member", "order", "shipping"), names("src/ddd"));
+        assertEquals(List.of("Main.java", "catalog", "member", "order"), names("src/ddd"));
         assertFalse(Files.exists(Path.of("src/ddd/shared")));
     }
 
@@ -126,7 +125,7 @@ class BoundedContextsTest {
                 assertFalse(source.matches("(?s).*import ddd\\.\\w+\\.infrastructure\\..*"));
             }
         }
-        assertEquals(20, domainFiles);
+        assertEquals(14, domainFiles);
         String orderItemFactory = Files.readString(Path.of("src/ddd/order/domain/OrderItemFactory.java"));
         assertTrue(orderItemFactory.contains("import ddd.catalog.domain.ProductRepository;"));
         String discountPolicy = Files.readString(Path.of("src/ddd/order/domain/DiscountPolicy.java"));
@@ -140,3 +139,4 @@ class BoundedContextsTest {
         assertTrue(hasLine(between, "| 상품 |", "| 주문 |", "주문 접수됨"));
     }
 }
+
