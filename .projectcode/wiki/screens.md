@@ -87,28 +87,3 @@ Main은 각 장의 장면만 실행한다.
 
 처음 나온 장: bounded-contexts
 - ../chapters/bounded-contexts/captures/done-주문-장면.txt
-
-## 배송 컨텍스트
-
-처음 나온 장: shipping-context
-- ../chapters/shipping-context/captures/done-주문-장면.txt
-
-## 외부 결제 연결
-
-처음 나온 장: payment-acl
-- ../chapters/payment-acl/captures/done-주문-장면.txt
-
-## 주문 목록 조회
-
-처음 나온 장: order-query
-- ../chapters/order-query/captures/done-주문-장면.txt
-
-## 결제 실패 되돌리기
-
-처음 나온 장: order-saga
-- ../chapters/order-saga/captures/done-주문-장면.txt
-
-## 소켓 메시지 큐 (선택)
-
-처음 나온 장: socket-queue
-- ../chapters/socket-queue/captures/done-소켓-장면.txt

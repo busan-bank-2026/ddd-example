@@ -1,11 +1,11 @@
-# 개념
+# 개념이 나온 장
 
 ## 선수 지식
 
 - 자바: 클래스, 인터페이스, enum, record, 예외
 - 자바: 컬렉션(List, Map), 람다, 패키지
 
-## 배울 것과 처음 나온 장
+## 개념
 
 | 개념 | 처음 나온 장 |
 |---|---|
@@ -30,19 +30,10 @@
 | 팩토리 | 12 order-factory |
 | 도메인 서비스 | 13 discount |
 | 명세 | 14 free-shipping |
-| 도메인 이벤트 | 15 order-events |
-| 트랜잭션 경계 | 15 order-events |
-| 최종 일관성 | 15 order-events |
+| 재고 변경 | 15 order-events |
+| 응용 서비스의 직접 호출 | 15 order-events |
 | 낙관적 잠금 | 16 optimistic-lock |
 | 하위 도메인 | 17 bounded-contexts |
 | 바운디드 컨텍스트 | 17 bounded-contexts |
-| 모듈 | 17 bounded-contexts |
-| 공개 호스트 서비스 | 18 shipping-context |
-| 발행된 언어 | 18 shipping-context |
-| 부패 방지 계층 | 19 payment-acl |
-| 컨텍스트 맵 | 19 payment-acl |
-| CQRS | 20 order-query |
-| 사가 | 21 order-saga |
-| 보상 | 21 order-saga |
-| 규칙 두는 곳 정리 | 21 order-saga |
-| 발행기를 바꿔 끼우기 | 22 socket-queue |
+| 동기 도메인 이벤트 | 17 bounded-contexts |
+| 컨텍스트 맵 | 17 bounded-contexts |
