@@ -1,8 +1,6 @@
 package ddd.order.infrastructure;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,14 +30,4 @@ public class MemoryOrderRepository implements OrderRepository {
         return Optional.of(new Order(order));
     }
 
-    @Override
-    public List<Order> findByMemberId(long memberId) {
-        List<Order> found = new ArrayList<>();
-        for (Order order : orders.values()) {
-            if (order.getMemberId() == memberId) {
-                found.add(new Order(order));
-            }
-        }
-        return found;
-    }
 }

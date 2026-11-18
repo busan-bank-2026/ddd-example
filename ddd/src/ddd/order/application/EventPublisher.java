@@ -1,28 +1,17 @@
 package ddd.order.application;
 
-import java.util.ArrayList;
-import java.util.List;
+import ddd.catalog.application.DecreaseStockHandler;
+import ddd.order.domain.OrderPlaced;
 
 public class EventPublisher {
 
-    private final List<EventHandler> handlers = new ArrayList<>();
-    private final List<Object> waitingEvents = new ArrayList<>();
+    private final DecreaseStockHandler handler;
 
-    public void subscribe(EventHandler handler) {
-        handlers.add(handler);
+    public EventPublisher(DecreaseStockHandler handler) {
+        this.handler = handler;
     }
 
-    public void publish(List<Object> events) {
-        waitingEvents.addAll(events);
-    }
-
-    public void processEvents() {
-        List<Object> events = new ArrayList<>(waitingEvents);
-        waitingEvents.clear();
-        for (Object event : events) {
-            for (EventHandler handler : handlers) {
-                handler.handle(event);
-            }
-        }
+    public void publish(OrderPlaced event) {
+        handler.handle(event);
     }
 }

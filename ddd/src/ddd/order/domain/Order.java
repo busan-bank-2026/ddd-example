@@ -12,7 +12,6 @@ public class Order {
     private int totalPrice;
     private int discountPrice;
     private OrderStatus status;
-    private List<Object> events;
     private long version;
 
     public Order(long id, long memberId, List<OrderItem> items, Address address) {
@@ -29,8 +28,6 @@ public class Order {
         }
         this.discountPrice = 0;
         this.status = OrderStatus.ORDERED;
-        this.events = new ArrayList<>();
-        events.add(new OrderPlaced(id, List.copyOf(items)));
     }
 
     public Order(Order other) {
@@ -41,7 +38,6 @@ public class Order {
         this.totalPrice = other.totalPrice;
         this.discountPrice = other.discountPrice;
         this.status = other.status;
-        this.events = new ArrayList<>(other.events);
         this.version = other.version;
     }
 
@@ -82,10 +78,6 @@ public class Order {
 
     public OrderStatus getStatus() {
         return status;
-    }
-
-    public List<Object> getEvents() {
-        return List.copyOf(events);
     }
 
     public long getVersion() {

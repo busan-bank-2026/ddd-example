@@ -1,5 +1,7 @@
 package ddd.member.infrastructure;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,5 +21,9 @@ public class MemoryMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findById(long id) {
         return Optional.ofNullable(members.get(id));
+    }
+    @Override
+    public List<Member> findAll() {
+        return new ArrayList<>(members.values());
     }
 }

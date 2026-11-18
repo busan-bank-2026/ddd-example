@@ -1,5 +1,7 @@
 package ddd.catalog.infrastructure;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,5 +21,9 @@ public class MemoryProductRepository implements ProductRepository {
     @Override
     public Optional<Product> findById(long id) {
         return Optional.ofNullable(products.get(id));
+    }
+    @Override
+    public List<Product> findAll() {
+        return new ArrayList<>(products.values());
     }
 }
