@@ -3,27 +3,19 @@
 - [x] 테스트 작성
 - [x] T1 무료 배송 명세로 배송비 정하기
   - 근거: S1, S2, S4
-  - 파일: ddd/src/ddd/order/domain/FreeShippingSpecification.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: ===== 무료 배송 조건 ===== 아래 [결제 금액으로 배송비 정하기]에 30000원 주문 배송비: 3000원과 60000원 주문 배송비: 0원이 찍히고, src/ddd/order/domain에 FreeShippingSpecification이 더 보인다
-  - Why: 무료 배송 조건을 주문 안의 if로 두지 않고 이름 붙은 객체로 만들면 무엇을 묻는지 보인다. 명세는 참 거짓만 답하고 배송비 돈은 주문이 정한다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount
-- [x] T2 금액 명세와 지역 명세를 and로 묶기
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/order/domain/FreeShippingSpecification.java, ddd/src/ddd/order/domain/Order.java
+  - 실행하면: captures/shots.json의 T1 실행 결과가 보인다
+  - Why: 업무 조건에 이름을 붙이고 참 거짓과 배송비 계산의 역할을 나눈다
+- [x] T2 무료 배송 명세에 제주 조건 더하기
   - 근거: S3, S4
-  - 파일: ddd/src/ddd/order/domain/OrderSpecification.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/FreeShippingAreaSpecification.java, ddd/src/ddd/order/domain/FreeShippingSpecification.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: [제주 주소는 무료 배송에서 빼기]에 서울시 마포구 60000원 주문 배송비: 0원과 제주시 연동 60000원 주문 배송비: 3000원이 찍히고, src/ddd/order/domain에 OrderSpecification, FreeShippingPriceSpecification, FreeShippingAreaSpecification이 더 보인다
-  - Why: 제주는 무료 배송에서 빠진다는 조건이 하나 더 생겼다. 조건마다 명세를 만들고 and로 묶으면 주문은 그대로 무료 배송 명세에게만 묻는다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/order/domain/FreeShippingSpecification.java
+  - 실행하면: captures/shots.json의 T2 실행 결과가 보인다
+  - Why: 제주 제외 조건을 같은 명세에 더해 두 조건을 한눈에 읽는다
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [x] T3 배송비를 int로 정하기
-  - 근거: 고침 T1, T2
-  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/FreeShippingAreaSpecification.java, ddd/src/ddd/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/domain/FreeShippingSpecification.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/domain/OrderSpecification.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingAreaSpecification.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/FreeShippingSpecification.java, ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/MemberGrade.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/domain/OrderSpecification.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
-  - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
-  - Why: 돈 값 객체가 없어졌다. 출력은 이 장 장면만 보인다
-
-- [ ] T4 무료 배송 조건을 한 명세로 합치기
+- [x] T4 무료 배송 조건을 한 명세로 합치기
   - 근거: 고침 T2
-  - 파일: plan.md의 파일 목록과 해당 장 시점 Main
-  - 실행하면: spec의 현재 실행 흐름과 같다
-  - Why: 금액과 지역의 두 조건을 한눈에 읽게 한다
+  - 파일: plan.md의 현재 수업 파일과 수정 범위
+  - 실행하면: 고친 코드가 원래 따라치기 단계에 반영된다
+  - Why: 승인한 단순한 수업 흐름과 코드, 자료를 일치시킨다

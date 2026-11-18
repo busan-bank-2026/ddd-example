@@ -18,3 +18,12 @@
 
 ## 라이브러리
 - 추가 없음
+
+## 현재 따라치기 파일 목록
+
+| 파일 | 변경 |
+|---|---|
+| ddd/glossary.md | 고침 |
+| ddd/src/ddd/Main.java | 고침 |
+| ddd/src/ddd/order/domain/FreeShippingSpecification.java | 고침 |
+| ddd/src/ddd/order/domain/Order.java | 고침 |

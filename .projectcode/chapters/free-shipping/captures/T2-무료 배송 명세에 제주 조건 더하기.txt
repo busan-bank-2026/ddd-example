@@ -1,0 +1,10 @@
+$ javac -encoding UTF-8 -d bin --source-path src src/ddd/Main.java && java -Dfile.encoding=UTF-8 -cp bin ddd.Main
+===== 무료 배송 조건 =====
+
+[결제 금액으로 배송비 정하기]
+30000원 주문 배송비: 3000원
+60000원 주문 배송비: 0원
+
+[제주 주소는 무료 배송에서 빼기]
+서울시 마포구 60000원 주문 배송비: 0원
+제주시 연동 60000원 주문 배송비: 3000원

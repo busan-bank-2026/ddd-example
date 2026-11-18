@@ -1,6 +1,6 @@
 # 폴더 구조
 
-비교 기준: done/discount에 고침 patch를 붙인 상태(f9ece31). 새로 생긴 파일과 고친 파일을 표시했다.
+비교 기준: done/discount의 수정을 반영한 앞 장 끝. 앞 장 수정 반영 시점: f9ece314280f7bae184a49dd9ff5a6bd65325774. 새로 생긴 파일과 고친 파일을 표시했다.
 
 ```
 ddd/
@@ -17,8 +17,6 @@ ddd/
         domain/
           Address.java
           DiscountPolicy.java
-          FreeShippingAreaSpecification.java   새로
-          FreeShippingPriceSpecification.java   새로
           FreeShippingSpecification.java   새로
           Member.java
           MemberGrade.java
@@ -27,7 +25,6 @@ ddd/
           OrderItem.java
           OrderItemFactory.java
           OrderRepository.java
-          OrderSpecification.java   새로
           OrderStatus.java
           Product.java
           ProductRepository.java
