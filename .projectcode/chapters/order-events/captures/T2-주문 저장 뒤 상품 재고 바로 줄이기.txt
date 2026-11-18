@@ -1,0 +1,6 @@
+$ javac -encoding UTF-8 -d bin --source-path src src/ddd/Main.java && java -Dfile.encoding=UTF-8 -cp bin ddd.Main
+===== 주문 뒤 재고 줄이기 =====
+
+[주문 저장 후 재고 줄이기]
+자바 책 2개 주문: 1번 주문, 주문 접수
+자바 책 재고: 10개 -> 8개
