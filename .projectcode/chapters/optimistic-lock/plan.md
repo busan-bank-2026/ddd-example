@@ -12,7 +12,7 @@
 ## 코드 계획
 Main.java
 - T1: 첫 줄을 ===== 동시 수정 막기 =====로 바꾸고 앞 장 장면을 지운다
-- T1: new MemoryOrderRepository()를 OrderRepository orderRepository 변수로 꺼내 주문 응용 서비스에 넘긴다. 발행기는 new EventPublisher()로 바로 넘긴다
+- T1: new MemoryOrderRepository()를 OrderRepository orderRepository 변수로 꺼내 주문 응용 서비스에 넘긴다. 상품 저장소를 넘겨 15장의 직접 재고 감소를 유지한다
 - T1: 장면 [같은 주문을 두 번 꺼내 저장하기]는 자바 책 2개를 주문하고 결제한 뒤 orderService.findOrder로 두 번 꺼내 first, second에 둔다
 - T1: first.ship()을 하고 orderRepository.save(first)를 한 뒤 첫째로 꺼내 배송: 결제 완료 -> 배송 중을 찍는다
 - T1: second.cancel()을 하고 orderRepository.save(second)를 한 뒤 둘째로 꺼내 취소: 배송 중 -> 취소를 찍는다. 이것이 문제다
@@ -80,3 +80,12 @@ orderRepository.save(second);
 - ddd/src/ddd/order/domain/Order.java: anemic-order, rich-entity, value-object, order-aggregate, order-status, order-repository, layers, id-reference, discount, free-shipping, order-events
 - ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java: order-repository, layers
 - ddd/glossary.md: ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, id-reference, order-factory, discount, free-shipping, order-events
+
+## 현재 따라치기 파일 목록
+
+| 파일 | 변경 |
+|---|---|
+| ddd/glossary.md | 고침 |
+| ddd/src/ddd/Main.java | 고침 |
+| ddd/src/ddd/order/domain/Order.java | 고침 |
+| ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java | 고침 |

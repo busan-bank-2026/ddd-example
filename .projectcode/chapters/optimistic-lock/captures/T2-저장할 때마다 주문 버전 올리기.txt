@@ -1,0 +1,9 @@
+$ javac -encoding UTF-8 -d bin --source-path src src/ddd/Main.java && java -Dfile.encoding=UTF-8 -cp bin ddd.Main
+===== 동시 수정 막기 =====
+
+[같은 주문을 두 번 꺼내 저장하기]
+첫째로 꺼내 배송: 결제 완료 -> 배송 중
+둘째로 꺼내 취소: 배송 중 -> 취소
+
+[저장할 때마다 버전 올리기]
+결제하고 저장: 버전 1 -> 2

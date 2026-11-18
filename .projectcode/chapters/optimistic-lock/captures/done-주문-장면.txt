@@ -1,4 +1,4 @@
-$ javac -d bin --source-path src src/ddd/Main.java && java -cp bin ddd.Main
+$ javac -encoding UTF-8 -d bin --source-path src src/ddd/Main.java && java -Dfile.encoding=UTF-8 -cp bin ddd.Main
 ===== 동시 수정 막기 =====
 
 [같은 주문을 두 번 꺼내 저장하기]

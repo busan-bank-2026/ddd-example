@@ -1,39 +1,26 @@
 # optimistic-lock 작업
 
 - [x] 테스트 작성
-- [x] 테스트 보강
-  - 근거: 앞 장 테스트 고치기에서 빠짐. IdReferenceTest가 Main 마지막 줄을 가격 바뀐 뒤 줄로 본다
-  - 파일: tests/ddd/IdReferenceTest.java
-  - 다른 장: id-reference
 - [x] T1 같은 주문을 두 번 꺼내 덮어쓰기
   - 근거: S1
   - 파일: ddd/src/ddd/Main.java
-  - 실행하면: ===== 동시 수정 막기 ===== 아래 [같은 주문을 두 번 꺼내 저장하기]에 첫째로 꺼내 배송: 결제 완료 -> 배송 중과 둘째로 꺼내 취소: 배송 중 -> 취소가 찍힌다. 배송 중이던 주문이 취소로 덮였다
-  - Why: 같은 주문을 두 곳에서 들고 있다가 나중에 저장한 쪽이 앞 저장을 지우는 것을 먼저 눈으로 본다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
+  - 실행하면: captures/shots.json의 T1 실행 결과가 보인다
+  - Why: 오래된 주문을 저장하면 앞 변경이 덮이는 문제를 먼저 실행한다
 - [x] T2 저장할 때마다 주문 버전 올리기
   - 근거: S2, S4
-  - 파일: ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 둘째로 꺼내 취소: 배송 중 -> 취소가 그대로 찍히고, [저장할 때마다 버전 올리기]에 결제하고 저장: 버전 1 -> 2가 찍히고, 용어집에 버전 version 줄이 더 보인다
-  - Why: 꺼낸 주문이 몇 번째 저장을 보고 바뀌었는지 알아야 나중 저장이 낡은 주문인지 가릴 수 있다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
+  - 실행하면: captures/shots.json의 T2 실행 결과가 보인다
+  - Why: 꺼낸 주문이 몇 번째 저장을 본 것인지 버전으로 기억한다
 - [x] T3 버전이 다르면 저장 거절하기
   - 근거: S3, S4
-  - 파일: ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/Main.java, ddd/glossary.md
-  - 실행하면: 둘째로 꺼내 취소: 다른 곳에서 먼저 바꾼 주문입니다와 저장된 주문 상태: 배송 중이 찍히고, 용어집 저장하기 줄에 버전 확인이 보인다
-  - Why: 잠가 두지 않고 저장할 때 버전만 비교하면 먼저 저장한 쪽은 지키고 낡은 주문의 저장은 막는다
-  - 다른 장: project-setup, anemic-order, ubiquitous-language, rich-entity, value-object, order-aggregate, order-status, order-repository, place-order, layers, id-reference, order-factory, discount, free-shipping, order-events
+  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java
+  - 실행하면: captures/shots.json의 T3 실행 결과가 보인다
+  - Why: 오래된 버전의 저장을 거절해 앞 변경을 지킨다
 - [x] 수렴 점검
 - [x] 캡처
 - [x] 도식
-- [x] T4 복사 생성자로 버전도 복사하기
+- [x] T5 직접 재고 감소 흐름에서 낙관적 잠금 유지하기
   - 근거: 고침 T1, T2, T3
-  - 파일: ddd/glossary.md, ddd/src/ddd/Main.java, ddd/src/ddd/application/DecreaseStockHandler.java, ddd/src/ddd/application/EventPublisher.java, ddd/src/ddd/application/OrderApplicationService.java, ddd/src/ddd/application/OrderLineCommand.java, ddd/src/ddd/application/PlaceOrderCommand.java, ddd/src/ddd/domain/Address.java, ddd/src/ddd/domain/DiscountPolicy.java, ddd/src/ddd/domain/FreeShippingAreaSpecification.java, ddd/src/ddd/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/domain/FreeShippingSpecification.java, ddd/src/ddd/domain/Member.java, ddd/src/ddd/domain/MemberGrade.java, ddd/src/ddd/domain/MemberRepository.java, ddd/src/ddd/domain/Money.java, ddd/src/ddd/domain/Order.java, ddd/src/ddd/domain/OrderLine.java, ddd/src/ddd/domain/OrderLineFactory.java, ddd/src/ddd/domain/OrderPlaced.java, ddd/src/ddd/domain/OrderRepository.java, ddd/src/ddd/domain/OrderSpecification.java, ddd/src/ddd/domain/OrderStatus.java, ddd/src/ddd/domain/Product.java, ddd/src/ddd/domain/ProductRepository.java, ddd/src/ddd/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/infrastructure/MemoryProductRepository.java, ddd/src/ddd/order/application/DecreaseStockHandler.java, ddd/src/ddd/order/application/EventHandler.java, ddd/src/ddd/order/application/EventPublisher.java, ddd/src/ddd/order/application/OrderItemRequest.java, ddd/src/ddd/order/application/OrderRequest.java, ddd/src/ddd/order/application/OrderService.java, ddd/src/ddd/order/domain/Address.java, ddd/src/ddd/order/domain/DiscountPolicy.java, ddd/src/ddd/order/domain/FreeShippingAreaSpecification.java, ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java, ddd/src/ddd/order/domain/FreeShippingSpecification.java, ddd/src/ddd/order/domain/Member.java, ddd/src/ddd/order/domain/MemberGrade.java, ddd/src/ddd/order/domain/MemberRepository.java, ddd/src/ddd/order/domain/Order.java, ddd/src/ddd/order/domain/OrderItem.java, ddd/src/ddd/order/domain/OrderItemFactory.java, ddd/src/ddd/order/domain/OrderPlaced.java, ddd/src/ddd/order/domain/OrderRepository.java, ddd/src/ddd/order/domain/OrderSpecification.java, ddd/src/ddd/order/domain/OrderStatus.java, ddd/src/ddd/order/domain/Product.java, ddd/src/ddd/order/domain/ProductRepository.java, ddd/src/ddd/order/infrastructure/MemoryMemberRepository.java, ddd/src/ddd/order/infrastructure/MemoryOrderRepository.java, ddd/src/ddd/order/infrastructure/MemoryProductRepository.java
-  - 실행하면: ===== 장 이름 ===== 아래에 이 장 장면만 찍힌다
-  - Why: 저장소가 복사 생성자로 복사한다. 출력은 이 장 장면만 보인다
-
-- [ ] T5 직접 재고 감소 흐름에서 낙관적 잠금 유지하기
-  - 근거: 고침 T1, T2, T3
-  - 파일: plan.md의 파일 목록과 해당 장 시점 Main
-  - 실행하면: spec의 현재 실행 흐름과 같다
-  - Why: 이벤트를 도입하기 전에도 동시 수정 예제를 실행한다
+  - 파일: plan.md의 현재 수업 파일과 수정 범위
+  - 실행하면: 고친 코드가 원래 따라치기 단계에 반영된다
+  - Why: 승인한 단순한 수업 흐름과 코드, 자료를 일치시킨다

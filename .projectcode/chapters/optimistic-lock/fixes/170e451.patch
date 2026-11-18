@@ -1,0 +1,282 @@
+diff --git a/ddd/glossary.md b/ddd/glossary.md
+index cd26b4e..03bb81e 100644
+--- a/ddd/glossary.md
++++ b/ddd/glossary.md
+@@ -41,14 +41,7 @@
+ | 할인 정책 | DiscountPolicy | 회원 등급과 주문 금액으로 할인 금액을 계산하는 도메인 서비스. VIP는 주문 금액의 10%, 일반은 0원이다. 계산만 하고 주문을 바꾸지 않는다 |
+ | 할인 금액 | discountPrice | 결제할 때 주문 금액에서 깎는 돈. 결제 전에는 0원이다 |
+ | 결제 금액 | paymentPrice | 주문 금액에서 할인 금액을 뺀 돈. 실제로 치르는 돈이다 |
+-| 무료 배송 명세 | FreeShippingSpecification | 주문이 무료 배송인지 참 거짓으로만 답하는 명세. 무료 배송 금액 명세와 무료 배송 지역 명세를 and로 묶었다. 둘 다 참이면 참이다 |
++| 무료 배송 명세 | FreeShippingSpecification | 결제 금액이 50000원 이상이고 주소가 제주로 시작하지 않는지 참 거짓으로 답한다 |
+ | 배송비 | shippingFee | 주문을 보내는 데 받는 돈. 결제 금액과 따로 받는다. 무료 배송 명세를 만족하면 0원, 아니면 3000원이다 |
+-| 주문 명세 | OrderSpecification | 주문 하나를 받아 조건을 만족하는지 참 거짓으로만 답하는 것. and로 두 명세를 묶으면 다시 주문 명세가 된다 |
+-| 무료 배송 금액 명세 | FreeShippingPriceSpecification | 결제 금액이 50000원 이상인지 답하는 명세 |
+-| 무료 배송 지역 명세 | FreeShippingAreaSpecification | 배송 주소가 제주가 아닌지 답하는 명세 |
+-| 재고 | stock | 상품이 지금 몇 개 남았는지. 주문하면 나중에 주문 수량만큼 줄어든다 |
+-| 주문 접수됨 | OrderPlaced | 주문이 만들어질 때 주문이 남기는 도메인 이벤트. 주문 번호와 주문 항목을 담는다. 이미 일어난 일이라 바뀌지 않는다 |
+-| 이벤트 발행기 | EventPublisher | 도메인 이벤트를 받아 쌓아 두었다가, 이벤트를 처리할 때 구독한 처리기마다 보내는 곳. 주문 응용 서비스는 주문을 저장한 뒤 이벤트를 여기에 넘긴다 |
++| 재고 | stock | 상품이 지금 몇 개 남았는지. 주문하기가 끝나기 전에 주문 수량만큼 줄어든다 |
+ | 재고 줄이기 | decreaseStock | 상품 재고를 주문 수량만큼 뺀다 |
+-| 이벤트 처리기 | EventHandler | 이벤트 발행기에 구독하는 곳. 받은 이벤트 중 자기 것만 골라 처리한다 |
+-| 재고 줄이기 처리기 | DecreaseStockHandler | 주문 접수됨 이벤트를 구독해 주문 항목마다 상품 재고를 줄이고 저장하는 곳. 주문 저장과 따로 일해서 재고는 이벤트를 처리한 뒤에 맞춰진다 |
+diff --git a/ddd/src/ddd/Main.java b/ddd/src/ddd/Main.java
+index 3abb5c6..5d55141 100644
+--- a/ddd/src/ddd/Main.java
++++ b/ddd/src/ddd/Main.java
+@@ -2,7 +2,6 @@ package ddd;
+ 
+ import java.util.List;
+ 
+-import ddd.order.application.EventPublisher;
+ import ddd.order.application.OrderItemRequest;
+ import ddd.order.application.OrderRequest;
+ import ddd.order.application.OrderService;
+@@ -32,7 +31,7 @@ public class Main {
+ 
+         OrderRepository orderRepository = new MemoryOrderRepository();
+         OrderService orderService = new OrderService(orderRepository,
+-                new OrderItemFactory(productRepository), memberRepository, new DiscountPolicy(), new EventPublisher());
++                new OrderItemFactory(productRepository), memberRepository, new DiscountPolicy(), productRepository);
+ 
+         System.out.println();
+         System.out.println("[같은 주문을 두 번 꺼내 저장하기]");
+diff --git a/ddd/src/ddd/order/application/DecreaseStockHandler.java b/ddd/src/ddd/order/application/DecreaseStockHandler.java
+deleted file mode 100644
+index ae37aad..0000000
+--- a/ddd/src/ddd/order/application/DecreaseStockHandler.java
++++ /dev/null
+@@ -1,27 +0,0 @@
+-package ddd.order.application;
+-
+-import ddd.order.domain.OrderItem;
+-import ddd.order.domain.OrderPlaced;
+-import ddd.order.domain.Product;
+-import ddd.order.domain.ProductRepository;
+-
+-public class DecreaseStockHandler implements EventHandler {
+-
+-    private final ProductRepository productRepository;
+-
+-    public DecreaseStockHandler(ProductRepository productRepository) {
+-        this.productRepository = productRepository;
+-    }
+-
+-    @Override
+-    public void handle(Object event) {
+-        if (!(event instanceof OrderPlaced placed)) {
+-            return;
+-        }
+-        for (OrderItem item : placed.items()) {
+-            Product product = productRepository.findById(item.getProductId()).orElseThrow();
+-            product.decreaseStock(item.getQuantity());
+-            productRepository.save(product);
+-        }
+-    }
+-}
+diff --git a/ddd/src/ddd/order/application/EventHandler.java b/ddd/src/ddd/order/application/EventHandler.java
+deleted file mode 100644
+index b47b16b..0000000
+--- a/ddd/src/ddd/order/application/EventHandler.java
++++ /dev/null
+@@ -1,6 +0,0 @@
+-package ddd.order.application;
+-
+-public interface EventHandler {
+-
+-    void handle(Object event);
+-}
+diff --git a/ddd/src/ddd/order/application/EventPublisher.java b/ddd/src/ddd/order/application/EventPublisher.java
+deleted file mode 100644
+index cc45d9e..0000000
+--- a/ddd/src/ddd/order/application/EventPublisher.java
++++ /dev/null
+@@ -1,28 +0,0 @@
+-package ddd.order.application;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-public class EventPublisher {
+-
+-    private final List<EventHandler> handlers = new ArrayList<>();
+-    private final List<Object> waitingEvents = new ArrayList<>();
+-
+-    public void subscribe(EventHandler handler) {
+-        handlers.add(handler);
+-    }
+-
+-    public void publish(List<Object> events) {
+-        waitingEvents.addAll(events);
+-    }
+-
+-    public void processEvents() {
+-        List<Object> events = new ArrayList<>(waitingEvents);
+-        waitingEvents.clear();
+-        for (Object event : events) {
+-            for (EventHandler handler : handlers) {
+-                handler.handle(event);
+-            }
+-        }
+-    }
+-}
+diff --git a/ddd/src/ddd/order/application/OrderService.java b/ddd/src/ddd/order/application/OrderService.java
+index 07e154e..ce2e862 100644
+--- a/ddd/src/ddd/order/application/OrderService.java
++++ b/ddd/src/ddd/order/application/OrderService.java
+@@ -3,6 +3,8 @@ package ddd.order.application;
+ import java.util.ArrayList;
+ import java.util.List;
+ 
++import ddd.order.domain.Product;
++import ddd.order.domain.ProductRepository;
+ import ddd.order.domain.Address;
+ import ddd.order.domain.DiscountPolicy;
+ import ddd.order.domain.Member;
+@@ -18,16 +20,16 @@ public class OrderService {
+     private final OrderItemFactory orderItemFactory;
+     private final MemberRepository memberRepository;
+     private final DiscountPolicy discountPolicy;
+-    private final EventPublisher eventPublisher;
++    private final ProductRepository productRepository;
+     private long nextId = 1;
+ 
+     public OrderService(OrderRepository orderRepository, OrderItemFactory orderItemFactory,
+-            MemberRepository memberRepository, DiscountPolicy discountPolicy, EventPublisher eventPublisher) {
++            MemberRepository memberRepository, DiscountPolicy discountPolicy, ProductRepository productRepository) {
+         this.orderRepository = orderRepository;
+         this.orderItemFactory = orderItemFactory;
+         this.memberRepository = memberRepository;
+         this.discountPolicy = discountPolicy;
+-        this.eventPublisher = eventPublisher;
++        this.productRepository = productRepository;
+     }
+ 
+     public long placeOrder(OrderRequest request) {
+@@ -37,7 +39,11 @@ public class OrderService {
+         }
+         Order order = new Order(nextId++, request.memberId(), items, new Address(request.address()));
+         orderRepository.save(order);
+-        eventPublisher.publish(order.getEvents());
++        for (OrderItem item : order.getItems()) {
++            Product product = productRepository.findById(item.getProductId()).orElseThrow();
++            product.decreaseStock(item.getQuantity());
++            productRepository.save(product);
++        }
+         return order.getId();
+     }
+ 
+diff --git a/ddd/src/ddd/order/domain/FreeShippingAreaSpecification.java b/ddd/src/ddd/order/domain/FreeShippingAreaSpecification.java
+deleted file mode 100644
+index f161ab5..0000000
+--- a/ddd/src/ddd/order/domain/FreeShippingAreaSpecification.java
++++ /dev/null
+@@ -1,9 +0,0 @@
+-package ddd.order.domain;
+-
+-public class FreeShippingAreaSpecification implements OrderSpecification {
+-
+-    @Override
+-    public boolean isSatisfiedBy(Order order) {
+-        return !order.getAddress().value().startsWith("제주");
+-    }
+-}
+diff --git a/ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java b/ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java
+deleted file mode 100644
+index c019b08..0000000
+--- a/ddd/src/ddd/order/domain/FreeShippingPriceSpecification.java
++++ /dev/null
+@@ -1,9 +0,0 @@
+-package ddd.order.domain;
+-
+-public class FreeShippingPriceSpecification implements OrderSpecification {
+-
+-    @Override
+-    public boolean isSatisfiedBy(Order order) {
+-        return order.getPaymentPrice() >= 50000;
+-    }
+-}
+diff --git a/ddd/src/ddd/order/domain/FreeShippingSpecification.java b/ddd/src/ddd/order/domain/FreeShippingSpecification.java
+index 5553203..479c71d 100644
+--- a/ddd/src/ddd/order/domain/FreeShippingSpecification.java
++++ b/ddd/src/ddd/order/domain/FreeShippingSpecification.java
+@@ -1,9 +1,9 @@
+ package ddd.order.domain;
+ 
+-public class FreeShippingSpecification implements OrderSpecification {
++public class FreeShippingSpecification {
+ 
+-    @Override
+     public boolean isSatisfiedBy(Order order) {
+-        return new FreeShippingPriceSpecification().and(new FreeShippingAreaSpecification()).isSatisfiedBy(order);
++        return order.getPaymentPrice() >= 50000
++                && !order.getAddress().value().startsWith("제주");
+     }
+ }
+diff --git a/ddd/src/ddd/order/domain/Order.java b/ddd/src/ddd/order/domain/Order.java
+index 2cf2f08..e277d08 100644
+--- a/ddd/src/ddd/order/domain/Order.java
++++ b/ddd/src/ddd/order/domain/Order.java
+@@ -12,7 +12,6 @@ public class Order {
+     private int totalPrice;
+     private int discountPrice;
+     private OrderStatus status;
+-    private List<Object> events;
+     private long version;
+ 
+     public Order(long id, long memberId, List<OrderItem> items, Address address) {
+@@ -29,8 +28,6 @@ public class Order {
+         }
+         this.discountPrice = 0;
+         this.status = OrderStatus.ORDERED;
+-        this.events = new ArrayList<>();
+-        events.add(new OrderPlaced(id, List.copyOf(items)));
+     }
+ 
+     public Order(Order other) {
+@@ -41,7 +38,6 @@ public class Order {
+         this.totalPrice = other.totalPrice;
+         this.discountPrice = other.discountPrice;
+         this.status = other.status;
+-        this.events = new ArrayList<>(other.events);
+         this.version = other.version;
+     }
+ 
+@@ -84,10 +80,6 @@ public class Order {
+         return status;
+     }
+ 
+-    public List<Object> getEvents() {
+-        return List.copyOf(events);
+-    }
+-
+     public long getVersion() {
+         return version;
+     }
+diff --git a/ddd/src/ddd/order/domain/OrderPlaced.java b/ddd/src/ddd/order/domain/OrderPlaced.java
+deleted file mode 100644
+index 4318e5c..0000000
+--- a/ddd/src/ddd/order/domain/OrderPlaced.java
++++ /dev/null
+@@ -1,6 +0,0 @@
+-package ddd.order.domain;
+-
+-import java.util.List;
+-
+-public record OrderPlaced(long orderId, List<OrderItem> items) {
+-}
+diff --git a/ddd/src/ddd/order/domain/OrderSpecification.java b/ddd/src/ddd/order/domain/OrderSpecification.java
+deleted file mode 100644
+index 256d7f3..0000000
+--- a/ddd/src/ddd/order/domain/OrderSpecification.java
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package ddd.order.domain;
+-
+-public interface OrderSpecification {
+-
+-    boolean isSatisfiedBy(Order order);
+-
+-    default OrderSpecification and(OrderSpecification other) {
+-        return order -> isSatisfiedBy(order) && other.isSatisfiedBy(order);
+-    }
+-}
